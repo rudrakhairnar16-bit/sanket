@@ -708,8 +708,8 @@ function PracticeScreen({
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [status, setStatus] = useState<"idle" | "loading" | "ready" | "practicing" | "success">("idle");
-  const [currentSign, setCurrentSign] = useState<{ sign: string | null; confidence: number }>({ sign: null, confidence: 0 });
+  const [status, setStatus] = useState<"idle" | "loading" | "ready" | "practicing" | "success" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
   const [handCount, setHandCount] = useState(0);
   const [accuracy, setAccuracy] = useState(0);
   const [practiceCount, setPracticeCount] = useState(0);
@@ -718,6 +718,7 @@ function PracticeScreen({
   const animFrameRef = useRef<number>(0);
   const correctFrames = useRef(0);
   const totalFrames = useRef(0);
+  const lastTimestamp = useRef(0);
 
   useEffect(() => {
     const saved = localStorage.getItem("isl-webcam-count");
@@ -735,6 +736,7 @@ function PracticeScreen({
 
   async function startCamera() {
     setStatus("loading");
+    setErrorMsg("");
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user", width: 640, height: 480 },
@@ -744,10 +746,10 @@ function PracticeScreen({
         videoRef.current.srcObject = stream;
       }
       setStatus("ready");
-
       setTimeout(() => startDetection(), 500);
-    } catch {
-      setStatus("idle");
+    } catch (err) {
+      setErrorMsg("Camera access denied. Please allow camera permissions.");
+      setStatus("error");
     }
   }
 
@@ -767,9 +769,11 @@ function PracticeScreen({
         numHands: 2,
       });
       setStatus("practicing");
+      lastTimestamp.current = 0;
       processFrame(landmarker);
     } catch {
-      setStatus("idle");
+      setErrorMsg("Failed to load AI model. Check your internet connection.");
+      setStatus("error");
     }
   }
 
@@ -782,90 +786,93 @@ function PracticeScreen({
     }
 
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) {
+      animFrameRef.current = requestAnimationFrame(() => processFrame(landmarker));
+      return;
+    }
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     ctx.drawImage(video, 0, 0);
 
-    const result = landmarker.detectForVideo(video, performance.now());
+    const now = performance.now();
+    if (now - lastTimestamp.current > 100) {
+      lastTimestamp.current = now;
+      const result = landmarker.detectForVideo(video, now);
 
-    if (result.landmarks && result.landmarks.length > 0) {
-      setHandCount(result.landmarks.length);
+      if (result.landmarks && result.landmarks.length > 0) {
+        setHandCount(result.landmarks.length);
 
-      result.landmarks.forEach((hand: any, i: number) => {
-        ctx.strokeStyle = i === 0 ? "#6366f1" : "#8b5cf6";
-        ctx.lineWidth = 2;
-        const connections = [
-          [0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8],
-          [5, 9], [9, 10], [10, 11], [11, 12], [9, 13], [13, 14], [14, 15],
-          [15, 16], [13, 17], [17, 18], [18, 19], [19, 20], [0, 17],
-        ];
-        for (const [cx, cy] of connections) {
-          ctx.beginPath();
-          ctx.moveTo(hand[cx].x * canvas.width, hand[cx].y * canvas.height);
-          ctx.lineTo(hand[cy].x * canvas.width, hand[cy].y * canvas.height);
-          ctx.stroke();
-        }
-        ctx.fillStyle = i === 0 ? "#6366f1" : "#8b5cf6";
-        for (const lm of hand) {
-          ctx.beginPath();
-          ctx.arc(lm.x * canvas.width, lm.y * canvas.height, 4, 0, 2 * Math.PI);
-          ctx.fill();
-        }
-      });
-
-      const detected = getDetectedSign(result.landmarks);
-      setCurrentSign(detected);
-
-      totalFrames.current += 1;
-      if (detected.sign === selectedSign && detected.confidence > 0.6) {
-        correctFrames.current += 1;
-      } else if (totalFrames.current > 10) {
-        correctFrames.current = Math.max(0, correctFrames.current - 1);
-      }
-
-      const acc = totalFrames.current > 0
-        ? Math.round((correctFrames.current / totalFrames.current) * 100)
-        : 0;
-      setAccuracy(acc);
-
-      if (acc > 60 && totalFrames.current > 20) {
-        setStatus("success");
-        const newCount = practiceCount + 1;
-        setPracticeCount(newCount);
-        localStorage.setItem("isl-webcam-count", String(newCount));
-
-        onUpdate((prev) => {
-          let state = addXP(prev, 50);
-          state = updateStreak(state);
-          state = checkWebcamMilestone(state, newCount);
-          return state;
+        result.landmarks.forEach((hand: any, i: number) => {
+          ctx.strokeStyle = i === 0 ? "#6366f1" : "#8b5cf6";
+          ctx.lineWidth = 2;
+          const connections = [
+            [0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8],
+            [5, 9], [9, 10], [10, 11], [11, 12], [9, 13], [13, 14], [14, 15],
+            [15, 16], [13, 17], [17, 18], [18, 19], [19, 20], [0, 17],
+          ];
+          for (const [a, b] of connections) {
+            ctx.beginPath();
+            ctx.moveTo(hand[a].x * canvas.width, hand[a].y * canvas.height);
+            ctx.lineTo(hand[b].x * canvas.width, hand[b].y * canvas.height);
+            ctx.stroke();
+          }
+          ctx.fillStyle = i === 0 ? "#6366f1" : "#8b5cf6";
+          for (const lm of hand) {
+            ctx.beginPath();
+            ctx.arc(lm.x * canvas.width, lm.y * canvas.height, 4, 0, 2 * Math.PI);
+            ctx.fill();
+          }
         });
-        cancelAnimationFrame(animFrameRef.current);
-        landmarker.close();
-        return;
+
+        const detected = classifyHands(result.landmarks);
+        totalFrames.current += 1;
+        if (detected.sign === selectedSign && detected.confidence > 0.6) {
+          correctFrames.current += 1;
+        } else if (totalFrames.current > 10) {
+          correctFrames.current = Math.max(0, correctFrames.current - 1);
+        }
+
+        const acc = totalFrames.current > 0
+          ? Math.round((correctFrames.current / totalFrames.current) * 100)
+          : 0;
+        setAccuracy(acc);
+
+        if (acc > 60 && totalFrames.current > 20) {
+          setStatus("success");
+          const newCount = practiceCount + 1;
+          setPracticeCount(newCount);
+          localStorage.setItem("isl-webcam-count", String(newCount));
+
+          onUpdate((prev) => {
+            let state = addXP(prev, 50);
+            state = updateStreak(state);
+            state = checkWebcamMilestone(state, newCount);
+            return state;
+          });
+          cancelAnimationFrame(animFrameRef.current);
+          landmarker.close();
+          return;
+        }
+      } else {
+        setHandCount(0);
       }
-    } else {
-      setHandCount(0);
     }
 
     animFrameRef.current = requestAnimationFrame(() => processFrame(landmarker));
   }
 
-  function reset() {
+  function stopAll() {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+    cancelAnimationFrame(animFrameRef.current);
     correctFrames.current = 0;
     totalFrames.current = 0;
     setAccuracy(0);
-    setCurrentSign({ sign: null, confidence: 0 });
     setStatus("idle");
-  }
-
-  function cleanup() {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((t) => t.stop());
-    }
-    cancelAnimationFrame(animFrameRef.current);
+    setErrorMsg("");
   }
 
   const signInfo = ALL_SIGNS.find((s) => s.name === selectedSign);
@@ -874,14 +881,14 @@ function PracticeScreen({
     <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <button
-          onClick={() => { cleanup(); onBack(); }}
+          onClick={() => { stopAll(); onBack(); }}
           className="text-sm text-gray-400 hover:text-gray-600 transition-all"
         >
           ← Exit
         </button>
         {status !== "idle" && (
           <button
-            onClick={() => { cleanup(); reset(); }}
+            onClick={stopAll}
             className="text-sm text-red-400 hover:text-red-600 transition-all"
           >
             Restart
@@ -921,6 +928,19 @@ function PracticeScreen({
               className="px-8 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all shadow-lg"
             >
               Start Camera
+            </button>
+          </div>
+        )}
+
+        {status === "error" && (
+          <div className="text-center py-8">
+            <span className="text-6xl block mb-4">😞</span>
+            <p className="text-red-600 font-medium mb-2">{errorMsg}</p>
+            <button
+              onClick={startCamera}
+              className="px-6 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all shadow-lg"
+            >
+              Try Again
             </button>
           </div>
         )}
@@ -991,13 +1011,13 @@ function PracticeScreen({
             </p>
             <div className="flex gap-3 justify-center">
               <button
-                onClick={() => { cleanup(); reset(); }}
+                onClick={stopAll}
                 className="px-6 py-2.5 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all"
               >
                 Practice Again
               </button>
               <button
-                onClick={() => { cleanup(); onBack(); }}
+                onClick={() => { stopAll(); onBack(); }}
                 className="px-6 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-all"
               >
                 Done
@@ -1012,6 +1032,52 @@ function PracticeScreen({
       </p>
     </div>
   );
+}
+
+function classifyHands(hands: { x: number; y: number }[][]): { sign: string | null; confidence: number } {
+  if (hands.length === 0) return { sign: null, confidence: 0 };
+
+  const hand = hands[0];
+  if (hand.length < 21) return { sign: null, confidence: 0 };
+
+  const d = (a: { x: number; y: number }, b: { x: number; y: number }) =>
+    Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
+
+  const tip4 = hand[4], ip3 = hand[3], mcp2 = hand[2];
+  const tip8 = hand[8], pip6 = hand[6], mcp5 = hand[5];
+  const tip12 = hand[12], pip10 = hand[10], mcp9 = hand[9];
+  const tip16 = hand[16], pip14 = hand[14], mcp13 = hand[13];
+  const tip20 = hand[20], pip18 = hand[18], mcp17 = hand[17];
+
+  const thumbExt = d(tip4, ip3) > d(ip3, mcp2) * 1.2;
+  const indexExt = d(tip8, pip6) > d(pip6, mcp5) * 1.4;
+  const middleExt = d(tip12, pip10) > d(pip10, mcp9) * 1.4;
+  const ringExt = d(tip16, pip14) > d(pip14, mcp13) * 1.4;
+  const pinkyExt = d(tip20, pip18) > d(pip18, mcp17) * 1.4;
+
+  const allExt = indexExt && middleExt && ringExt && pinkyExt;
+
+  if (allExt && thumbExt) return { sign: "Wait", confidence: 0.85 };
+  if (!indexExt && !middleExt && !ringExt && !pinkyExt && !thumbExt) return { sign: "Yes", confidence: 0.8 };
+  if (indexExt && !middleExt && !ringExt && !pinkyExt && !thumbExt) return { sign: "No", confidence: 0.75 };
+
+  if (hands.length >= 2) {
+    const leftP = { x: (hands[0][9].x + hands[0][0].x) / 2, y: (hands[0][9].y + hands[0][0].y) / 2 };
+    const rightP = { x: (hands[1][9].x + hands[1][0].x) / 2, y: (hands[1][9].y + hands[1][0].y) / 2 };
+    if (d(leftP, rightP) < 0.15) {
+      let match = true;
+      for (let i = 4; i < 21; i++) {
+        if (d(hands[0][i], hands[1][i]) > 0.1) { match = false; break; }
+      }
+      if (match) return { sign: "Namaste", confidence: 0.9 };
+    }
+  }
+
+  if (indexExt && middleExt && !ringExt && !pinkyExt) {
+    return { sign: "Namaste", confidence: 0.5 };
+  }
+
+  return { sign: null, confidence: 0 };
 }
 
 function BadgesScreen({
@@ -1071,48 +1137,4 @@ function BadgesScreen({
   );
 }
 
-function getDetectedSign(hands: { x: number; y: number }[][]): { sign: string | null; confidence: number } {
-  if (hands.length === 0) return { sign: null, confidence: 0 };
 
-  const hand = hands[0];
-  if (hand.length < 21) return { sign: null, confidence: 0 };
-
-  const d = (a: { x: number; y: number }, b: { x: number; y: number }) =>
-    Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
-
-  const tip4 = hand[4], ip3 = hand[3], mcp2 = hand[2];
-  const tip8 = hand[8], pip6 = hand[6], mcp5 = hand[5];
-  const tip12 = hand[12], pip10 = hand[10], mcp9 = hand[9];
-  const tip16 = hand[16], pip14 = hand[14], mcp13 = hand[13];
-  const tip20 = hand[20], pip18 = hand[18], mcp17 = hand[17];
-
-  const thumbExt = d(tip4, ip3) > d(ip3, mcp2) * 1.2;
-  const indexExt = d(tip8, pip6) > d(pip6, mcp5) * 1.4;
-  const middleExt = d(tip12, pip10) > d(pip10, mcp9) * 1.4;
-  const ringExt = d(tip16, pip14) > d(pip14, mcp13) * 1.4;
-  const pinkyExt = d(tip20, pip18) > d(pip18, mcp17) * 1.4;
-
-  const allExt = indexExt && middleExt && ringExt && pinkyExt;
-
-  if (allExt && thumbExt) return { sign: "Wait", confidence: 0.85 };
-  if (!indexExt && !middleExt && !ringExt && !pinkyExt && !thumbExt) return { sign: "Yes", confidence: 0.8 };
-  if (indexExt && !middleExt && !ringExt && !pinkyExt && !thumbExt) return { sign: "No", confidence: 0.75 };
-
-  if (hands.length >= 2) {
-    const leftP = { x: (hands[0][9].x + hands[0][0].x) / 2, y: (hands[0][9].y + hands[0][0].y) / 2 };
-    const rightP = { x: (hands[1][9].x + hands[1][0].x) / 2, y: (hands[1][9].y + hands[1][0].y) / 2 };
-    if (d(leftP, rightP) < 0.15) {
-      let match = true;
-      for (let i = 4; i < 21; i++) {
-        if (d(hands[0][i], hands[1][i]) > 0.1) { match = false; break; }
-      }
-      if (match) return { sign: "Namaste", confidence: 0.9 };
-    }
-  }
-
-  if (indexExt && middleExt && !ringExt && !pinkyExt) {
-    return { sign: "Namaste", confidence: 0.5 };
-  }
-
-  return { sign: null, confidence: 0 };
-}
