@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { getTodayIST } from "@/lib/utils";
 import SignPractice from "@/components/SignPractice";
+import CertificateGenerator from "@/components/CertificateGenerator";
 
 interface ModuleData {
   _id: string;
@@ -37,6 +38,7 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
   const [showPractice, setShowPractice] = useState(false);
   const [practiceDone, setPracticeDone] = useState(false);
+  const [milestoneCert, setMilestoneCert] = useState<number | null>(null);
 
   useEffect(() => {
     loadData();
@@ -109,6 +111,9 @@ export default function DashboardPage() {
           totalCompleted: data.totalCompleted,
         });
         setCompletedToday(true);
+        if (data.milestone) {
+          setTimeout(() => setMilestoneCert(data.milestone), 1000);
+        }
         refreshUser();
       } else {
         setError(data.error || "Submission failed");
@@ -217,11 +222,11 @@ export default function DashboardPage() {
             </div>
           )}
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="aspect-video bg-gray-900 flex items-center justify-center relative group">
+            <div className="aspect-video bg-gray-900 flex items-center justify-center relative group" role="img" aria-label={`Video lesson: ${module.title}`}>
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
                   <div className="w-20 h-20 rounded-full bg-white/10 backdrop-blur flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform cursor-pointer">
-                    <svg className="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path d="M8 5v14l11-7z" />
                     </svg>
                   </div>
@@ -247,6 +252,8 @@ export default function DashboardPage() {
                     setSelectedAnswer(option);
                     setError("");
                   }}
+                  aria-pressed={selectedAnswer === option}
+                  aria-label={`Option ${String.fromCharCode(65 + index)}: ${option}`}
                   className={`w-full text-left p-4 rounded-2xl border-2 transition-all ${
                     selectedAnswer === option
                       ? "border-primary-500 bg-primary-50 text-primary-700 shadow-md"
@@ -304,6 +311,15 @@ export default function DashboardPage() {
             Your admin hasn&#39;t added any modules yet. Check back later.
           </p>
         </div>
+      )}
+
+      {milestoneCert && (
+        <CertificateGenerator
+          name={user?.name || "Learner"}
+          department={user?.department || ""}
+          streak={milestoneCert}
+          onClose={() => setMilestoneCert(null)}
+        />
       )}
     </div>
   );

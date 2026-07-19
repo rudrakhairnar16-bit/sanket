@@ -1,10 +1,32 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
+
 export default function Home() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (loading) return;
+    if (user) {
+      router.replace(
+        user.role === "admin" || user.role === "superadmin"
+          ? "/admin"
+          : "/dashboard"
+      );
+    } else {
+      router.replace("/login");
+    }
+  }, [user, loading, router]);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-8">
-      <h1 className="text-4xl font-bold mb-4">Sanket</h1>
-      <p className="text-lg text-gray-600">
-        ISL for Sarkari Clerks
-      </p>
-    </main>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-indigo-50">
+      <div className="text-center">
+        <div className="w-12 h-12 rounded-full border-4 border-primary-200 border-t-primary-600 animate-spin mx-auto mb-4" />
+        <p className="text-gray-500">Loading Sanket...</p>
+      </div>
+    </div>
   );
 }
