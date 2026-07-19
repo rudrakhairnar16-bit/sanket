@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { DEPARTMENTS } from "@/lib/utils";
 
@@ -188,12 +189,19 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <div className="mt-4 text-center">
+          <div className="mt-4 text-center space-y-3">
             <p className="text-white/60 text-sm">
               Demo accounts:{" "}
               <span className="text-white/80">admin / admin123</span> or{" "}
               <span className="text-white/80">ramesh / admin123</span>
             </p>
+            <Link
+              href="/learn"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-medium transition-all backdrop-blur border border-white/10"
+            >
+              <span>🌐</span>
+              Learn ISL as a Citizen
+            </Link>
           </div>
         </div>
       </div>
