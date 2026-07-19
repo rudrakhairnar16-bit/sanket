@@ -62,8 +62,8 @@ Sanket makes ISL training frictionless — **3 minutes a day**, integrated into 
 
 ### Prerequisites
 - Node.js 18+ and npm
-- MongoDB Atlas account (free tier)
-- Cloudinary account (free tier) — for video uploads
+- **Docker** (recommended — for local MongoDB) OR MongoDB Atlas account (free tier)
+- Cloudinary account (free tier) — optional, for video uploads
 
 ### 1. Clone & Install
 ```bash
@@ -72,22 +72,41 @@ cd sanket
 npm install
 ```
 
-### 2. Environment Variables
+### 2. Start MongoDB (choose one)
+
+**Option A — Docker (recommended, easiest):**
+```bash
+docker run -d --name sanket-mongo -p 27017:27017 mongo:7
+```
+
+**Option B — MongoDB Atlas (free tier):**
+Create a free cluster at [cloud.mongodb.com](https://cloud.mongodb.com) and get your connection string.
+
+### 3. Environment Variables
 Create a `.env` file in the root directory:
+
+**If using Docker (local):**
+```env
+MONGODB_URI=mongodb://localhost:27017/sanket
+JWT_SECRET=sanket-dev-secret-change-in-production
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=placeholder
+```
+
+**If using MongoDB Atlas:**
 ```env
 MONGODB_URI=mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/sanket
 JWT_SECRET=<any-random-string-at-least-32-chars>
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=<your-cloudinary-cloud-name>
 ```
 
-### 3. Run Development Server
+### 4. Run Development Server
 ```bash
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### 4. Seed Demo Data
+### 5. Seed Demo Data
 > **⚠️ This clears all existing data and populates the database with demo records.**
 
 Visit: `POST /api/admin/seed`
@@ -97,7 +116,7 @@ Or use curl:
 curl -X POST http://localhost:3000/api/admin/seed
 ```
 
-### 5. Demo Accounts
+### 6. Demo Accounts
 
 | Username | Password | Role |
 |---|---|---|
