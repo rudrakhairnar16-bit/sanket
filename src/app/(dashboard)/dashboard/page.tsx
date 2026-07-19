@@ -59,23 +59,33 @@ export default function DashboardPage() {
         }
       }
 
+      let streakData: any = null;
+      if (streakRes.ok) {
+        streakData = await streakRes.json();
+        setCompletedToday(streakData.completedToday);
+        setStreak({
+          currentStreak: streakData.currentStreak || 0,
+          longestStreak: streakData.longestStreak || 0,
+          totalCompleted: streakData.totalCompleted || 0,
+        });
+      }
+
       if (!module && moduleRes.ok) {
         const data = await moduleRes.json();
         if (data.modules?.length > 0) {
-          const today = getTodayIST();
-          const dayIndex =
-            (parseInt(today.replace(/-/g, ""), 10) % data.modules.length) +
-            1;
-          const module =
-            data.modules.find((m: ModuleData) => m.order === dayIndex) ||
-            data.modules[0];
-          setModule(module);
+          if (streakData && streakData.totalCompleted === 0) {
+            const firstModule = data.modules.find((m: ModuleData) => m.order === 1) || data.modules[0];
+            setModule(firstModule);
+          } else {
+            const today = getTodayIST();
+            const dayIndex =
+              (parseInt(today.replace(/-/g, ""), 10) % data.modules.length) + 1;
+            const mod =
+              data.modules.find((m: ModuleData) => m.order === dayIndex) ||
+              data.modules[0];
+            setModule(mod);
+          }
         }
-      }
-
-      if (streakRes.ok) {
-        const data = await streakRes.json();
-        setCompletedToday(data.completedToday);
       }
     } catch {
       setError("Failed to load today's lesson");
@@ -166,6 +176,33 @@ export default function DashboardPage() {
           </div>
         )}
       </div>
+
+      {streak && streak.totalCompleted === 0 && !completedToday && (
+        <div className="bg-gradient-to-br from-primary-50 to-indigo-50 border border-primary-200 rounded-3xl p-6 animate-slide-down">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl gradient-primary flex items-center justify-center shrink-0 shadow-lg">
+              <span className="text-2xl">👋</span>
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-primary-900">Welcome to Sanket!</h2>
+              <p className="text-primary-700 text-sm mt-1">
+                Complete your first lesson below to start your ISL learning journey.
+              </p>
+              <div className="flex gap-3 mt-3">
+                <span className="text-xs px-3 py-1 rounded-full bg-white/70 text-primary-600 font-medium">
+                  📹 Watch Sign
+                </span>
+                <span className="text-xs px-3 py-1 rounded-full bg-white/70 text-primary-600 font-medium">
+                  ✅ Take Quiz
+                </span>
+                <span className="text-xs px-3 py-1 rounded-full bg-white/70 text-primary-600 font-medium">
+                  📸 Practice
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {streak && (
         <StreakBar

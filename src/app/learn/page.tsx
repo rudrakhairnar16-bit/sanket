@@ -24,8 +24,10 @@ import {
   BADGES,
   type GameState,
 } from "@/lib/game-storage";
+import { setLang, loadLang, t } from "@/lib/hi";
+import { playCorrect, playIncorrect, playLevelUp } from "@/lib/sound";
 
-type Screen = "home" | "flashcards" | "quiz" | "practice" | "badges";
+type Screen = "home" | "flashcards" | "quiz" | "practice" | "badges" | "dictionary" | "leaderboard";
 
 export default function LearnPage() {
   const [screen, setScreen] = useState<Screen>("home");
@@ -33,7 +35,14 @@ export default function LearnPage() {
   const [animateIn, setAnimateIn] = useState("animate-fade-in");
 
   useEffect(() => {
-    setGame(loadGame());
+    const saved = loadGame();
+    setGame(saved);
+    setLang(loadLang());
+    if (saved.darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   }, []);
 
   function transitionTo(newScreen: Screen) {
@@ -99,6 +108,12 @@ export default function LearnPage() {
           onBack={() => transitionTo("home")}
         />
       )}
+      {screen === "dictionary" && (
+        <DictionaryScreen onBack={() => transitionTo("home")} />
+      )}
+      {screen === "leaderboard" && (
+        <LeaderboardScreen game={game} onBack={() => transitionTo("home")} />
+      )}
     </div>
   );
 }
@@ -121,22 +136,57 @@ function HomeScreen({
     day: "numeric",
     month: "long",
   });
+  const [lang, setLangState] = useState<"en" | "hi">("en");
+
+  useEffect(() => {
+    setLangState(loadLang());
+  }, []);
+
+  function toggleLang() {
+    const next = lang === "en" ? "hi" : "en";
+    setLangState(next);
+    setLang(next);
+  }
+
+  function toggleDark() {
+    const isDark = !document.documentElement.classList.contains("dark");
+    document.documentElement.classList.toggle("dark");
+    const updated = { ...game, darkMode: isDark };
+    saveGame(updated);
+    onNavigate("home");
+  }
 
   return (
     <div className={`max-w-4xl mx-auto px-4 py-6 ${animateIn}`}>
       <div className="flex items-center justify-between mb-6">
-        <Link
-          href="/login"
-          className="text-sm text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-all"
-        >
-          ← Login
-        </Link>
-        <Link
-          href="/dashboard"
-          className="text-sm text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-all"
-        >
-          Clerk Dashboard →
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/login"
+            className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 flex items-center gap-1 transition-all"
+          >
+            ← {t("Login")}
+          </Link>
+          <button
+            onClick={toggleLang}
+            className="px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+          >
+            {lang === "en" ? "हिंदी" : "EN"}
+          </button>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleDark}
+            className="px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+          >
+            {game.darkMode ? "☀️" : "🌙"}
+          </button>
+          <Link
+            href="/dashboard"
+            className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 flex items-center gap-1 transition-all"
+          >
+            {t("Clerk Dashboard")} →
+          </Link>
+        </div>
       </div>
 
       <div className="glass rounded-3xl p-6 mb-6">
@@ -203,12 +253,33 @@ function HomeScreen({
         />
       </div>
 
+      <div className="grid grid-cols-2 gap-3 mb-6">
+        <button
+          onClick={() => onNavigate("dictionary")}
+          className="glass rounded-2xl p-4 text-center hover:shadow-md transition-all"
+        >
+          <span className="text-2xl block mb-1">📖</span>
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+            {t("ISL Dictionary") || "ISL Dictionary"}
+          </span>
+        </button>
+        <button
+          onClick={() => onNavigate("leaderboard")}
+          className="glass rounded-2xl p-4 text-center hover:shadow-md transition-all"
+        >
+          <span className="text-2xl block mb-1">🏆</span>
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+            {t("Leaderboard")}
+          </span>
+        </button>
+      </div>
+
       <button
         onClick={() => onNavigate("badges")}
         className="w-full glass rounded-2xl p-4 text-center hover:shadow-md transition-all"
       >
-        <span className="text-sm font-medium text-gray-600">
-          View All Badges ({game.badges.length}/{BADGES.length})
+        <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+          {t("View All Badges")} ({game.badges.length}/{BADGES.length})
         </span>
       </button>
 
@@ -231,10 +302,10 @@ function StatBox({
   label: string;
 }) {
   return (
-    <div className="bg-white rounded-2xl p-3 text-center">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl p-3 text-center">
       <span className="text-xl block mb-0.5">{icon}</span>
-      <p className="text-lg font-bold text-gray-900">{value}</p>
-      <p className="text-xs text-gray-400">{label}</p>
+      <p className="text-lg font-bold text-gray-900 dark:text-white">{value}</p>
+      <p className="text-xs text-gray-400 dark:text-gray-500">{t(label) || label}</p>
     </div>
   );
 }
@@ -260,8 +331,8 @@ function ModeCard({
       <div className={`absolute inset-0 bg-gradient-to-br ${color}`} />
       <div className="relative">
         <span className="text-4xl block mb-3">{icon}</span>
-        <h3 className="text-lg font-bold mb-1">{title}</h3>
-        <p className="text-sm text-white/80">{description}</p>
+        <h3 className="text-lg font-bold mb-1">{t(title) || title}</h3>
+        <p className="text-sm text-white/80">{t(description) || description}</p>
       </div>
     </button>
   );
@@ -334,19 +405,19 @@ function FlashcardScreen({
   if (!currentSign || allDone) {
     return (
       <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 text-center">
           <span className="text-6xl block mb-4">🎉</span>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            All Categories Done!
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            {t("All Categories Done!")}
           </h2>
-          <p className="text-gray-500 mb-6">
-            You reviewed {knownCount} signs. Keep practicing daily!
+          <p className="text-gray-500 dark:text-gray-400 mb-6">
+            {t("You reviewed")} {knownCount} {t("signs. Keep practicing daily!")}
           </p>
           <button
             onClick={onBack}
             className="px-6 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all"
           >
-            Back to Home
+            {t("Back to Home")}
           </button>
         </div>
       </div>
@@ -358,12 +429,12 @@ function FlashcardScreen({
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={onBack}
-          className="text-sm text-gray-400 hover:text-gray-600 transition-all"
+          className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-all"
         >
-          ← Exit
+          ← {t("Exit")}
         </button>
-        <span className="text-xs text-gray-400">
-          {category.name} • {signIndex + 1}/{signs.length}
+        <span className="text-xs text-gray-400 dark:text-gray-500">
+          {t(category.name)} • {signIndex + 1}/{signs.length}
         </span>
       </div>
 
@@ -381,18 +452,18 @@ function FlashcardScreen({
           }}
         >
           <div
-            className="absolute inset-0 bg-white rounded-3xl shadow-lg border border-gray-100 p-8 flex flex-col items-center justify-center text-center"
+            className="absolute inset-0 bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 p-8 flex flex-col items-center justify-center text-center"
             style={{ backfaceVisibility: "hidden" }}
           >
             <span className="text-7xl mb-4">{currentSign.icon}</span>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               {currentSign.name}
             </h2>
-            <p className="text-gray-400 text-sm">Tap to reveal meaning</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm">{t("Tap to reveal meaning")}</p>
           </div>
 
           <div
-            className="bg-white rounded-3xl shadow-lg border border-primary-200 p-8 flex flex-col items-center justify-center text-center"
+            className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-primary-200 dark:border-primary-800 p-8 flex flex-col items-center justify-center text-center"
             style={{
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
@@ -400,17 +471,17 @@ function FlashcardScreen({
             }}
           >
             <span className="text-6xl mb-4">💡</span>
-            <h2 className="text-2xl font-bold text-primary-700 mb-2">
+            <h2 className="text-2xl font-bold text-primary-700 dark:text-primary-300 mb-2">
               {currentSign.meaning}
             </h2>
             {currentSign.hint && (
-              <p className="text-gray-500 text-sm mt-2">
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
                 💬 {currentSign.hint}
               </p>
             )}
             {currentSign.webcamSupported && (
-              <span className="mt-3 px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">
-                📸 Webcam practice available
+              <span className="mt-3 px-3 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs rounded-full font-medium">
+                📸 {t("Webcam practice available")}
               </span>
             )}
           </div>
@@ -420,15 +491,15 @@ function FlashcardScreen({
       <div className="flex gap-3">
         <button
           onClick={skipSign}
-          className="flex-1 px-6 py-3 bg-white border border-gray-200 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-all"
+          className="flex-1 px-6 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
         >
-          Skip
+          {t("Skip")}
         </button>
         <button
           onClick={markKnown}
           className="flex-1 px-6 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all shadow-lg"
         >
-          ✓ I Know This
+          ✓ {t("I Know This")}
         </button>
       </div>
 
@@ -480,9 +551,13 @@ function QuizScreen({
   function handleAnswer(option: string) {
     if (selected) return;
     setSelected(option);
-    lastAnswerRef.current = option === q.sign.meaning;
-    if (option === q.sign.meaning) {
+    const correct = option === q.sign.meaning;
+    lastAnswerRef.current = correct;
+    if (correct) {
       setCorrectCount((c) => c + 1);
+      playCorrect();
+    } else {
+      playIncorrect();
     }
   }
 
@@ -528,7 +603,7 @@ function QuizScreen({
     const pct = Math.round((correctCount / total) * 100);
     return (
       <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
-        <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-8 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 p-8 text-center">
           {pct >= 80 ? (
             <span className="text-7xl block mb-4">🏆</span>
           ) : pct >= 50 ? (
@@ -536,15 +611,11 @@ function QuizScreen({
           ) : (
             <span className="text-6xl block mb-4">📚</span>
           )}
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {pct >= 80
-              ? "Outstanding!"
-              : pct >= 50
-              ? "Good Effort!"
-              : "Keep Learning!"}
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            {t(pct >= 80 ? "Outstanding!" : pct >= 50 ? "Good Effort!" : "Keep Practicing!")}
           </h2>
-          <p className="text-gray-500 mb-1">
-            You scored {correctCount}/{total} across {CATEGORIES.length} categories
+          <p className="text-gray-500 dark:text-gray-400 mb-6">
+            {t("You scored")} {correctCount}/{total} {t("across")} {CATEGORIES.length} {t("categories")}
           </p>
           <p className="text-3xl font-bold text-primary-600 mb-6">
             {pct}% Accuracy
@@ -577,23 +648,23 @@ function QuizScreen({
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={onBack}
-          className="text-sm text-gray-400 hover:text-gray-600 transition-all"
+          className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-all"
         >
-          ← Exit
+          ← {t("Exit")}
         </button>
-        <span className="text-xs text-gray-400">
-          {category.name} • Q{questionIndex + 1}/{quizData.length}
+        <span className="text-xs text-gray-400 dark:text-gray-500">
+          {t(category.name)} • Q{questionIndex + 1}/{quizData.length}
         </span>
       </div>
 
-      <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-6 sm:p-8 mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 sm:p-8 mb-4">
         <div className="text-center mb-6">
           <span className="text-6xl block mb-3">{q.sign.icon}</span>
-          <h2 className="text-xl font-bold text-gray-900">
-            What does this sign mean?
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            {t("What does this sign mean?")}
           </h2>
-          <p className="text-sm text-gray-400 mt-1">
-            Sign: {q.sign.name}
+          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+            {t("Sign")}: {q.sign.name}
           </p>
         </div>
 
@@ -627,12 +698,12 @@ function QuizScreen({
                 >
                   {String.fromCharCode(65 + i)}
                 </div>
-                <span className="font-medium">{option}</span>
+                <span className="font-medium dark:text-white">{option}</span>
                 {selected && option === q.sign.meaning && (
-                  <span className="ml-auto text-green-600 text-sm font-medium">✓</span>
+                  <span className="ml-auto text-green-600 dark:text-green-400 text-sm font-medium">✓</span>
                 )}
                 {selected === option && option !== q.sign.meaning && (
-                  <span className="ml-auto text-red-600 text-sm font-medium">✗</span>
+                  <span className="ml-auto text-red-600 dark:text-red-400 text-sm font-medium">✗</span>
                 )}
               </div>
             </button>
@@ -645,22 +716,22 @@ function QuizScreen({
           <div
             className={`rounded-2xl p-4 mb-4 text-center ${
               isCorrect
-                ? "bg-green-50 border border-green-200"
-                : "bg-red-50 border border-red-200"
+                ? "bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800"
+                : "bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800"
             }`}
           >
             <p
               className={`font-medium ${
-                isCorrect ? "text-green-700" : "text-red-700"
+                isCorrect ? "text-green-700 dark:text-green-300" : "text-red-700 dark:text-red-300"
               }`}
             >
               {isCorrect
-                ? "✅ Correct! +20 XP"
-                : `✗ The answer was: ${q.sign.meaning}`}
+                ? "✅ " + t("Correct") + "! +20 XP"
+                : `✗ ${t("The answer was")}: ${q.sign.meaning}`}
             </p>
-            <p className="text-xs text-gray-500 mt-1">{q.sign.hint}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{q.sign.hint}</p>
             {q.sign.webcamSupported && (
-              <p className="text-xs text-green-600 mt-1">📸 Try with webcam!</p>
+              <p className="text-xs text-green-600 dark:text-green-400 mt-1">📸 {t("Try with webcam!")}</p>
             )}
           </div>
           <button
@@ -669,8 +740,8 @@ function QuizScreen({
           >
             {questionIndex + 1 >= quizData.length &&
             categoryIndex + 1 >= CATEGORIES.length
-              ? "See Final Results"
-              : "Next Question"}
+              ? t("See Final Results")
+              : t("Next Question")}
           </button>
         </div>
       )}
@@ -882,52 +953,52 @@ function PracticeScreen({
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => { stopAll(); onBack(); }}
-          className="text-sm text-gray-400 hover:text-gray-600 transition-all"
+          className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-all"
         >
-          ← Exit
+          ← {t("Exit")}
         </button>
         {status !== "idle" && (
           <button
             onClick={stopAll}
-            className="text-sm text-red-400 hover:text-red-600 transition-all"
+            className="text-sm text-red-400 hover:text-red-600 dark:text-red-300 dark:hover:text-red-200 transition-all"
           >
-            Restart
+            {t("Restart")}
           </button>
         )}
       </div>
 
-      <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-6 mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 mb-4">
         <div className="text-center mb-4">
-          <h2 className="text-lg font-bold text-gray-900">Webcam Practice</h2>
-          <p className="text-sm text-gray-500">
-            Show the sign to your camera
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t("Webcam Practice")}</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {t("Show the sign to your camera")}
           </p>
         </div>
 
         {status === "idle" && (
           <div className="text-center py-8">
             <span className="text-6xl block mb-4">📸</span>
-            <p className="text-gray-500 mb-2">Choose a sign to practice:</p>
+            <p className="text-gray-500 dark:text-gray-400 mb-2">{t("Choose a sign to practice:")}</p>
             <select
               value={selectedSign}
               onChange={(e) => setSelectedSign(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 mb-4 bg-white"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 mb-4 bg-white dark:bg-gray-800 dark:text-white"
             >
               {WEBCAM_SIGNS.map((name) => (
                 <option key={name} value={name}>{name}</option>
               ))}
             </select>
             {signInfo && (
-              <div className="mb-4 p-3 bg-gray-50 rounded-2xl">
+              <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-2xl">
                 <span className="text-3xl block mb-2">{signInfo.icon}</span>
-                <p className="text-sm text-gray-600">{signInfo.hint}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{signInfo.hint}</p>
               </div>
             )}
             <button
               onClick={startCamera}
               className="px-8 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all shadow-lg"
             >
-              Start Camera
+              {t("Start Camera")}
             </button>
           </div>
         )}
@@ -935,12 +1006,12 @@ function PracticeScreen({
         {status === "error" && (
           <div className="text-center py-8">
             <span className="text-6xl block mb-4">😞</span>
-            <p className="text-red-600 font-medium mb-2">{errorMsg}</p>
+            <p className="text-red-600 dark:text-red-400 font-medium mb-2">{errorMsg}</p>
             <button
               onClick={startCamera}
               className="px-6 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all shadow-lg"
             >
-              Try Again
+              {t("Try Again")}
             </button>
           </div>
         )}
@@ -963,7 +1034,7 @@ function PracticeScreen({
               <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80">
                 <div className="text-center">
                   <div className="w-10 h-10 rounded-full border-4 border-primary-200 border-t-primary-600 animate-spin mx-auto mb-3" />
-                  <p className="text-white/80 text-sm">Starting camera...</p>
+                  <p className="text-white/80 text-sm">{t("Starting camera...")}</p>
                 </div>
               </div>
             )}
@@ -1001,35 +1072,179 @@ function PracticeScreen({
         )}
 
         {status === "success" && (
-          <div className="mt-4 bg-green-50 border border-green-200 rounded-2xl p-6 text-center animate-scale-in">
+          <div className="mt-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-2xl p-6 text-center animate-scale-in">
             <span className="text-5xl block mb-3">🎉</span>
-            <p className="text-green-700 font-bold text-lg mb-1">
-              Sign Recognized!
+            <p className="text-green-700 dark:text-green-300 font-bold text-lg mb-1">
+              {t("Sign Recognized!")}
             </p>
-            <p className="text-green-600 text-sm mb-3">
-              You signed {selectedSign} correctly! +50 XP
+            <p className="text-green-600 dark:text-green-400 text-sm mb-3">
+              {t("You signed")} {selectedSign} {t("correctly!")} +50 XP
             </p>
             <div className="flex gap-3 justify-center">
               <button
                 onClick={stopAll}
                 className="px-6 py-2.5 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all"
               >
-                Practice Again
+                {t("Practice Again")}
               </button>
               <button
                 onClick={() => { stopAll(); onBack(); }}
-                className="px-6 py-2.5 bg-white border border-gray-200 text-gray-600 rounded-xl font-medium hover:bg-gray-50 transition-all"
+                className="px-6 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
               >
-                Done
+                {t("Done")}
               </button>
             </div>
           </div>
         )}
       </div>
 
-      <p className="text-xs text-gray-400 text-center">
-        Practice count: {practiceCount} • +50 XP per successful practice
+      <p className="text-xs text-gray-400 dark:text-gray-500 text-center">
+        {t("Practice count")}: {practiceCount} • +50 XP {t("per successful practice")}
       </p>
+    </div>
+  );
+}
+
+function DictionaryScreen({ onBack }: { onBack: () => void }) {
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("all");
+  const query = search.toLowerCase();
+
+  const filtered = ALL_SIGNS.filter((s) => {
+    const matchCategory = category === "all" || s.category === category;
+    const matchSearch = s.name.toLowerCase().includes(query) || s.meaning.toLowerCase().includes(query);
+    return matchCategory && matchSearch;
+  });
+
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-8 animate-fade-in">
+      <button
+        onClick={onBack}
+        className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 mb-6 flex items-center gap-1 transition-all"
+      >
+        ← {t("Back to Home") || "Back"}
+      </button>
+
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        📖 {t("ISL Dictionary") || "ISL Dictionary"}
+      </h2>
+      <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+        {ALL_SIGNS.length} {t("signs") || "signs"} across {CATEGORIES.length} categories
+      </p>
+
+      <div className="flex gap-2 mb-6">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t("Search signs...")}
+          className="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
+        />
+        <select
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white outline-none"
+        >
+          <option value="all">{t("All Categories")}</option>
+          {CATEGORIES.map((c) => (
+            <option key={c.id} value={c.id}>{c.icon} {t(c.name)}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="space-y-2">
+        {filtered.length > 0 ? filtered.map((sign) => (
+          <div
+            key={sign.id}
+            className="bg-white dark:bg-gray-800 rounded-2xl p-4 flex items-center gap-4 border border-gray-100 dark:border-gray-700"
+          >
+            <span className="text-3xl w-12 text-center">{sign.icon}</span>
+            <div className="flex-1">
+              <p className="font-semibold text-gray-900 dark:text-white">{sign.name}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{sign.meaning}</p>
+            </div>
+            <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+              {t(sign.category)}
+            </span>
+            {sign.webcamSupported && (
+              <span className="text-xs px-2 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300">
+                📸
+              </span>
+            )}
+          </div>
+        )) : (
+          <div className="text-center py-12 text-gray-400 dark:text-gray-500">
+            <span className="text-4xl block mb-3">🔍</span>
+            <p>{t("No results found")}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function LeaderboardScreen({ game, onBack }: { game: GameState; onBack: () => void }) {
+  const allPlayers = [
+    { name: "You", xp: game.xp, level: game.level, streak: game.streak },
+    { name: "Aisha Sharma", xp: 2450, level: 12, streak: 8 },
+    { name: "Rahul Verma", xp: 1820, level: 9, streak: 5 },
+    { name: "Priya Patel", xp: 1560, level: 8, streak: 6 },
+    { name: "Vikram Singh", xp: 980, level: 5, streak: 3 },
+    { name: "Sneha Reddy", xp: 720, level: 4, streak: 2 },
+    { name: "Arun Kumar", xp: 450, level: 3, streak: 1 },
+  ].sort((a, b) => b.xp - a.xp);
+
+  return (
+    <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
+      <button
+        onClick={onBack}
+        className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 mb-6 flex items-center gap-1 transition-all"
+      >
+        ← {t("Back to Home") || "Back"}
+      </button>
+
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        🏆 {t("Leaderboard")}
+      </h2>
+      <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+        {t("Top ISL learners") || "Top ISL learners"}
+      </p>
+
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        {allPlayers.map((player, i) => (
+          <div
+            key={i}
+            className={`flex items-center gap-4 p-4 ${
+              player.name === "You"
+                ? "bg-primary-50 dark:bg-primary-900/20 border-l-4 border-primary-500"
+                : "border-b border-gray-50 dark:border-gray-700"
+            }`}
+          >
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold ${
+              i === 0 ? "bg-amber-100 dark:bg-amber-900 text-amber-600" :
+              i === 1 ? "bg-gray-100 dark:bg-gray-700 text-gray-500" :
+              i === 2 ? "bg-orange-100 dark:bg-orange-900 text-orange-600" :
+              "bg-gray-50 dark:bg-gray-700 text-gray-400"
+            }`}>
+              {i + 1}
+            </div>
+            <div className="flex-1">
+              <p className={`font-semibold ${
+                player.name === "You" ? "text-primary-700 dark:text-primary-300" : "text-gray-900 dark:text-white"
+              }`}>
+                {player.name}
+              </p>
+              <p className="text-xs text-gray-400">
+                {t("Level")} {player.level} • {player.streak}-day {t("streak") || "streak"}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="font-bold text-gray-900 dark:text-white">{player.xp}</p>
+              <p className="text-xs text-gray-400">{t("XP")}</p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -1091,14 +1306,14 @@ function BadgesScreen({
     <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
       <button
         onClick={onBack}
-        className="text-sm text-gray-400 hover:text-gray-600 mb-6 flex items-center gap-1 transition-all"
+        className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 mb-6 flex items-center gap-1 transition-all"
       >
-        ← Back
+        ← {t("Back")}
       </button>
 
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">Achievements</h2>
-      <p className="text-gray-500 text-sm mb-6">
-        {game.badges.length} of {BADGES.length} unlocked
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t("Achievements")}</h2>
+      <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+        {game.badges.length} {t("of")} {BADGES.length} {t("unlocked")}
       </p>
 
       <div className="space-y-3">
@@ -1109,8 +1324,8 @@ function BadgesScreen({
               key={badge.id}
               className={`rounded-2xl p-4 flex items-center gap-4 transition-all ${
                 unlocked
-                  ? "bg-white border border-amber-200 shadow-sm"
-                  : "bg-gray-50 border border-gray-100 opacity-60"
+                  ? "bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700 shadow-sm"
+                  : "bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 opacity-60"
               }`}
             >
               <span className={`text-3xl ${unlocked ? "" : "grayscale"}`}>
@@ -1119,12 +1334,12 @@ function BadgesScreen({
               <div>
                 <p
                   className={`font-semibold ${
-                    unlocked ? "text-gray-900" : "text-gray-400"
+                    unlocked ? "text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"
                   }`}
                 >
                   {badge.name}
                 </p>
-                <p className="text-xs text-gray-500">{badge.requirement}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{badge.requirement}</p>
               </div>
               {unlocked && (
                 <span className="ml-auto text-green-500 text-xl">✅</span>

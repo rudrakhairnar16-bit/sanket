@@ -40,6 +40,25 @@ Sanket makes ISL training frictionless — **3 minutes a day**, integrated into 
 - Citizens answer: *"Did this staff member try to use sign language?"*
 - Feedback metrics shown on admin dashboard (converts training completion → real-world impact)
 
+### 🌐 ISL Quest — Public Learning (`/learn`)
+- **No login required** — open to all citizens
+- **Flashcard Mode**: 3D card flip animation, 35 signs across 6 categories (Greetings, Office, Emergency, Daily Life, Numbers, Questions)
+- **Quiz Challenge**: MCQ tests with scoring (+20 XP correct, +5 XP wrong)
+- **Webcam Practice**: Real-time MediaPipe hand tracking for 5 signs (+50 XP)
+- **XP & Leveling**: Level 1-20 progression system with 10 unlockable badges
+- **Daily Streak**: Tracks consecutive practice days
+- **ISL Dictionary**: Search any sign by name or meaning with category filter
+- **Dark Mode**: Toggle for comfortable evening learning
+- **Hindi Bilingual**: Switch between English and हिंदी UI
+- **Sound Effects**: Web Audio API chimes for correct/incorrect answers
+- **Citizen Leaderboard**: Top learners ranked by XP on `/learn`
+- **Progress Sharing**: Share achievements on WhatsApp
+
+### 👤 New User Onboarding
+- First-time users see a welcome banner with 3 intro tasks
+- First sign "Namaste" auto-assigned (not random)
+- Progress tracking for onboarding completion
+
 ---
 
 ## Tech Stack
@@ -157,6 +176,18 @@ All ISL sign content is curated from the **Indian Sign Language Research and Tra
 - Full attribution: *"Content sourced from ISLRTC, Ministry of Social Justice & Empowerment, Government of India."*
 
 > **For production use:** Any original content beyond the ISLRTC set should be reviewed by Deaf community members or certified ISL interpreters before deployment.
+
+---
+
+## Live Demo
+
+**Deployed at:** `https://sanket.vercel.app` (after Vercel deploy)
+
+| Login | URL |
+|-------|-----|
+| Clerk Dashboard | `/dashboard` |
+| Admin Panel | `/admin` |
+| ISL Quest (Public) | `/learn` — no login required |
 
 ---
 

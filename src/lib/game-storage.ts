@@ -9,6 +9,8 @@ export interface GameState {
   badges: string[];
   totalCorrect: number;
   totalAttempted: number;
+  darkMode: boolean;
+  soundEnabled: boolean;
 }
 
 export const BADGES = [
@@ -55,6 +57,8 @@ export function getDefaultState(): GameState {
     badges: [],
     totalCorrect: 0,
     totalAttempted: 0,
+    darkMode: false,
+    soundEnabled: true,
   };
 }
 
