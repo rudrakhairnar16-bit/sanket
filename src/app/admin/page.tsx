@@ -33,9 +33,17 @@ interface DashboardData {
   }[];
 }
 
+interface FeedbackStats {
+  total: number;
+  positive: number;
+  negative: number;
+  satisfactionRate: number;
+}
+
 export default function AdminDashboardPage() {
   const { user } = useAuth();
   const [data, setData] = useState<DashboardData | null>(null);
+  const [feedback, setFeedback] = useState<FeedbackStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -47,10 +55,19 @@ export default function AdminDashboardPage() {
       if (fromDate) params.set("from", fromDate);
       if (toDate) params.set("to", toDate);
 
-      const res = await fetch(`/api/admin/dashboard?${params}`);
-      if (res.ok) {
-        const json = await res.json();
+      const [dashboardRes, feedbackRes] = await Promise.all([
+        fetch(`/api/admin/dashboard?${params}`),
+        fetch("/api/feedback/stats"),
+      ]);
+
+      if (dashboardRes.ok) {
+        const json = await dashboardRes.json();
         setData(json);
+      }
+
+      if (feedbackRes.ok) {
+        const json = await feedbackRes.json();
+        setFeedback(json.stats);
       }
     } finally {
       setLoading(false);
@@ -215,6 +232,29 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       </div>
+
+      {feedback && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <StatCard
+            label="Citizen Feedback"
+            value={feedback.total}
+            icon="💬"
+            color="primary"
+          />
+          <StatCard
+            label="Positive Responses"
+            value={feedback.positive}
+            icon="👍"
+            color="green"
+          />
+          <StatCard
+            label="Satisfaction Rate"
+            value={`${feedback.satisfactionRate}%`}
+            icon="⭐"
+            color="blue"
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -228,12 +268,13 @@ function StatCard({
   label: string;
   value: string | number;
   icon: string;
-  color: "primary" | "blue" | "green";
+  color: "primary" | "blue" | "green" | "purple";
 }) {
   const colors = {
     primary: "from-primary-50 to-indigo-50 border-primary-200",
     blue: "from-blue-50 to-cyan-50 border-blue-200",
     green: "from-green-50 to-emerald-50 border-green-200",
+    purple: "from-purple-50 to-violet-50 border-purple-200",
   };
 
   return (

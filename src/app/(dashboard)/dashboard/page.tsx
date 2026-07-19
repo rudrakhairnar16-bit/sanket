@@ -13,6 +13,7 @@ interface ModuleData {
   options: string[];
   correctAnswer: string;
   order: number;
+  isReview?: boolean;
 }
 
 interface StreakData {
@@ -43,12 +44,20 @@ export default function DashboardPage() {
 
   async function loadData() {
     try {
-      const [moduleRes, streakRes] = await Promise.all([
+      const [moduleRes, streakRes, reviewRes] = await Promise.all([
         fetch("/api/modules"),
         fetch("/api/completions"),
+        fetch("/api/completions/review"),
       ]);
 
-      if (moduleRes.ok) {
+      if (reviewRes.ok) {
+        const reviewData = await reviewRes.json();
+        if (reviewData.review) {
+          setModule({ ...reviewData.review.module, isReview: true });
+        }
+      }
+
+      if (!module && moduleRes.ok) {
         const data = await moduleRes.json();
         if (data.modules?.length > 0) {
           const today = getTodayIST();
@@ -194,6 +203,19 @@ export default function DashboardPage() {
         </div>
       ) : module ? (
         <>
+          {module.isReview && (
+            <div className="bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200 rounded-3xl p-4 flex items-center gap-3 animate-slide-down">
+              <span className="text-2xl">🔄</span>
+              <div>
+                <p className="font-semibold text-amber-800 text-sm">
+                  Spaced Repetition Review
+                </p>
+                <p className="text-amber-600 text-xs">
+                  You got this wrong before. Try again to reinforce your learning!
+                </p>
+              </div>
+            </div>
+          )}
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="aspect-video bg-gray-900 flex items-center justify-center relative group">
               <div className="absolute inset-0 flex items-center justify-center">

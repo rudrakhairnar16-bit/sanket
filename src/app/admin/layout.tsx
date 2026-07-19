@@ -37,6 +37,7 @@ export default function AdminLayout({
   const navItems = [
     { href: "/admin", label: "Dashboard", icon: "📊" },
     { href: "/admin/modules", label: "Modules", icon: "📚" },
+    { href: "/admin/qr", label: "QR Codes", icon: "📱" },
   ];
 
   return (
