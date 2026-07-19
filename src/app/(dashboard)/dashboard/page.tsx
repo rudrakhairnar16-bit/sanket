@@ -188,9 +188,9 @@ export default function DashboardPage() {
           <ResultCard
             correct={result.correct}
             milestone={result.milestone}
-            streak={streak!}
-            module={module!}
-            selectedAnswer={selectedAnswer!}
+            streak={streak || { currentStreak: 0, longestStreak: 0, totalCompleted: 0 }}
+            module={module || { _id: "", title: "", videoUrl: "", question: "", options: [], correctAnswer: "", order: 0 }}
+            selectedAnswer={selectedAnswer || ""}
             onPractice={() => setShowPractice(true)}
             practiceDone={practiceDone}
           />
@@ -222,7 +222,7 @@ export default function DashboardPage() {
             </div>
           )}
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="aspect-video bg-gray-900 flex items-center justify-center relative group" role="img" aria-label={`Video lesson: ${module.title}`}>
+            <div className="aspect-video bg-gradient-to-br from-primary-900 to-indigo-900 flex items-center justify-center relative group">
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
                   <div className="w-20 h-20 rounded-full bg-white/10 backdrop-blur flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform cursor-pointer">
@@ -230,11 +230,12 @@ export default function DashboardPage() {
                       <path d="M8 5v14l11-7z" />
                     </svg>
                   </div>
-                  <p className="text-white/60 text-sm">{module.title}</p>
+                  <p className="text-white/60 text-sm mb-1">{module.title}</p>
+                  <p className="text-white/40 text-xs">ISLRTC</p>
                 </div>
               </div>
               <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60 to-transparent">
-                <p className="text-white font-medium">{module.title}</p>
+                <p className="text-white font-medium text-sm">ISL Lesson — Content from ISLRTC, Govt. of India</p>
               </div>
             </div>
           </div>
@@ -434,8 +435,6 @@ function ResultCard({
   onPractice: () => void;
   practiceDone: boolean;
 }) {
-  const [showCert, setShowCert] = useState(false);
-
   return (
     <div className="space-y-6">
       <div
@@ -501,12 +500,11 @@ function ResultCard({
               You&#39;ve completed {milestone} days of learning ISL.
               Consistency is key!
             </p>
-            <button
-              onClick={() => setShowCert(true)}
-              className="px-6 py-3 bg-amber-500 text-white rounded-xl font-medium hover:bg-amber-600 transition-all shadow-lg"
+            <div
+              className="px-6 py-3 bg-amber-500 text-white rounded-xl font-medium shadow-lg text-center"
             >
               Download Certificate
-            </button>
+            </div>
           </div>
         </div>
       )}

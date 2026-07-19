@@ -30,6 +30,7 @@ export default function LeaderboardPage() {
         setUsers(data.users || []);
         setDepartments(data.departments || []);
       })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 

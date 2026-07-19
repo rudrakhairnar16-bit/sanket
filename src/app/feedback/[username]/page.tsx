@@ -11,19 +11,7 @@ export default function CitizenFeedbackPage({
   const [comment, setComment] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [clerkName, setClerkName] = useState("");
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    fetch("/api/auth/me")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.user) {
-          setClerkName(data.user.name);
-        }
-      })
-      .catch(() => {});
-  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

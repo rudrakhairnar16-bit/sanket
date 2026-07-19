@@ -14,6 +14,4 @@ export const DEPARTMENTS = [
   "Education",
 ] as const;
 
-export function classNames(...classes: (string | false | undefined | null)[]) {
-  return classes.filter(Boolean).join(" ");
-}
+

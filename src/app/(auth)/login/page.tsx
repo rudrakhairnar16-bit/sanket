@@ -209,16 +209,14 @@ export default function LoginPage() {
             make public services truly accessible for everyone.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            {["Water Tax", "Property Tax", "Police", "Municipal"].map(
-              (dept) => (
-                <span
-                  key={dept}
-                  className="px-4 py-2 rounded-full bg-white/10 text-white/80 text-sm"
-                >
-                  {dept}
-                </span>
-              )
-            )}
+            {DEPARTMENTS.map((dept) => (
+              <span
+                key={dept}
+                className="px-4 py-2 rounded-full bg-white/10 text-white/80 text-sm"
+              >
+                {dept}
+              </span>
+            ))}
           </div>
         </div>
       </div>

@@ -19,7 +19,7 @@ export async function POST() {
     }
 
     const hashedPassword = await bcrypt.hash("admin123", 10);
-    const admin = await User.create({
+    await User.create({
       username: "admin",
       password: hashedPassword,
       name: "Super Admin",
@@ -27,7 +27,7 @@ export async function POST() {
       role: "superadmin",
     });
 
-    const deptAdmin = await User.create({
+    await User.create({
       username: "wateradmin",
       password: hashedPassword,
       name: "Water Tax Manager",
@@ -55,14 +55,6 @@ export async function POST() {
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayIST = new Date(
       yesterday.getTime() + 5.5 * 60 * 60 * 1000
-    )
-      .toISOString()
-      .split("T")[0];
-
-    const dayBefore = new Date();
-    dayBefore.setDate(dayBefore.getDate() - 2);
-    const dayBeforeIST = new Date(
-      dayBefore.getTime() + 5.5 * 60 * 60 * 1000
     )
       .toISOString()
       .split("T")[0];

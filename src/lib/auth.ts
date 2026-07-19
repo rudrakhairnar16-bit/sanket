@@ -1,9 +1,12 @@
 import jwt from "jsonwebtoken";
 import { NextRequest } from "next/server";
-import { connectDB } from "./db";
-import User from "@/models/User";
 
-const JWT_SECRET = process.env.JWT_SECRET || "sanket-dev-secret";
+function getJWTSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET not set in environment");
+  return secret;
+}
+const JWT_SECRET = getJWTSecret();
 
 export interface JWTPayload {
   userId: string;
@@ -32,11 +35,4 @@ export async function getAuthUser(
   }
 }
 
-export function requireRole(...roles: string[]) {
-  return async (req: NextRequest) => {
-    const user = await getAuthUser(req);
-    if (!user) return null;
-    if (!roles.includes(user.role)) return null;
-    return user;
-  };
-}
+

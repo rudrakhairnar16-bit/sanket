@@ -33,6 +33,10 @@ export default function EditModulePage() {
     fetch(`/api/modules/${params.id}`)
       .then((r) => r.json())
       .then((data) => {
+        if (!data?.module) {
+          setError("Module not found");
+          return;
+        }
         const mod = data.module;
         const opts = [...mod.options];
         while (opts.length < 4) opts.push("");
@@ -46,6 +50,7 @@ export default function EditModulePage() {
           active: mod.active,
         });
       })
+      .catch(() => setError("Failed to load module"))
       .finally(() => setPageLoading(false));
   }, [params.id]);
 

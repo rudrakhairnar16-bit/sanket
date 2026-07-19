@@ -18,28 +18,41 @@ export default function AdminModulesPage() {
   const [modules, setModules] = useState<Module[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [error, setError] = useState("");
+
   useEffect(() => {
     fetch("/api/modules")
       .then((r) => r.json())
       .then((data) => setModules(data.modules || []))
+      .catch(() => setError("Failed to load modules"))
       .finally(() => setLoading(false));
   }, []);
 
   async function toggleActive(id: string, current: boolean) {
-    await fetch(`/api/modules/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ active: !current }),
-    });
-    setModules((prev) =>
-      prev.map((m) => (m._id === id ? { ...m, active: !current } : m))
-    );
+    try {
+      const res = await fetch(`/api/modules/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ active: !current }),
+      });
+      if (!res.ok) throw new Error();
+      setModules((prev) =>
+        prev.map((m) => (m._id === id ? { ...m, active: !current } : m))
+      );
+    } catch {
+      setError("Failed to update module");
+    }
   }
 
   async function deleteModule(id: string) {
-    if (!confirm("Delete this module?")) return;
-    await fetch(`/api/modules/${id}`, { method: "DELETE" });
-    setModules((prev) => prev.filter((m) => m._id !== id));
+    if (!window.confirm("Delete this module?")) return;
+    try {
+      const res = await fetch(`/api/modules/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      setModules((prev) => prev.filter((m) => m._id !== id));
+    } catch {
+      setError("Failed to delete module");
+    }
   }
 
   if (loading) {

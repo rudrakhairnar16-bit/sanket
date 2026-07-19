@@ -16,12 +16,15 @@ export default function AdminQRPage() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<string | null>(null);
 
+  const [error, setError] = useState("");
+
   useEffect(() => {
     fetch("/api/leaderboard")
       .then((r) => r.json())
       .then((data) => {
         setLearners(data.users || []);
       })
+      .catch(() => setError("Failed to load learners"))
       .finally(() => setLoading(false));
   }, []);
 
@@ -91,8 +94,12 @@ export default function AdminQRPage() {
         </div>
       </div>
 
+      {error && (
+        <div className="bg-red-50 text-red-600 text-sm p-4 rounded-2xl">{error}</div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((learner) => (
+        {filtered.length > 0 ? filtered.map((learner) => (
           <div
             key={learner._id}
             className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-md transition-shadow"
@@ -134,7 +141,12 @@ export default function AdminQRPage() {
               </button>
             </div>
           </div>
-        ))}
+        )) : (
+          <div className="col-span-full text-center py-16 text-gray-400">
+            <div className="text-6xl mb-4">👥</div>
+            <p className="text-gray-500">No learners found</p>
+          </div>
+        )}
       </div>
     </div>
   );
