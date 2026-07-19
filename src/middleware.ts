@@ -1,0 +1,52 @@
+import { NextRequest, NextResponse } from "next/server";
+import { verifyToken } from "@/lib/auth";
+
+const publicPaths = ["/api/auth/login", "/api/auth/register", "/login"];
+
+export function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  if (publicPaths.some((p) => pathname.startsWith(p))) {
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/api/")) {
+    const token = req.cookies.get("token")?.value;
+    if (!token) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+    try {
+      verifyToken(token);
+    } catch {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
+  }
+
+  if (pathname.startsWith("/admin")) {
+    const token = req.cookies.get("token")?.value;
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+    try {
+      const payload = verifyToken(token);
+      if (payload.role !== "admin" && payload.role !== "superadmin") {
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
+    } catch {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+  }
+
+  if (pathname.startsWith("/dashboard")) {
+    const token = req.cookies.get("token")?.value;
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/api/:path*", "/dashboard/:path*", "/admin/:path*"],
+};
