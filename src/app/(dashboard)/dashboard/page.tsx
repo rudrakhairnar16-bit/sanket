@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { getTodayIST } from "@/lib/utils";
+import SignPractice from "@/components/SignPractice";
 
 interface ModuleData {
   _id: string;
@@ -33,6 +34,8 @@ export default function DashboardPage() {
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showPractice, setShowPractice] = useState(false);
+  const [practiceDone, setPracticeDone] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -158,7 +161,15 @@ export default function DashboardPage() {
         />
       )}
 
-      {completedToday && result ? (
+      {showPractice ? (
+        <SignPractice
+          moduleTitle={module?.title || ""}
+          onComplete={() => {
+            setPracticeDone(true);
+            setShowPractice(false);
+          }}
+        />
+      ) : completedToday && result ? (
         <div className="animate-scale-in">
           <ResultCard
             correct={result.correct}
@@ -166,6 +177,8 @@ export default function DashboardPage() {
             streak={streak!}
             module={module!}
             selectedAnswer={selectedAnswer!}
+            onPractice={() => setShowPractice(true)}
+            practiceDone={practiceDone}
           />
         </div>
       ) : completedToday && !result ? (
@@ -372,12 +385,16 @@ function ResultCard({
   streak,
   module: mod,
   selectedAnswer,
+  onPractice,
+  practiceDone,
 }: {
   correct: boolean;
   milestone: number | null;
   streak: StreakData;
   module: ModuleData;
   selectedAnswer: string;
+  onPractice: () => void;
+  practiceDone: boolean;
 }) {
   const [showCert, setShowCert] = useState(false);
 
@@ -405,6 +422,35 @@ function ResultCard({
           </p>
         )}
       </div>
+
+      {correct && !practiceDone && (
+        <div className="animate-slide-up">
+          <div className="bg-gradient-to-br from-primary-50 to-indigo-50 border border-primary-200 rounded-3xl p-6 text-center">
+            <span className="text-4xl block mb-2">📸</span>
+            <h3 className="text-lg font-bold text-primary-800 mb-1">
+              Practice with your camera
+            </h3>
+            <p className="text-primary-600 text-sm mb-4">
+              Show the sign to your webcam and get real-time feedback
+            </p>
+            <button
+              onClick={onPractice}
+              className="px-6 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all shadow-lg shadow-primary-500/25"
+            >
+              Open Camera Practice
+            </button>
+          </div>
+        </div>
+      )}
+
+      {practiceDone && (
+        <div className="bg-green-50 border border-green-200 rounded-3xl p-4 text-center animate-scale-in">
+          <span className="text-2xl block mb-1">✅</span>
+          <p className="text-green-700 font-medium text-sm">
+            Sign practice completed!
+          </p>
+        </div>
+      )}
 
       {milestone && (
         <div className="animate-scale-in">
