@@ -33,6 +33,7 @@ export default function LearnPage() {
   const [screen, setScreen] = useState<Screen>("home");
   const [game, setGame] = useState<GameState | null>(null);
   const [animateIn, setAnimateIn] = useState("animate-fade-in");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const saved = loadGame();
@@ -43,7 +44,46 @@ export default function LearnPage() {
     } else {
       document.documentElement.classList.remove("dark");
     }
+
+    fetch("/api/auth/me")
+      .then((r) => {
+        if (r.ok) {
+          setIsLoggedIn(true);
+          return fetch("/api/game-sync");
+        }
+        return null;
+      })
+      .then((res) => res?.json())
+      .then((server) => {
+        if (server && server.islXp > saved.xp) {
+          const merged = {
+            ...saved,
+            xp: server.islXp,
+            level: server.islLevel || saved.level,
+            streak: Math.max(server.islStreak, saved.streak),
+            badges: Array.from(new Set([...saved.badges, ...(server.islBadges || [])])),
+          };
+          saveGame(merged);
+          setGame(merged);
+        }
+      })
+      .catch(() => {});
   }, []);
+
+  function syncToServer(state: GameState) {
+    if (!isLoggedIn) return;
+    fetch("/api/game-sync", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        xp: state.xp,
+        level: state.level,
+        streak: state.streak,
+        badges: state.badges,
+        completedSigns: state.completedSigns,
+      }),
+    }).catch(() => {});
+  }
 
   function transitionTo(newScreen: Screen) {
     setAnimateIn("animate-fade-in");
@@ -55,6 +95,7 @@ export default function LearnPage() {
       if (!prev) return prev;
       const next = updater(prev);
       saveGame(next);
+      syncToServer(next);
       return next;
     });
   }
