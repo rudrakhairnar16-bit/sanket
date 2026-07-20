@@ -102,7 +102,7 @@ export default function LearnPage() {
 
   if (!game) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-50 flex items-center justify-center">
         <div className="w-12 h-12 rounded-full border-4 border-primary-200 border-t-primary-600 animate-spin" />
       </div>
     );
@@ -112,7 +112,7 @@ export default function LearnPage() {
   const accuracy = getAccuracy(game);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-50">
       {screen === "home" && (
         <HomeScreen
           game={game}
@@ -203,13 +203,14 @@ function HomeScreen({
         <div className="flex items-center gap-2">
           <Link
             href="/login"
-            className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 flex items-center gap-1 transition-all"
+            className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 flex items-center gap-1 transition-all"
           >
             ← {t("Login")}
           </Link>
           <button
             onClick={toggleLang}
-            className="px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+            className="px-2 py-1 text-xs rounded-lg border border-primary-200 dark:border-primary-700
+          text-primary-500 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900 transition-all"
           >
             {lang === "en" ? "हिंदी" : lang === "hi" ? "मराठी" : "EN"}
           </button>
@@ -217,13 +218,14 @@ function HomeScreen({
         <div className="flex items-center gap-2">
           <button
             onClick={toggleDark}
-            className="px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+            className="px-2 py-1 text-xs rounded-lg border border-primary-200 dark:border-primary-700
+          text-primary-500 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900 transition-all"
           >
             {game.darkMode ? "☀️" : "🌙"}
           </button>
           <Link
             href="/dashboard"
-            className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 flex items-center gap-1 transition-all"
+            className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 flex items-center gap-1 transition-all"
           >
             {t("Clerk Dashboard")} →
           </Link>
@@ -233,28 +235,28 @@ function HomeScreen({
       <div className="glass rounded-3xl p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-xs text-gray-400 uppercase tracking-wide">ISL Quest</p>
-            <h1 className="text-2xl font-bold text-gray-900 mt-0.5">
+            <p className="text-xs text-primary-400 uppercase tracking-wide">ISL Quest</p>
+            <h1 className="text-2xl font-bold text-primary-900 mt-0.5">
               Learn Indian Sign Language
             </h1>
-            <p className="text-sm text-gray-500 mt-0.5">{today}</p>
+            <p className="text-sm text-primary-500 mt-0.5">{today}</p>
           </div>
           <div className="text-right">
             <div className="text-3xl font-bold text-primary-600">Lv.{game.level}</div>
-            <p className="text-xs text-gray-400">{game.xp} XP</p>
+            <p className="text-xs text-primary-400">{game.xp} XP</p>
           </div>
         </div>
 
         <div className="bg-white/60 rounded-2xl p-4 mb-4">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-gray-500 font-medium">
+            <span className="text-xs text-primary-500 font-medium">
               Level {game.level} → {game.level + 1}
             </span>
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-primary-400">
               {progress.current} / {progress.next} XP
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+          <div className="w-full bg-primary-200 rounded-full h-2.5 overflow-hidden">
             <div
               className="h-full gradient-primary rounded-full transition-all duration-500"
               style={{ width: `${Math.min(progress.progress, 100)}%` }}
@@ -275,7 +277,7 @@ function HomeScreen({
           icon="🃏"
           title="Flashcards"
           description="Flip cards to learn signs and their meanings"
-          color="from-primary-500 to-indigo-600"
+          color="from-primary-500 to-primary-700"
           onClick={() => onNavigate("flashcards")}
         />
         <ModeCard
@@ -289,7 +291,7 @@ function HomeScreen({
           icon="📸"
           title="Webcam Practice"
           description="Use your camera to practice real signs"
-          color="from-amber-500 to-orange-600"
+          color="from-orange-500 to-orange-700"
           onClick={() => onNavigate("practice")}
         />
       </div>
@@ -300,7 +302,7 @@ function HomeScreen({
           className="glass rounded-2xl p-4 text-center hover:shadow-md transition-all"
         >
           <span className="text-2xl block mb-1">📖</span>
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+          <span className="text-sm font-medium text-primary-600 dark:text-primary-300">
             {t("ISL Dictionary") || "ISL Dictionary"}
           </span>
         </button>
@@ -309,7 +311,7 @@ function HomeScreen({
           className="glass rounded-2xl p-4 text-center hover:shadow-md transition-all"
         >
           <span className="text-2xl block mb-1">🏆</span>
-          <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+          <span className="text-sm font-medium text-primary-600 dark:text-primary-300">
             {t("Leaderboard")}
           </span>
         </button>
@@ -323,14 +325,14 @@ function HomeScreen({
           <span className="text-lg font-bold text-white">📋</span>
         </div>
         <div className="flex-1">
-          <p className="font-semibold text-gray-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
+          <p className="font-semibold text-primary-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
             12-Week ISL Curriculum
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-primary-500 dark:text-primary-400">
             Structured learning path for public servants
           </p>
         </div>
-        <span className="text-gray-300 dark:text-gray-600 text-lg">→</span>
+        <span className="text-primary-300 dark:text-primary-700 text-lg">→</span>
       </Link>
       <Link
         href="/roadmap"
@@ -340,14 +342,14 @@ function HomeScreen({
           <span className="text-lg font-bold text-white">🗺️</span>
         </div>
         <div className="flex-1">
-          <p className="font-semibold text-gray-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
+          <p className="font-semibold text-primary-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
             Scalability Roadmap
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-primary-500 dark:text-primary-400">
             Pilot → City → State → National rollout plan
           </p>
         </div>
-        <span className="text-gray-300 dark:text-gray-600 text-lg">→</span>
+        <span className="text-primary-300 dark:text-primary-700 text-lg">→</span>
       </Link>
       <Link
         href="/policy"
@@ -357,14 +359,14 @@ function HomeScreen({
           <span className="text-lg font-bold text-white">📄</span>
         </div>
         <div className="flex-1">
-          <p className="font-semibold text-gray-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
+          <p className="font-semibold text-primary-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
             Policy Whitepaper
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-primary-500 dark:text-primary-400">
             Municipal adoption blueprint aligned with RPwD Act 2016
           </p>
         </div>
-        <span className="text-gray-300 dark:text-gray-600 text-lg">→</span>
+        <span className="text-primary-300 dark:text-primary-700 text-lg">→</span>
       </Link>
       <Link
         href="/interpreter"
@@ -374,27 +376,27 @@ function HomeScreen({
           <span className="text-lg font-bold text-white">🤟</span>
         </div>
         <div className="flex-1">
-          <p className="font-semibold text-gray-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
+          <p className="font-semibold text-primary-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
             Live ISL Interpreter
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-primary-500 dark:text-primary-400">
             Real-time sign-to-text &amp; two-way communication
           </p>
         </div>
-        <span className="text-gray-300 dark:text-gray-600 text-lg">→</span>
+        <span className="text-primary-300 dark:text-primary-700 text-lg">→</span>
       </Link>
 
       <button
         onClick={() => onNavigate("badges")}
         className="w-full glass rounded-2xl p-4 text-center hover:shadow-md transition-all"
       >
-        <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+        <span className="text-sm font-medium text-primary-600 dark:text-primary-300">
           {t("View All Badges")} ({game.badges.length}/{BADGES.length})
         </span>
       </button>
 
       <div className="mt-4 p-4 bg-white/40 rounded-2xl text-center">
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-primary-400">
           Content sourced from ISLRTC, Ministry of Social Justice & Empowerment, Govt. of India
         </p>
       </div>
@@ -412,10 +414,10 @@ function StatBox({
   label: string;
 }) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl p-3 text-center">
+    <div className="bg-white dark:bg-primary-950 rounded-2xl p-3 text-center">
       <span className="text-xl block mb-0.5">{icon}</span>
-      <p className="text-lg font-bold text-gray-900 dark:text-white">{value}</p>
-      <p className="text-xs text-gray-400 dark:text-gray-500">{t(label) || label}</p>
+      <p className="text-lg font-bold text-primary-900 dark:text-white">{value}</p>
+      <p className="text-xs text-primary-400 dark:text-primary-400">{t(label) || label}</p>
     </div>
   );
 }
@@ -515,12 +517,13 @@ function FlashcardScreen({
   if (!currentSign || allDone) {
     return (
       <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
-        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 text-center">
+        <div className="bg-white dark:bg-primary-950 rounded-3xl shadow-sm border border-primary-100
+          dark:border-primary-800 p-8 text-center">
           <span className="text-6xl block mb-4">🎉</span>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <h2 className="text-2xl font-bold text-primary-900 dark:text-white mb-2">
             {t("All Categories Done!")}
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">
+          <p className="text-primary-500 dark:text-primary-400 mb-6">
             {t("You reviewed")} {knownCount} {t("signs. Keep practicing daily!")}
           </p>
           <button
@@ -539,11 +542,11 @@ function FlashcardScreen({
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={onBack}
-          className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-all"
+          className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 transition-all"
         >
           ← {t("Exit")}
         </button>
-        <span className="text-xs text-gray-400 dark:text-gray-500">
+        <span className="text-xs text-primary-400 dark:text-primary-400">
           {t(category.name)} • {signIndex + 1}/{signs.length}
         </span>
       </div>
@@ -562,18 +565,19 @@ function FlashcardScreen({
           }}
         >
           <div
-            className="absolute inset-0 bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 p-8 flex flex-col items-center justify-center text-center"
+            className="absolute inset-0 bg-white dark:bg-primary-950 rounded-3xl shadow-lg border border-primary-100
+           dark:border-primary-800 p-8 flex flex-col items-center justify-center text-center"
             style={{ backfaceVisibility: "hidden" }}
           >
             <span className="text-7xl mb-4">{currentSign.icon}</span>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-2xl font-bold text-primary-900 dark:text-white mb-2">
               {currentSign.name}
             </h2>
-            <p className="text-gray-400 dark:text-gray-500 text-sm">{t("Tap to reveal meaning")}</p>
+            <p className="text-primary-400 dark:text-primary-400 text-sm">{t("Tap to reveal meaning")}</p>
           </div>
 
           <div
-            className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-primary-200 dark:border-primary-800 p-8 flex flex-col items-center justify-center text-center"
+            className="bg-white dark:bg-primary-950 rounded-3xl shadow-lg border border-primary-200 dark:border-primary-800 p-8 flex flex-col items-center justify-center text-center"
             style={{
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
@@ -585,7 +589,7 @@ function FlashcardScreen({
               {currentSign.meaning}
             </h2>
             {currentSign.hint && (
-              <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
+              <p className="text-primary-500 dark:text-primary-400 text-sm mt-2">
                 💬 {currentSign.hint}
               </p>
             )}
@@ -601,7 +605,9 @@ function FlashcardScreen({
       <div className="flex gap-3">
         <button
           onClick={skipSign}
-          className="flex-1 px-6 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+          className="flex-1 px-6 py-3 bg-white dark:bg-primary-950 border border-primary-200
+          dark:border-primary-700 text-primary-600 dark:text-primary-300 rounded-xl font-medium hover:bg-primary-50
+          dark:hover:bg-primary-900 transition-all"
         >
           {t("Skip")}
         </button>
@@ -622,13 +628,13 @@ function FlashcardScreen({
                 ? "bg-primary-500 w-4"
                 : i < signIndex
                 ? "bg-green-400"
-                : "bg-gray-200"
+                : "bg-primary-200"
             }`}
           />
         ))}
       </div>
 
-      <p className="text-xs text-gray-400 text-center mt-4">
+      <p className="text-xs text-primary-400 text-center mt-4">
         +15 XP per sign • Tap card to flip
       </p>
     </div>
@@ -713,7 +719,8 @@ function QuizScreen({
     const pct = Math.round((correctCount / total) * 100);
     return (
       <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
-        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 p-8 text-center">
+        <div className="bg-white dark:bg-primary-950 rounded-3xl shadow-lg border border-primary-100
+          dark:border-primary-800 p-8 text-center">
           {pct >= 80 ? (
             <span className="text-7xl block mb-4">🏆</span>
           ) : pct >= 50 ? (
@@ -721,16 +728,16 @@ function QuizScreen({
           ) : (
             <span className="text-6xl block mb-4">📚</span>
           )}
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <h2 className="text-2xl font-bold text-primary-900 dark:text-white mb-2">
             {t(pct >= 80 ? "Outstanding!" : pct >= 50 ? "Good Effort!" : "Keep Practicing!")}
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">
+          <p className="text-primary-500 dark:text-primary-400 mb-6">
             {t("You scored")} {correctCount}/{total} {t("across")} {CATEGORIES.length} {t("categories")}
           </p>
           <p className="text-3xl font-bold text-primary-600 mb-6">
             {pct}% Accuracy
           </p>
-          <p className="text-sm text-gray-400 mb-6">+{score} XP earned</p>
+          <p className="text-sm text-primary-400 mb-6">+{score} XP earned</p>
           <button
             onClick={onBack}
             className="px-6 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all shadow-lg"
@@ -745,7 +752,7 @@ function QuizScreen({
   if (!q) {
     return (
       <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in text-center">
-        <p className="text-gray-500 mb-4">Not enough signs in this category.</p>
+        <p className="text-primary-500 mb-4">Not enough signs in this category.</p>
         <button onClick={onBack} className="text-primary-600 hover:underline">
           Go back
         </button>
@@ -758,22 +765,23 @@ function QuizScreen({
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={onBack}
-          className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-all"
+          className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 transition-all"
         >
           ← {t("Exit")}
         </button>
-        <span className="text-xs text-gray-400 dark:text-gray-500">
+        <span className="text-xs text-primary-400 dark:text-primary-400">
           {t(category.name)} • Q{questionIndex + 1}/{quizData.length}
         </span>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 sm:p-8 mb-4">
+      <div className="bg-white dark:bg-primary-950 rounded-3xl shadow-lg border border-primary-100
+           dark:border-primary-800 p-6 sm:p-8 mb-4">
         <div className="text-center mb-6">
           <span className="text-6xl block mb-3">{q.sign.icon}</span>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-xl font-bold text-primary-900 dark:text-white">
             {t("What does this sign mean?")}
           </h2>
-          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+          <p className="text-sm text-primary-400 dark:text-primary-400 mt-1">
             {t("Sign")}: {q.sign.name}
           </p>
         </div>
@@ -792,8 +800,8 @@ function QuizScreen({
                   : selected
                   ? option === q.sign.meaning
                     ? "border-green-400 bg-green-50"
-                    : "border-gray-100 bg-gray-50 opacity-60"
-                  : "border-gray-100 bg-gray-50 hover:border-gray-200 hover:bg-gray-100"
+                    : "border-primary-100 bg-primary-50 opacity-60"
+                  : "border-primary-100 bg-primary-50 hover:border-primary-200 hover:bg-primary-100"
               }`}
             >
               <div className="flex items-center gap-3">
@@ -803,7 +811,7 @@ function QuizScreen({
                       ? option === q.sign.meaning
                         ? "bg-green-500 text-white"
                         : "bg-red-500 text-white"
-                      : "bg-gray-200 text-gray-500"
+                      : "bg-primary-200 text-primary-500"
                   }`}
                 >
                   {String.fromCharCode(65 + i)}
@@ -839,7 +847,7 @@ function QuizScreen({
                 ? "✅ " + t("Correct") + "! +20 XP"
                 : `✗ ${t("The answer was")}: ${q.sign.meaning}`}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{q.sign.hint}</p>
+            <p className="text-xs text-primary-500 dark:text-primary-400 mt-1">{q.sign.hint}</p>
             {q.sign.webcamSupported && (
               <p className="text-xs text-green-600 dark:text-green-400 mt-1">📸 {t("Try with webcam!")}</p>
             )}
@@ -865,13 +873,13 @@ function QuizScreen({
                 ? "bg-primary-500 w-4"
                 : i < questionIndex
                 ? "bg-green-400"
-                : "bg-gray-200"
+                : "bg-primary-200"
             }`}
           />
         ))}
       </div>
 
-      <p className="text-xs text-gray-400 text-center mt-3">
+      <p className="text-xs text-primary-400 text-center mt-3">
         Score: {score} XP • {correctCount}/{questionIndex + (selected ? 1 : 0)} correct
       </p>
     </div>
@@ -985,7 +993,7 @@ function PracticeScreen({
         setHandCount(result.landmarks.length);
 
         result.landmarks.forEach((hand: any, i: number) => {
-          ctx.strokeStyle = i === 0 ? "#6366f1" : "#8b5cf6";
+          ctx.strokeStyle = i === 0 ? "#2563eb" : "#1e3a8a";
           ctx.lineWidth = 2;
           const connections = [
             [0, 1], [1, 2], [2, 3], [3, 4], [0, 5], [5, 6], [6, 7], [7, 8],
@@ -998,7 +1006,7 @@ function PracticeScreen({
             ctx.lineTo(hand[b].x * canvas.width, hand[b].y * canvas.height);
             ctx.stroke();
           }
-          ctx.fillStyle = i === 0 ? "#6366f1" : "#8b5cf6";
+          ctx.fillStyle = i === 0 ? "#2563eb" : "#1e3a8a";
           for (const lm of hand) {
             ctx.beginPath();
             ctx.arc(lm.x * canvas.width, lm.y * canvas.height, 4, 0, 2 * Math.PI);
@@ -1063,7 +1071,7 @@ function PracticeScreen({
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => { stopAll(); onBack(); }}
-          className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-all"
+          className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 transition-all"
         >
           ← {t("Exit")}
         </button>
@@ -1077,10 +1085,11 @@ function PracticeScreen({
         )}
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 mb-4">
+      <div className="bg-white dark:bg-primary-950 rounded-3xl shadow-lg border border-primary-100
+           dark:border-primary-800 p-6 mb-4">
         <div className="text-center mb-4">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t("Webcam Practice")}</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <h2 className="text-lg font-bold text-primary-900 dark:text-white">{t("Webcam Practice")}</h2>
+          <p className="text-sm text-primary-500 dark:text-primary-400">
             {t("Show the sign to your camera")}
           </p>
         </div>
@@ -1088,20 +1097,20 @@ function PracticeScreen({
         {status === "idle" && (
           <div className="text-center py-8">
             <span className="text-6xl block mb-4">📸</span>
-            <p className="text-gray-500 dark:text-gray-400 mb-2">{t("Choose a sign to practice:")}</p>
+            <p className="text-primary-500 dark:text-primary-400 mb-2">{t("Choose a sign to practice:")}</p>
             <select
               value={selectedSign}
               onChange={(e) => setSelectedSign(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 mb-4 bg-white dark:bg-gray-800 dark:text-white"
+              className="w-full px-4 py-3 rounded-xl border border-primary-200 dark:border-primary-700 mb-4 bg-white dark:bg-primary-950 dark:text-white"
             >
               {WEBCAM_SIGNS.map((name) => (
                 <option key={name} value={name}>{name}</option>
               ))}
             </select>
             {signInfo && (
-              <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-2xl">
+              <div className="mb-4 p-3 bg-primary-50 dark:bg-primary-900 rounded-2xl">
                 <span className="text-3xl block mb-2">{signInfo.icon}</span>
-                <p className="text-sm text-gray-600 dark:text-gray-300">{signInfo.hint}</p>
+                <p className="text-sm text-primary-600 dark:text-primary-300">{signInfo.hint}</p>
               </div>
             )}
             <button
@@ -1165,17 +1174,17 @@ function PracticeScreen({
         {status === "practicing" && (
           <div className="mt-4">
             <div className="flex items-center gap-4">
-              <div className="flex-1 bg-gray-100 rounded-full h-2.5 overflow-hidden">
+              <div className="flex-1 bg-primary-100 rounded-full h-2.5 overflow-hidden">
                 <div
                   className="h-full gradient-primary rounded-full transition-all duration-300"
                   style={{ width: `${Math.min(accuracy, 100)}%` }}
                 />
               </div>
-              <span className="text-sm font-medium text-gray-600 w-12 text-right">
+              <span className="text-sm font-medium text-primary-600 w-12 text-right">
                 {accuracy}%
               </span>
             </div>
-            <p className="text-sm text-gray-500 mt-2 text-center">
+            <p className="text-sm text-primary-500 mt-2 text-center">
               {signInfo?.hint}
             </p>
           </div>
@@ -1199,7 +1208,9 @@ function PracticeScreen({
               </button>
               <button
                 onClick={() => { stopAll(); onBack(); }}
-                className="px-6 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                className="px-6 py-2.5 bg-white dark:bg-primary-950 border border-primary-200
+          dark:border-primary-700 text-primary-600 dark:text-primary-300 rounded-xl font-medium hover:bg-primary-50
+          dark:hover:bg-primary-900 transition-all"
               >
                 {t("Done")}
               </button>
@@ -1208,7 +1219,7 @@ function PracticeScreen({
         )}
       </div>
 
-      <p className="text-xs text-gray-400 dark:text-gray-500 text-center">
+      <p className="text-xs text-primary-400 dark:text-primary-400 text-center">
         {t("Practice count")}: {practiceCount} • +50 XP {t("per successful practice")}
       </p>
     </div>
@@ -1230,15 +1241,15 @@ function DictionaryScreen({ onBack }: { onBack: () => void }) {
     <div className="max-w-2xl mx-auto px-4 py-8 animate-fade-in">
       <button
         onClick={onBack}
-        className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 mb-6 flex items-center gap-1 transition-all"
+        className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 mb-6 flex items-center gap-1 transition-all"
       >
         ← {t("Back to Home") || "Back"}
       </button>
 
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <h2 className="text-2xl font-bold text-primary-900 dark:text-white mb-2">
         📖 {t("ISL Dictionary") || "ISL Dictionary"}
       </h2>
-      <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+      <p className="text-primary-500 dark:text-primary-400 text-sm mb-6">
         {ALL_SIGNS.length} {t("signs") || "signs"} across {CATEGORIES.length} categories
       </p>
 
@@ -1248,12 +1259,12 @@ function DictionaryScreen({ onBack }: { onBack: () => void }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("Search signs...")}
-          className="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
+          className="flex-1 px-4 py-3 rounded-xl border border-primary-200 dark:border-primary-700 bg-white dark:bg-primary-950 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
         />
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white outline-none"
+          className="px-4 py-3 rounded-xl border border-primary-200 dark:border-primary-700 bg-white dark:bg-primary-950 dark:text-white outline-none"
         >
           <option value="all">{t("All Categories")}</option>
           {CATEGORIES.map((c) => (
@@ -1266,14 +1277,16 @@ function DictionaryScreen({ onBack }: { onBack: () => void }) {
         {filtered.length > 0 ? filtered.map((sign) => (
           <div
             key={sign.id}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-4 flex items-center gap-4 border border-gray-100 dark:border-gray-700"
+          className="bg-white dark:bg-primary-950 rounded-2xl p-4 flex items-center gap-4 border
+           border-primary-100 dark:border-primary-800"
           >
             <span className="text-3xl w-12 text-center">{sign.icon}</span>
             <div className="flex-1">
-              <p className="font-semibold text-gray-900 dark:text-white">{sign.name}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{sign.meaning}</p>
+              <p className="font-semibold text-primary-900 dark:text-white">{sign.name}</p>
+              <p className="text-sm text-primary-500 dark:text-primary-400">{sign.meaning}</p>
             </div>
-            <span className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+<span className="text-xs px-2 py-1 rounded-full bg-primary-100 dark:bg-primary-900 text-primary-500
+           dark:text-primary-400">
               {t(sign.category)}
             </span>
             {sign.webcamSupported && (
@@ -1283,7 +1296,7 @@ function DictionaryScreen({ onBack }: { onBack: () => void }) {
             )}
           </div>
         )) : (
-          <div className="text-center py-12 text-gray-400 dark:text-gray-500">
+          <div className="text-center py-12 text-primary-400 dark:text-primary-400">
             <span className="text-4xl block mb-3">🔍</span>
             <p>{t("No results found")}</p>
           </div>
@@ -1308,49 +1321,50 @@ function LeaderboardScreen({ game, onBack }: { game: GameState; onBack: () => vo
     <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
       <button
         onClick={onBack}
-        className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 mb-6 flex items-center gap-1 transition-all"
+        className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 mb-6 flex items-center gap-1 transition-all"
       >
         ← {t("Back to Home") || "Back"}
       </button>
 
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <h2 className="text-2xl font-bold text-primary-900 dark:text-white mb-2">
         🏆 {t("Leaderboard")}
       </h2>
-      <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+      <p className="text-primary-500 dark:text-primary-400 text-sm mb-6">
         {t("Top ISL learners") || "Top ISL learners"}
       </p>
 
-      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-primary-950 rounded-3xl shadow-sm border border-primary-100
+           dark:border-primary-800 overflow-hidden">
         {allPlayers.map((player, i) => (
           <div
             key={i}
             className={`flex items-center gap-4 p-4 ${
               player.name === "You"
                 ? "bg-primary-50 dark:bg-primary-900/20 border-l-4 border-primary-500"
-                : "border-b border-gray-50 dark:border-gray-700"
+                : "border-b border-primary-50 dark:border-primary-800"
             }`}
           >
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold ${
-              i === 0 ? "bg-amber-100 dark:bg-amber-900 text-amber-600" :
-              i === 1 ? "bg-gray-100 dark:bg-gray-700 text-gray-500" :
+              i === 0 ? "bg-orange-100 dark:bg-orange-900 text-orange-600" :
+              i === 1 ? "bg-primary-100 dark:bg-primary-900 text-primary-600" :
               i === 2 ? "bg-orange-100 dark:bg-orange-900 text-orange-600" :
-              "bg-gray-50 dark:bg-gray-700 text-gray-400"
+              "bg-primary-50 dark:bg-primary-900 text-primary-500"
             }`}>
               {i + 1}
             </div>
             <div className="flex-1">
               <p className={`font-semibold ${
-                player.name === "You" ? "text-primary-700 dark:text-primary-300" : "text-gray-900 dark:text-white"
+                player.name === "You" ? "text-primary-700 dark:text-primary-300" : "text-primary-900 dark:text-white"
               }`}>
                 {player.name}
               </p>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-primary-400">
                 {t("Level")} {player.level} • {player.streak}-day {t("streak") || "streak"}
               </p>
             </div>
             <div className="text-right">
-              <p className="font-bold text-gray-900 dark:text-white">{player.xp}</p>
-              <p className="text-xs text-gray-400">{t("XP")}</p>
+              <p className="font-bold text-primary-900 dark:text-white">{player.xp}</p>
+              <p className="text-xs text-primary-400">{t("XP")}</p>
             </div>
           </div>
         ))}
@@ -1416,13 +1430,13 @@ function BadgesScreen({
     <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
       <button
         onClick={onBack}
-        className="text-sm text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 mb-6 flex items-center gap-1 transition-all"
+        className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 mb-6 flex items-center gap-1 transition-all"
       >
         ← {t("Back")}
       </button>
 
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t("Achievements")}</h2>
-      <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
+      <h2 className="text-2xl font-bold text-primary-900 dark:text-white mb-2">{t("Achievements")}</h2>
+      <p className="text-primary-500 dark:text-primary-400 text-sm mb-6">
         {game.badges.length} {t("of")} {BADGES.length} {t("unlocked")}
       </p>
 
@@ -1434,8 +1448,8 @@ function BadgesScreen({
               key={badge.id}
               className={`rounded-2xl p-4 flex items-center gap-4 transition-all ${
                 unlocked
-                  ? "bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700 shadow-sm"
-                  : "bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700 opacity-60"
+                  ? "bg-white dark:bg-primary-950 border border-orange-200 dark:border-orange-700 shadow-sm"
+                  : "bg-primary-50 dark:bg-primary-950/50 border border-primary-100 dark:border-primary-800 opacity-60"
               }`}
             >
               <span className={`text-3xl ${unlocked ? "" : "grayscale"}`}>
@@ -1444,12 +1458,12 @@ function BadgesScreen({
               <div>
                 <p
                   className={`font-semibold ${
-                    unlocked ? "text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"
+                    unlocked ? "text-primary-900 dark:text-white" : "text-primary-400 dark:text-primary-400"
                   }`}
                 >
                   {badge.name}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{badge.requirement}</p>
+                <p className="text-xs text-primary-500 dark:text-primary-400">{badge.requirement}</p>
               </div>
               {unlocked && (
                 <span className="ml-auto text-green-500 text-xl">✅</span>
