@@ -30,6 +30,8 @@ export default function TwoWayInterpreterPage() {
   const [handCount, setHandCount] = useState(0);
   const [clerkText, setClerkText] = useState("");
   const [deafDisplay, setDeafDisplay] = useState<string | null>(null);
+  const [showSigns, setShowSigns] = useState(false);
+  const [islTokens, setIslTokens] = useState<ReturnType<typeof textToISL>>([]);
   const [isListening, setIsListening] = useState(false);
   const [lang, setLang] = useState("en");
   const [hasSamples, setHasSamples] = useState(false);
@@ -325,29 +327,46 @@ export default function TwoWayInterpreterPage() {
                 className="w-full bg-slate-800 text-white rounded-xl px-4 py-3 text-sm placeholder-slate-500 border border-white/10 focus:border-indigo-500/50 focus:outline-none resize-none"
                 rows={3}
               />
-              {clerkText && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                <button
+                  onClick={() => {
+                    setIslTokens(textToISL(clerkText, lang));
+                    setShowSigns(true);
+                  }}
+                  disabled={!clerkText.trim()}
+                  className="px-4 py-2 bg-purple-500 hover:bg-purple-400 disabled:opacity-40 text-white rounded-xl text-sm font-medium transition-all"
+                >
+                  🤟 Convert to ISL Signs
+                </button>
                 <button
                   onClick={() => speak(clerkText, lang)}
-                  className="mt-2 px-4 py-2 bg-indigo-500 hover:bg-indigo-400 text-white rounded-xl text-sm font-medium transition-all"
+                  disabled={!clerkText.trim()}
+                  className="px-4 py-2 bg-indigo-500 hover:bg-indigo-400 disabled:opacity-40 text-white rounded-xl text-sm font-medium transition-all"
                 >
                   🔊 Speak to Citizen
                 </button>
-              )}
-              {clerkText && textToISL(clerkText, lang).length > 0 && (
+              </div>
+              {showSigns && clerkText && (
                 <div className="mt-4 bg-gradient-to-br from-purple-600/30 to-indigo-600/30 border border-purple-400/30 rounded-2xl p-4">
-                  <p className="text-xs text-purple-200 mb-2">👋 SHOWN TO DEAF CITIZEN (ISL Symbols)</p>
-                  <div className="flex flex-wrap gap-2">
-                    {textToISL(clerkText, lang).map((t, i) => (
-                      <span
-                        key={i}
-                        className="flex items-center gap-1.5 px-3 py-2 bg-slate-900/70 rounded-xl border border-white/10"
-                        title={t.label}
-                      >
-                        <span className="text-2xl">{t.symbol}</span>
-                        <span className="text-xs text-slate-300">{t.label}</span>
-                      </span>
-                    ))}
-                  </div>
+                  <p className="text-xs text-purple-200 mb-2">👋 SHOWN TO DEAF CITIZEN (ISL Signs)</p>
+                  {islTokens.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {islTokens.map((t, i) => (
+                        <span
+                          key={i}
+                          className="flex items-center gap-1.5 px-3 py-2 bg-slate-900/70 rounded-xl border border-white/10"
+                          title={t.label}
+                        >
+                          <span className="text-2xl">{t.symbol}</span>
+                          <span className="text-xs text-slate-300">{t.label}</span>
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-400">
+                      No matching ISL signs found for this text. Try words like water, bill, tax, help, wait, name, address…
+                    </p>
+                  )}
                 </div>
               )}
             </div>
