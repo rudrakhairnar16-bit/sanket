@@ -113,10 +113,10 @@ export default function AdminDashboardPage() {
     <div className="space-y-6 animate-fade-in pb-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
             Compliance Dashboard
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
             {user?.role === "superadmin" ? "All departments" : user?.department}
           </p>
         </div>
@@ -125,14 +125,14 @@ export default function AdminDashboardPage() {
             type="date"
             value={fromDate}
             onChange={(e) => setFromDate(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-gray-200 text-sm focus:border-primary-500 outline-none"
+            className="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white text-sm focus:border-primary-500 outline-none"
           />
-          <span className="text-gray-400">to</span>
+          <span className="text-gray-400 dark:text-gray-500">to</span>
           <input
             type="date"
             value={toDate}
             onChange={(e) => setToDate(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-gray-200 text-sm focus:border-primary-500 outline-none"
+            className="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white text-sm focus:border-primary-500 outline-none"
           />
           <button
             onClick={exportCSV}
@@ -165,16 +165,16 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
             Department Compliance
           </h3>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} />
+                <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#9ca3af' }} />
+                <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} />
                 <Tooltip />
                 <Bar
                   dataKey="Completions"
@@ -184,12 +184,12 @@ export default function AdminDashboardPage() {
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-gray-400 text-center py-12">No data</p>
+            <p className="text-gray-400 dark:text-gray-500 text-center py-12">No data</p>
           )}
         </div>
 
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-          <h3 className="font-semibold text-gray-900 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
             Top Performing Clerks
           </h3>
           <div className="space-y-3">
@@ -197,37 +197,37 @@ export default function AdminDashboardPage() {
               data.leaderboard.map((clerk, i) => (
                 <div
                   key={clerk._id}
-                  className="flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                 >
                   <div
                     className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold ${
                       i === 0
-                        ? "bg-amber-100 text-amber-600"
+                        ? "bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-300"
                         : i === 1
-                        ? "bg-slate-100 text-slate-500"
+                        ? "bg-slate-100 dark:bg-gray-700 text-slate-500 dark:text-gray-300"
                         : i === 2
-                        ? "bg-orange-100 text-orange-600"
-                        : "bg-gray-50 text-gray-400"
+                        ? "bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-300"
+                        : "bg-gray-50 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
                     }`}
                   >
                     {i + 1}
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900 text-sm">
+                    <p className="font-medium text-gray-900 dark:text-white text-sm">
                       {clerk.name}
                     </p>
-                    <p className="text-xs text-gray-400">{clerk.department}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{clerk.department}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-gray-900 text-sm">
+                    <p className="font-bold text-gray-900 dark:text-white text-sm">
                       {clerk.currentStreak}
                     </p>
-                    <p className="text-xs text-gray-400">day streak</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">day streak</p>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-gray-400 text-center py-8">No data</p>
+              <p className="text-gray-400 dark:text-gray-500 text-center py-8">No data</p>
             )}
           </div>
         </div>
@@ -271,10 +271,10 @@ function StatCard({
   color: "primary" | "blue" | "green" | "purple";
 }) {
   const colors = {
-    primary: "from-primary-50 to-indigo-50 border-primary-200",
-    blue: "from-blue-50 to-cyan-50 border-blue-200",
-    green: "from-green-50 to-emerald-50 border-green-200",
-    purple: "from-purple-50 to-violet-50 border-purple-200",
+    primary: "from-primary-50 to-indigo-50 dark:from-primary-950/50 dark:to-indigo-950/50 border-primary-200 dark:border-primary-800",
+    blue: "from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/50 border-blue-200 dark:border-blue-800",
+    green: "from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50 border-green-200 dark:border-green-800",
+    purple: "from-purple-50 to-violet-50 dark:from-purple-950/50 dark:to-violet-950/50 border-purple-200 dark:border-purple-800",
   };
 
   return (
@@ -282,8 +282,8 @@ function StatCard({
       className={`bg-gradient-to-br ${colors[color]} border rounded-3xl p-6`}
     >
       <span className="text-3xl block mb-2">{icon}</span>
-      <p className="text-3xl font-bold text-gray-900">{value}</p>
-      <p className="text-sm text-gray-500">{label}</p>
+      <p className="text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
     </div>
   );
 }
