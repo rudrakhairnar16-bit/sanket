@@ -103,11 +103,18 @@ export default function LiveInterpreter() {
         setIsListening(status === "listening");
       }
     );
-    recognizerRef.current.start(lang);
     return () => {
       recognizerRef.current?.stop();
     };
   }, []);
+
+  useEffect(() => {
+    if (recognizerRef.current && isListening) {
+      recognizerRef.current.stop();
+      recognizerRef.current.start(lang);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang]);
 
   useEffect(() => {
     const tick = () => setClock(new Date().toLocaleTimeString());
@@ -279,7 +286,15 @@ export default function LiveInterpreter() {
   };
 
   const toggleMic = () => {
-    if (!recognizerRef.current) return;
+    if (!recognizerRef.current) {
+      recognizerRef.current = new SpeechRecognizer(
+        (text, final) => {
+          if (final) setInputText((prev) => prev + text + " ");
+          else setTranscript(text);
+        },
+        (status) => setIsListening(status === "listening")
+      );
+    }
     if (isListening) {
       recognizerRef.current.stop();
     } else {
