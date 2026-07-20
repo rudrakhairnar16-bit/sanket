@@ -30,6 +30,7 @@ export default function LiveInterpreter() {
   const [demoMode, setDemoMode] = useState(true);
   const [lang, setLang] = useState("en");
   const [transcript, setTranscript] = useState("");
+  const [clock, setClock] = useState("");
   const chatRef = useRef<HTMLDivElement>(null);
   const lastSignRef = useRef<string | null>(null);
   const stableFramesRef = useRef(0);
@@ -106,6 +107,13 @@ export default function LiveInterpreter() {
     return () => {
       recognizerRef.current?.stop();
     };
+  }, []);
+
+  useEffect(() => {
+    const tick = () => setClock(new Date().toLocaleTimeString());
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
   }, []);
 
   async function loadHandLandmarker() {
@@ -532,7 +540,7 @@ export default function LiveInterpreter() {
                 {handCount > 0 ? `📷 ${handCount} hand(s) detected` : "📷 No hands"}
               </p>
               <p className="text-xs text-gray-600">
-                {new Date().toLocaleTimeString()}
+                {clock}
               </p>
             </div>
           </div>
