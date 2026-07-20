@@ -41,8 +41,8 @@ export default function AdminLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <nav className="sticky top-0 z-50 glass border-b border-gray-200/50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-950">
+      <nav className="sticky top-0 z-50 glass border-b border-gray-200/50 dark:border-gray-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
@@ -50,8 +50,8 @@ export default function AdminLayout({
                 <span className="text-lg font-bold text-white">सं</span>
               </div>
               <div>
-                <span className="font-bold text-gray-900">Admin Panel</span>
-                <span className="hidden sm:inline text-sm text-gray-400 ml-2">
+                <span className="font-bold text-gray-900 dark:text-white">Admin Panel</span>
+                <span className="hidden sm:inline text-sm text-gray-400 dark:text-gray-500 ml-2">
                   • {user.department}
                 </span>
               </div>
@@ -64,8 +64,8 @@ export default function AdminLayout({
                   href={item.href}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                     pathname === item.href
-                      ? "bg-primary-100 text-primary-700"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                      ? "bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300"
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
                   }`}
                 >
                   <span>{item.icon}</span>
@@ -74,20 +74,20 @@ export default function AdminLayout({
               ))}
               <Link
                 href="/dashboard"
-                className="ml-2 px-4 py-2 rounded-xl text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all"
+                className="ml-2 px-4 py-2 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
               >
                 ← Back to Learner
               </Link>
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-xl">
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-gray-800 rounded-xl">
                 <div className="w-7 h-7 rounded-lg gradient-primary flex items-center justify-center text-white text-xs font-bold">
                   {user.name.charAt(0)}
                 </div>
                 <div className="text-sm">
-                  <p className="font-medium text-gray-900 leading-tight">{user.name}</p>
-                  <p className="text-xs text-gray-500 capitalize">{user.role}</p>
+                  <p className="font-medium text-gray-900 dark:text-white leading-tight">{user.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{user.role}</p>
                 </div>
               </div>
               <button
@@ -95,13 +95,13 @@ export default function AdminLayout({
                   await logout();
                   router.push("/login");
                 }}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl transition-all"
               >
                 Sign Out
               </button>
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-xl"
+                className="md:hidden p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={menuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
@@ -117,7 +117,7 @@ export default function AdminLayout({
                   key={item.href}
                   href={item.href}
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
                   <span>{item.icon}</span>
                   {item.label}
@@ -126,13 +126,13 @@ export default function AdminLayout({
               <Link
                 href="/dashboard"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-gray-500 hover:bg-gray-100"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 ← Back to Learner
               </Link>
-              <div className="border-t border-gray-200 mt-2 pt-2 px-4">
-                <p className="text-sm text-gray-500">{user.name}</p>
-                <p className="text-xs text-gray-400 capitalize">{user.role}</p>
+              <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2 px-4">
+                <p className="text-sm text-gray-500 dark:text-gray-400">{user.name}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 capitalize">{user.role}</p>
               </div>
             </div>
           )}
