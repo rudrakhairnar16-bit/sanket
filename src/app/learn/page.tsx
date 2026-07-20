@@ -334,7 +334,7 @@ function HomeScreen({
       </Link>
       <Link
         href="/roadmap"
-        className="flex items-center gap-3 glass rounded-2xl p-4 mb-4 hover:shadow-md transition-all group"
+        className="flex items-center gap-3 glass rounded-2xl p-4 mb-2 hover:shadow-md transition-all group"
       >
         <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shrink-0">
           <span className="text-lg font-bold text-white">🗺️</span>
@@ -345,6 +345,23 @@ function HomeScreen({
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             Pilot → City → State → National rollout plan
+          </p>
+        </div>
+        <span className="text-gray-300 dark:text-gray-600 text-lg">→</span>
+      </Link>
+      <Link
+        href="/policy"
+        className="flex items-center gap-3 glass rounded-2xl p-4 mb-4 hover:shadow-md transition-all group"
+      >
+        <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shrink-0">
+          <span className="text-lg font-bold text-white">📄</span>
+        </div>
+        <div className="flex-1">
+          <p className="font-semibold text-gray-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
+            Policy Whitepaper
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Municipal adoption blueprint aligned with RPwD Act 2016
           </p>
         </div>
         <span className="text-gray-300 dark:text-gray-600 text-lg">→</span>
