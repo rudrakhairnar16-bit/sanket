@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
@@ -10,12 +10,15 @@ export const metadata: Metadata = {
   description:
     "A civic tech platform for government clerks to learn Indian Sign Language (ISL)",
   manifest: "/manifest.json",
-  themeColor: "#6366f1",
   appleWebApp: { capable: true, title: "Sanket", statusBarStyle: "default" },
   icons: [
     { rel: "icon", url: "/favicon.ico" },
     { rel: "apple-touch-icon", url: "/icon-192.png" },
   ],
+};
+
+export const viewport: Viewport = {
+  themeColor: "#6366f1",
 };
 
 export default function RootLayout({
