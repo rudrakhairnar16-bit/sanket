@@ -23,6 +23,14 @@ export function verifyToken(token: string): JWTPayload {
   return jwt.verify(token, JWT_SECRET) as JWTPayload;
 }
 
+export function decodeToken(token: string): JWTPayload | null {
+  try {
+    return jwt.decode(token) as JWTPayload | null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getAuthUser(
   req: NextRequest
 ): Promise<JWTPayload | null> {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/lib/auth";
+import { decodeToken } from "@/lib/auth";
 
 const publicPaths = ["/api/auth/login", "/api/auth/register", "/api/admin/seed", "/api/game-sync", "/api/nudges", "/login", "/learn", "/curriculum", "/roadmap", "/policy", "/interpreter", "/interpreter/calibrate"];
 
@@ -15,11 +15,6 @@ export function middleware(req: NextRequest) {
     if (!token) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
-    try {
-      verifyToken(token);
-    } catch {
-      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
-    }
   }
 
   if (pathname.startsWith("/admin")) {
@@ -28,8 +23,8 @@ export function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
     try {
-      const payload = verifyToken(token);
-      if (payload.role !== "admin" && payload.role !== "superadmin") {
+      const payload = decodeToken(token);
+      if (payload && payload.role !== "admin" && payload.role !== "superadmin") {
         return NextResponse.redirect(new URL("/dashboard", req.url));
       }
     } catch {

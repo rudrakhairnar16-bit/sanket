@@ -7,6 +7,7 @@ import { getTodayIST } from "@/lib/utils";
 import SignPractice from "@/components/SignPractice";
 import CertificateGenerator from "@/components/CertificateGenerator";
 import { loadGame, getLevelProgress } from "@/lib/game-storage";
+import { getTasks, completeTask } from "@/lib/tasks";
 
 interface ModuleData {
   _id: string;
@@ -215,6 +216,8 @@ export default function DashboardPage() {
       )}
 
       <IslQuestCard />
+
+      <TasksCard />
 
       {showPractice ? (
         <SignPractice
@@ -570,6 +573,123 @@ function ResultCard({
           />
         </div>
       </div>
+    </div>
+  );
+}
+
+function TasksCard() {
+  const [state, setState] = useState<ReturnType<typeof getTasks> | null>(null);
+  const [justDone, setJustDone] = useState<string | null>(null);
+
+  useEffect(() => {
+    setState(getTasks());
+  }, []);
+
+  function handleComplete(id: string) {
+    completeTask(id);
+    setState(getTasks());
+    setJustDone(id);
+    setTimeout(() => setJustDone(null), 1500);
+  }
+
+  if (!state) return null;
+
+  const pct =
+    state.total > 0 ? Math.round((state.completedCount / state.total) * 100) : 0;
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 animate-slide-down">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center shadow-md">
+            <span className="text-lg">📋</span>
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-900 dark:text-white">Your Tasks</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {state.mandatory
+                ? "Onboarding — complete all to finish setup"
+                : "Ongoing — keep your learning momentum"}
+            </p>
+          </div>
+        </div>
+        <span
+          className={`text-xs font-semibold px-3 py-1.5 rounded-full ${
+            state.mandatory
+              ? "bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-300"
+              : "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-300"
+          }`}
+        >
+          {state.mandatory ? "Mandatory" : "Recommended"}
+        </span>
+      </div>
+
+      <div className="bg-gray-100 dark:bg-gray-700 rounded-full h-2 overflow-hidden mb-4">
+        <div
+          className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+
+      <div className="space-y-2">
+        {state.tasks.map((task) => (
+          <div
+            key={task.id}
+            className={`flex items-center gap-3 p-3 rounded-2xl border-2 transition-all ${
+              task.done
+                ? "border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20"
+                : "border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40"
+            }`}
+          >
+            <div
+              className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0 ${
+                task.done ? "bg-green-500 text-white" : "bg-gray-200 dark:bg-gray-700"
+              }`}
+            >
+              {task.done ? "✅" : task.icon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p
+                className={`font-medium text-sm ${
+                  task.done
+                    ? "text-gray-400 line-through"
+                    : "text-gray-900 dark:text-white"
+                }`}
+              >
+                {task.title}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                {task.description}
+              </p>
+            </div>
+            {!task.done && (
+              <button
+                onClick={() => handleComplete(task.id)}
+                className="px-3 py-1.5 text-xs font-semibold text-white bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg hover:opacity-90 transition-all shrink-0"
+              >
+                {justDone === task.id ? "Done!" : "Mark done"}
+              </button>
+            )}
+            {task.done && task.link && (
+              <Link
+                href={task.link}
+                className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline shrink-0"
+              >
+                Open
+              </Link>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {state.mandatory && state.completedCount === state.total && (
+        <div className="mt-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-200 dark:border-green-800 rounded-2xl p-4 text-center">
+          <span className="text-2xl block mb-1">🎉</span>
+          <p className="text-green-700 dark:text-green-300 font-semibold text-sm">
+            Onboarding complete! You're all set.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
