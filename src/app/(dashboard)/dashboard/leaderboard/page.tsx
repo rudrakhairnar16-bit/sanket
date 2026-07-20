@@ -14,6 +14,7 @@ interface LeaderboardUser {
   islLevel: number;
   islStreak: number;
   islBadges: string[];
+  isChampion?: boolean;
 }
 
 interface DeptStat {
@@ -141,7 +142,10 @@ export default function LeaderboardPage() {
                       {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index + 1}`}
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium text-gray-900 dark:text-white">{user.name}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {user.name}
+                        {user.isChampion && <span className="ml-1.5 text-sm" title="ISL Champion">👑</span>}
+                      </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">{user.department}</p>
                     </div>
                     <div className="text-right">

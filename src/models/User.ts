@@ -10,6 +10,7 @@ export interface IUser extends Document {
   longestStreak: number;
   totalCompleted: number;
   lastCompletedDate: string | null;
+  isChampion: boolean;
   islXp: number;
   islLevel: number;
   islStreak: number;
@@ -33,6 +34,7 @@ const UserSchema = new Schema<IUser>(
     longestStreak: { type: Number, default: 0 },
     totalCompleted: { type: Number, default: 0 },
     lastCompletedDate: { type: String, default: null },
+    isChampion: { type: Boolean, default: false },
     islXp: { type: Number, default: 0 },
     islLevel: { type: Number, default: 1 },
     islStreak: { type: Number, default: 0 },

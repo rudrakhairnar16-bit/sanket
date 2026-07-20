@@ -30,6 +30,7 @@ interface DashboardData {
     currentStreak: number;
     longestStreak: number;
     totalCompleted: number;
+    isChampion?: boolean;
   }[];
 }
 
@@ -212,17 +213,34 @@ export default function AdminDashboardPage() {
                   >
                     {i + 1}
                   </div>
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900 dark:text-white text-sm">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 dark:text-white text-sm truncate">
                       {clerk.name}
+                      {clerk.isChampion && <span className="ml-1 text-xs" title="ISL Champion">👑</span>}
                     </p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">{clerk.department}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{clerk.department}</p>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-gray-900 dark:text-white text-sm">
-                      {clerk.currentStreak}
-                    </p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">day streak</p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={async () => {
+                        try {
+                          const res = await fetch(`/api/users/${clerk._id}/champion`, { method: "PATCH" });
+                          if (res.ok) loadData();
+                        } catch {}
+                      }}
+                      className={`px-2 py-1 rounded-lg text-xs font-medium transition-all ${
+                        clerk.isChampion
+                          ? "bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-amber-50 dark:hover:bg-amber-900/30"
+                      }`}
+                      title={clerk.isChampion ? "Remove Champion" : "Designate Champion"}
+                    >
+                      {clerk.isChampion ? "👑" : "☆"} Champion
+                    </button>
+                    <div className="text-right">
+                      <p className="font-bold text-gray-900 dark:text-white text-sm">{clerk.currentStreak}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">day streak</p>
+                    </div>
                   </div>
                 </div>
               ))
