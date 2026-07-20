@@ -9,37 +9,44 @@ export async function GET(_req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
-  await connectDB();
+  try {
+    await connectDB();
 
-  const filter: Record<string, unknown> = {};
-  if (user.role !== "superadmin") {
-    filter.department = user.department;
-  }
+    const filter: Record<string, unknown> = {};
+    if (user.role !== "superadmin") {
+      filter.department = user.department;
+    }
 
-  const total = await Feedback.countDocuments(filter);
-  const positive = await Feedback.countDocuments({ ...filter, attempted: true });
-  const negative = await Feedback.countDocuments({ ...filter, attempted: false });
+    const total = await Feedback.countDocuments(filter);
+    const positive = await Feedback.countDocuments({ ...filter, attempted: true });
+    const negative = await Feedback.countDocuments({ ...filter, attempted: false });
 
-  const deptStats = await Feedback.aggregate([
-    { $match: filter },
-    {
-      $group: {
-        _id: "$department",
-        total: { $sum: 1 },
-        positive: { $sum: { $cond: ["$attempted", 1, 0] } },
-        clerkName: { $first: "$clerkName" },
+    const deptStats = await Feedback.aggregate([
+      { $match: filter },
+      {
+        $group: {
+          _id: "$department",
+          total: { $sum: 1 },
+          positive: { $sum: { $cond: ["$attempted", 1, 0] } },
+          clerkName: { $first: "$clerkName" },
+        },
       },
-    },
-    { $sort: { total: -1 } },
-  ]);
+      { $sort: { total: -1 } },
+    ]);
 
-  return NextResponse.json({
-    stats: {
-      total,
-      positive,
-      negative,
-      satisfactionRate: total > 0 ? Math.round((positive / total) * 100) : 0,
-    },
-    departments: deptStats,
-  });
+    return NextResponse.json({
+      stats: {
+        total,
+        positive,
+        negative,
+        satisfactionRate: total > 0 ? Math.round((positive / total) * 100) : 0,
+      },
+      departments: deptStats,
+    });
+  } catch {
+    return NextResponse.json({
+      stats: { total: 0, positive: 0, negative: 0, satisfactionRate: 0 },
+      departments: [],
+    });
+  }
 }

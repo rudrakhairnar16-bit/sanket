@@ -78,3 +78,12 @@ export function updateMockProfile(
   if (data.name) user.name = data.name;
   if (data.department) user.department = data.department;
 }
+
+export function toggleMockChampion(
+  id: string
+): { isChampion: boolean; name: string } | null {
+  const user = DEMO_USERS.find((u) => u.id === id);
+  if (!user) return null;
+  user.isChampion = !user.isChampion;
+  return { isChampion: user.isChampion, name: user.name };
+}

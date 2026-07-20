@@ -47,27 +47,34 @@ export async function GET(req: NextRequest) {
   const clerkId = searchParams.get("clerkId");
   const department = searchParams.get("department");
 
-  await connectDB();
+  try {
+    await connectDB();
 
-  const filter: Record<string, unknown> = {};
-  if (clerkId) filter.clerkId = clerkId;
-  if (department) filter.department = department;
+    const filter: Record<string, unknown> = {};
+    if (clerkId) filter.clerkId = clerkId;
+    if (department) filter.department = department;
 
-  const feedbacks = await Feedback.find(filter)
-    .sort({ createdAt: -1 })
-    .limit(50);
+    const feedbacks = await Feedback.find(filter)
+      .sort({ createdAt: -1 })
+      .limit(50);
 
-  const total = await Feedback.countDocuments(filter);
-  const positive = await Feedback.countDocuments({ ...filter, attempted: true });
-  const negative = await Feedback.countDocuments({ ...filter, attempted: false });
+    const total = await Feedback.countDocuments(filter);
+    const positive = await Feedback.countDocuments({ ...filter, attempted: true });
+    const negative = await Feedback.countDocuments({ ...filter, attempted: false });
 
-  return NextResponse.json({
-    feedbacks,
-    stats: {
-      total,
-      positive,
-      negative,
-      satisfactionRate: total > 0 ? Math.round((positive / total) * 100) : 0,
-    },
-  });
+    return NextResponse.json({
+      feedbacks,
+      stats: {
+        total,
+        positive,
+        negative,
+        satisfactionRate: total > 0 ? Math.round((positive / total) * 100) : 0,
+      },
+    });
+  } catch {
+    return NextResponse.json({
+      feedbacks: [],
+      stats: { total: 0, positive: 0, negative: 0, satisfactionRate: 0 },
+    });
+  }
 }
