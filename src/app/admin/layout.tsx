@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { loadGame, saveGame, type GameState } from "@/lib/game-storage";
 
 export default function AdminLayout({
   children,
@@ -14,6 +15,24 @@ export default function AdminLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    const game = loadGame();
+    setDark(game.darkMode);
+    if (game.darkMode) {
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
+
+  function toggleDark() {
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark");
+    const game = loadGame();
+    const updated: GameState = { ...game, darkMode: next };
+    saveGame(updated);
+  }
 
   useEffect(() => {
     if (!loading && (!user || (user.role !== "admin" && user.role !== "superadmin"))) {
@@ -81,6 +100,13 @@ export default function AdminLayout({
             </div>
 
             <div className="flex items-center gap-3">
+              <button
+                onClick={toggleDark}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-all"
+                title={dark ? "Light mode" : "Dark mode"}
+              >
+                {dark ? "☀️" : "🌙"}
+              </button>
               <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-100 dark:bg-gray-800 rounded-xl">
                 <div className="w-7 h-7 rounded-lg gradient-primary flex items-center justify-center text-white text-xs font-bold">
                   {user.name.charAt(0)}
