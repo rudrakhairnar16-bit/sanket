@@ -30,15 +30,21 @@ export default function TwoWayInterpreterPage() {
   const [handCount, setHandCount] = useState(0);
   const [clerkText, setClerkText] = useState("");
   const [deafDisplay, setDeafDisplay] = useState<string | null>(null);
-  const [showSigns, setShowSigns] = useState(false);
-  const [islTokens, setIslTokens] = useState<ReturnType<typeof textToISL>>([]);
   const [isListening, setIsListening] = useState(false);
   const [lang, setLang] = useState("en");
   const [hasSamples, setHasSamples] = useState(false);
+  const [trainMode, setTrainMode] = useState(false);
+  const [trainSignId, setTrainSignId] = useState<string | null>(null);
+  const [trainCount, setTrainCount] = useState(0);
+  const [micSupported, setMicSupported] = useState(true);
 
   const lastSignRef = useRef<string | null>(null);
   const stableFramesRef = useRef(0);
   const STABLE_THRESHOLD = 6;
+  const trainBufferRef = useRef<Landmark[][]>([]);
+  const trainActiveRef = useRef(false);
+  const trainModeRef = useRef(false);
+  const trainSignIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("sanket-knn-samples");
@@ -73,16 +79,25 @@ export default function TwoWayInterpreterPage() {
 
   useEffect(() => {
     if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
+      setMicSupported(false);
       return;
     }
     recognizerRef.current = new SpeechRecognizer(
       (text, final) => {
         if (final) setClerkText((prev) => (prev + " " + text).trim());
-        else setClerkText((prev) => prev);
       },
       (s) => setIsListening(s === "listening")
     );
   }, []);
+
+  useEffect(() => {
+    trainModeRef.current = trainMode;
+    trainSignIdRef.current = trainSignId;
+    if (!trainMode || !trainSignId) {
+      trainActiveRef.current = false;
+      trainBufferRef.current = [];
+    }
+  }, [trainMode, trainSignId]);
 
   async function loadHandLandmarker() {
     try {
@@ -174,7 +189,25 @@ export default function TwoWayInterpreterPage() {
             drawLandmarks(ctx, hand, i === 0 ? "#6366f1" : "#f472b6");
           });
 
-          if (hasSamples && classifier.getSampleCount() > 0) {
+          if (trainModeRef.current && trainSignIdRef.current) {
+            for (const hand of result.landmarks) {
+              trainBufferRef.current.push(hand);
+            }
+            if (!trainActiveRef.current && trainBufferRef.current.length > 0) {
+              trainActiveRef.current = true;
+              const captureId = trainSignIdRef.current;
+              setTimeout(() => {
+                if (trainBufferRef.current.length > 15) {
+                  classifier.addMultipleSamples(captureId, trainBufferRef.current);
+                  localStorage.setItem("sanket-knn-samples", classifier.serialize());
+                  setHasSamples(classifier.getSignCount() > 0);
+                  setTrainCount((c) => c + 1);
+                }
+                trainBufferRef.current = [];
+                trainActiveRef.current = false;
+              }, 1500);
+            }
+          } else if (hasSamples && classifier.getSampleCount() > 0) {
             let best = { signId: null as string | null, confidence: 0 };
             for (const hand of result.landmarks) {
               const r = classifier.classify(hand);
@@ -255,6 +288,19 @@ export default function TwoWayInterpreterPage() {
             >
               🎤 {isListening ? "Listening" : "Clerk Mic"}
             </button>
+            <button
+              onClick={() => {
+                setTrainMode((v) => !v);
+                setTrainSignId(null);
+              }}
+              className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${
+                trainMode
+                  ? "bg-emerald-600 text-white"
+                  : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+              }`}
+            >
+              🎯 {trainMode ? "Training ON" : "Train Model"}
+            </button>
           </div>
         </div>
 
@@ -323,21 +369,11 @@ export default function TwoWayInterpreterPage() {
               <textarea
                 value={clerkText}
                 onChange={(e) => setClerkText(e.target.value)}
-                placeholder="Type your reply, or press Clerk Mic to speak…"
+                placeholder="Type your reply — it converts to ISL signs live…"
                 className="w-full bg-slate-800 text-white rounded-xl px-4 py-3 text-sm placeholder-slate-500 border border-white/10 focus:border-indigo-500/50 focus:outline-none resize-none"
                 rows={3}
               />
-              <div className="flex flex-wrap gap-2 mt-2">
-                <button
-                  onClick={() => {
-                    setIslTokens(textToISL(clerkText, lang));
-                    setShowSigns(true);
-                  }}
-                  disabled={!clerkText.trim()}
-                  className="px-4 py-2 bg-purple-500 hover:bg-purple-400 disabled:opacity-40 text-white rounded-xl text-sm font-medium transition-all"
-                >
-                  🤟 Convert to ISL Signs
-                </button>
+              <div className="flex flex-wrap items-center gap-2 mt-2">
                 <button
                   onClick={() => speak(clerkText, lang)}
                   disabled={!clerkText.trim()}
@@ -345,13 +381,18 @@ export default function TwoWayInterpreterPage() {
                 >
                   🔊 Speak to Citizen
                 </button>
+                {!micSupported && (
+                  <span className="text-xs text-amber-400">
+                    🎤 Mic unavailable in this browser — type your reply instead.
+                  </span>
+                )}
               </div>
-              {showSigns && clerkText && (
+              {clerkText.trim() && (
                 <div className="mt-4 bg-gradient-to-br from-purple-600/30 to-indigo-600/30 border border-purple-400/30 rounded-2xl p-4">
                   <p className="text-xs text-purple-200 mb-2">👋 SHOWN TO DEAF CITIZEN (ISL Signs)</p>
-                  {islTokens.length > 0 ? (
+                  {textToISL(clerkText, lang).length > 0 ? (
                     <div className="flex flex-wrap gap-2">
-                      {islTokens.map((t, i) => (
+                      {textToISL(clerkText, lang).map((t, i) => (
                         <span
                           key={i}
                           className="flex items-center gap-1.5 px-3 py-2 bg-slate-900/70 rounded-xl border border-white/10"
@@ -364,7 +405,7 @@ export default function TwoWayInterpreterPage() {
                     </div>
                   ) : (
                     <p className="text-sm text-slate-400">
-                      No matching ISL signs found for this text. Try words like water, bill, tax, help, wait, name, address…
+                      No matching ISL signs yet. Try words like water, bill, tax, help, wait, name, address…
                     </p>
                   )}
                 </div>
@@ -393,6 +434,61 @@ export default function TwoWayInterpreterPage() {
             ))}
           </div>
         </div>
+
+        {/* Train Mode panel */}
+        {trainMode && (
+          <div className="mt-8 bg-emerald-900/20 border border-emerald-500/30 rounded-3xl p-6">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+              <div>
+                <h3 className="font-semibold text-emerald-300">🎯 Train Sign Model</h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  Pick a sign, then hold it to the camera for ~1.5s. Samples are captured live so fast signs get recognized.
+                </p>
+              </div>
+              <span className="text-xs px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300">
+                {classifier.getSignCount()} signs • {trainCount} captures
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-400 mb-2">
+              {trainSignId ? (
+                <>Capturing <strong className="text-emerald-300">{getLocalizedName(SIGN_MAP.get(trainSignId)!, lang)}</strong> — hold the sign to camera…</>
+              ) : (
+                "Select a sign to train:"
+              )}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {MUNICIPAL_SIGNS.map((sign) => (
+                <button
+                  key={sign.id}
+                  onClick={() => setTrainSignId(sign.id)}
+                  className={`px-3 py-2 rounded-xl text-sm transition-all border ${
+                    trainSignId === sign.id
+                      ? "bg-emerald-500 text-white border-emerald-400"
+                      : "bg-slate-800 hover:bg-slate-700 border-white/10 text-slate-300"
+                  }`}
+                >
+                  {sign.icon} {getLocalizedName(sign, lang)}
+                </button>
+              ))}
+            </div>
+
+            {trainCount > 0 && (
+              <button
+                onClick={() => {
+                  classifier.reset();
+                  localStorage.removeItem("sanket-knn-samples");
+                  setHasSamples(false);
+                  setTrainCount(0);
+                  setTrainSignId(null);
+                }}
+                className="mt-4 px-4 py-2 bg-red-900/40 hover:bg-red-900/60 text-red-300 rounded-xl text-sm transition-all"
+              >
+                Reset All Training
+              </button>
+            )}
+          </div>
+        )}
 
         <p className="text-center text-xs text-slate-600 mt-8">
           Two-way accessibility: deaf citizen signs → clerk understands • clerk replies → spoken aloud.
