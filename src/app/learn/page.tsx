@@ -26,6 +26,7 @@ import {
 } from "@/lib/game-storage";
 import { setLang, loadLang, t } from "@/lib/hi";
 import { playCorrect, playIncorrect, playLevelUp } from "@/lib/sound";
+import { classifier, type Landmark } from "@/lib/knn-classifier";
 
 type Screen = "home" | "flashcards" | "quiz" | "practice" | "badges" | "dictionary" | "leaderboard";
 
@@ -903,16 +904,41 @@ function PracticeScreen({
   const [accuracy, setAccuracy] = useState(0);
   const [practiceCount, setPracticeCount] = useState(0);
   const [selectedSign, setSelectedSign] = useState<string>(WEBCAM_SIGNS[0]);
+  const [trainMode, setTrainMode] = useState(false);
+  const [trainSignId, setTrainSignId] = useState<string | null>(null);
+  const [trainCount, setTrainCount] = useState(0);
+  const [hasSamples, setHasSamples] = useState(false);
+  const [detectedName, setDetectedName] = useState<string | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const animFrameRef = useRef<number>(0);
   const correctFrames = useRef(0);
   const totalFrames = useRef(0);
   const lastTimestamp = useRef(0);
+  const trainBufferRef = useRef<Landmark[][]>([]);
+  const trainActiveRef = useRef(false);
+  const trainModeRef = useRef(false);
+  const trainSignIdRef = useRef<string | null>(null);
+
+  const webcamSignList = ALL_SIGNS.filter((s) => s.webcamSupported);
 
   useEffect(() => {
     const saved = localStorage.getItem("isl-webcam-count");
     if (saved) setPracticeCount(parseInt(saved, 10));
+    const knn = localStorage.getItem("sanket-knn-samples");
+    if (knn && knn.length > 20) {
+      classifier.deserialize(knn);
+      setHasSamples(classifier.getSignCount() > 0);
+    }
   }, []);
+
+  useEffect(() => {
+    trainModeRef.current = trainMode;
+    trainSignIdRef.current = trainSignId;
+    if (!trainMode || !trainSignId) {
+      trainActiveRef.current = false;
+      trainBufferRef.current = [];
+    }
+  }, [trainMode, trainSignId]);
 
   useEffect(() => {
     return () => {
@@ -1014,18 +1040,55 @@ function PracticeScreen({
           }
         });
 
-        const detected = classifyHands(result.landmarks);
-        totalFrames.current += 1;
-        if (detected.sign === selectedSign && detected.confidence > 0.6) {
-          correctFrames.current += 1;
-        } else if (totalFrames.current > 10) {
-          correctFrames.current = Math.max(0, correctFrames.current - 1);
+        if (trainModeRef.current && trainSignIdRef.current) {
+          for (const hand of result.landmarks) {
+            trainBufferRef.current.push(hand as Landmark[]);
+          }
+          if (!trainActiveRef.current && trainBufferRef.current.length > 0) {
+            trainActiveRef.current = true;
+            const captureId = trainSignIdRef.current;
+            setTimeout(() => {
+              if (trainBufferRef.current.length > 15) {
+                classifier.addMultipleSamples(captureId, trainBufferRef.current);
+                localStorage.setItem("sanket-knn-samples", classifier.serialize());
+                setHasSamples(classifier.getSignCount() > 0);
+                setTrainCount((c) => c + 1);
+              }
+              trainBufferRef.current = [];
+              trainActiveRef.current = false;
+            }, 1500);
+          }
+        } else if (hasSamples && classifier.getSampleCount() > 0) {
+          let best = { signId: null as string | null, confidence: 0 };
+          for (const hand of result.landmarks) {
+            const r = classifier.classify(hand as Landmark[]);
+            if (r.confidence > best.confidence) best = r;
+          }
+          if (best.signId) {
+            const matched = ALL_SIGNS.find((s) => s.id === best.signId);
+            setDetectedName(matched ? matched.name : null);
+          } else {
+            setDetectedName(null);
+          }
+
+          totalFrames.current += 1;
+          if (best.signId === selectedSignId() && best.confidence > 0.6) {
+            correctFrames.current += 1;
+          } else if (totalFrames.current > 10) {
+            correctFrames.current = Math.max(0, correctFrames.current - 1);
+          }
+
+          const acc = totalFrames.current > 0
+            ? Math.round((correctFrames.current / totalFrames.current) * 100)
+            : 0;
+          setAccuracy(acc);
+        } else {
+          setAccuracy(0);
         }
 
         const acc = totalFrames.current > 0
           ? Math.round((correctFrames.current / totalFrames.current) * 100)
           : 0;
-        setAccuracy(acc);
 
         if (acc > 60 && totalFrames.current > 20) {
           setStatus("success");
@@ -1059,12 +1122,16 @@ function PracticeScreen({
     cancelAnimationFrame(animFrameRef.current);
     correctFrames.current = 0;
     totalFrames.current = 0;
+    trainBufferRef.current = [];
+    trainActiveRef.current = false;
+    setDetectedName(null);
     setAccuracy(0);
     setStatus("idle");
     setErrorMsg("");
   }
 
   const signInfo = ALL_SIGNS.find((s) => s.name === selectedSign);
+  const selectedSignId = () => signInfo?.id ?? null;
 
   return (
     <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
@@ -1092,7 +1159,64 @@ function PracticeScreen({
           <p className="text-sm text-primary-500 dark:text-primary-400">
             {t("Show the sign to your camera")}
           </p>
+          <button
+            onClick={() => { setTrainMode((v) => !v); setTrainSignId(null); }}
+            className={`mt-3 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+              trainMode
+                ? "bg-orange-500 text-white"
+                : "bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-300 hover:bg-primary-200 dark:hover:bg-primary-800"
+            }`}
+          >
+            🎯 {trainMode ? "Training ON" : "Train Model"}
+          </button>
         </div>
+
+        {trainMode && (
+          <div className="mb-4 bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-2xl p-4">
+            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+              <p className="text-sm font-semibold text-orange-600 dark:text-orange-300">
+                🎯 Train Sign Model
+              </p>
+              <span className="text-xs px-2.5 py-1 rounded-full bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-300">
+                {classifier.getSignCount()} signs • {trainCount} captures
+              </span>
+            </div>
+            <p className="text-xs text-primary-500 dark:text-primary-400 mb-2">
+              {trainSignId
+                ? <>Capturing <strong className="text-orange-600 dark:text-orange-300">{ALL_SIGNS.find((s) => s.id === trainSignId)?.name}</strong> — hold the sign to camera ~1.5s…</>
+                : "Select a sign to train:"}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {webcamSignList.map((sign) => (
+                <button
+                  key={sign.id}
+                  onClick={() => setTrainSignId(sign.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs transition-all border ${
+                    trainSignId === sign.id
+                      ? "bg-orange-500 text-white border-orange-400"
+                      : "bg-white dark:bg-primary-950 hover:bg-primary-50 dark:hover:bg-primary-900 border-primary-200 dark:border-primary-800 text-primary-600 dark:text-primary-300"
+                  }`}
+                >
+                  {sign.icon} {sign.name}
+                </button>
+              ))}
+            </div>
+            {trainCount > 0 && (
+              <button
+                onClick={() => {
+                  classifier.reset();
+                  localStorage.removeItem("sanket-knn-samples");
+                  setHasSamples(false);
+                  setTrainCount(0);
+                  setTrainSignId(null);
+                }}
+                className="mt-3 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-300 rounded-xl text-xs transition-all"
+              >
+                Reset All Training
+              </button>
+            )}
+          </div>
+        )}
 
         {status === "idle" && (
           <div className="text-center py-8">
@@ -1185,8 +1309,21 @@ function PracticeScreen({
               </span>
             </div>
             <p className="text-sm text-primary-500 mt-2 text-center">
-              {signInfo?.hint}
+              {trainMode ? "Training mode — samples are captured live" : signInfo?.hint}
             </p>
+            {!trainMode && hasSamples && (
+              <p className="text-sm text-center mt-1">
+                <span className="text-xs text-primary-400">Detected: </span>
+                <span className="font-semibold text-orange-600 dark:text-orange-300">
+                  {detectedName ?? "—"}
+                </span>
+              </p>
+            )}
+            {!trainMode && !hasSamples && (
+              <p className="text-xs text-center text-orange-500 dark:text-orange-400 mt-1">
+                No trained signs yet — tap “Train Model” to teach a sign.
+              </p>
+            )}
           </div>
         )}
 
@@ -1371,52 +1508,6 @@ function LeaderboardScreen({ game, onBack }: { game: GameState; onBack: () => vo
       </div>
     </div>
   );
-}
-
-function classifyHands(hands: { x: number; y: number }[][]): { sign: string | null; confidence: number } {
-  if (hands.length === 0) return { sign: null, confidence: 0 };
-
-  const hand = hands[0];
-  if (hand.length < 21) return { sign: null, confidence: 0 };
-
-  const d = (a: { x: number; y: number }, b: { x: number; y: number }) =>
-    Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
-
-  const tip4 = hand[4], ip3 = hand[3], mcp2 = hand[2];
-  const tip8 = hand[8], pip6 = hand[6], mcp5 = hand[5];
-  const tip12 = hand[12], pip10 = hand[10], mcp9 = hand[9];
-  const tip16 = hand[16], pip14 = hand[14], mcp13 = hand[13];
-  const tip20 = hand[20], pip18 = hand[18], mcp17 = hand[17];
-
-  const thumbExt = d(tip4, ip3) > d(ip3, mcp2) * 1.2;
-  const indexExt = d(tip8, pip6) > d(pip6, mcp5) * 1.4;
-  const middleExt = d(tip12, pip10) > d(pip10, mcp9) * 1.4;
-  const ringExt = d(tip16, pip14) > d(pip14, mcp13) * 1.4;
-  const pinkyExt = d(tip20, pip18) > d(pip18, mcp17) * 1.4;
-
-  const allExt = indexExt && middleExt && ringExt && pinkyExt;
-
-  if (allExt && thumbExt) return { sign: "Wait", confidence: 0.85 };
-  if (!indexExt && !middleExt && !ringExt && !pinkyExt && !thumbExt) return { sign: "Yes", confidence: 0.8 };
-  if (indexExt && !middleExt && !ringExt && !pinkyExt && !thumbExt) return { sign: "No", confidence: 0.75 };
-
-  if (hands.length >= 2) {
-    const leftP = { x: (hands[0][9].x + hands[0][0].x) / 2, y: (hands[0][9].y + hands[0][0].y) / 2 };
-    const rightP = { x: (hands[1][9].x + hands[1][0].x) / 2, y: (hands[1][9].y + hands[1][0].y) / 2 };
-    if (d(leftP, rightP) < 0.15) {
-      let match = true;
-      for (let i = 4; i < 21; i++) {
-        if (d(hands[0][i], hands[1][i]) > 0.1) { match = false; break; }
-      }
-      if (match) return { sign: "Namaste", confidence: 0.9 };
-    }
-  }
-
-  if (indexExt && middleExt && !ringExt && !pinkyExt) {
-    return { sign: "Namaste", confidence: 0.5 };
-  }
-
-  return { sign: null, confidence: 0 };
 }
 
 function BadgesScreen({
