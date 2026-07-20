@@ -4,12 +4,13 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { classifier, type Landmark } from "@/lib/knn-classifier";
 import { speak } from "@/lib/tts";
 import { SpeechRecognizer } from "@/lib/speech";
-import { MUNICIPAL_SIGNS, SIGN_MAP, getLocalizedName, CATEGORY_LABELS } from "@/data/municipal-signs";
+import { MUNICIPAL_SIGNS, SIGN_MAP, getLocalizedName, textToISL, CATEGORY_LABELS, type ISLToken } from "@/data/municipal-signs";
 
 interface ChatMessage {
   role: "citizen" | "clerk";
   text: string;
   time: Date;
+  islTokens?: ISLToken[];
 }
 
 export default function LiveInterpreter() {
@@ -26,6 +27,7 @@ export default function LiveInterpreter() {
   const [inputText, setInputText] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [deafDisplay, setDeafDisplay] = useState<string | null>(null);
+  const [lastClerkTokens, setLastClerkTokens] = useState<ISLToken[]>([]);
   const [calibrated, setCalibrated] = useState(false);
   const [demoMode, setDemoMode] = useState(true);
   const [lang, setLang] = useState("en");
@@ -53,8 +55,8 @@ export default function LiveInterpreter() {
     chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
-  const addMessage = useCallback((role: "citizen" | "clerk", text: string) => {
-    setMessages((prev) => [...prev, { role, text, time: new Date() }]);
+  const addMessage = useCallback((role: "citizen" | "clerk", text: string, islTokens?: ISLToken[]) => {
+    setMessages((prev) => [...prev, { role, text, time: new Date(), islTokens }]);
     if (role === "clerk") {
       setDeafDisplay(text);
       setTimeout(() => setDeafDisplay(null), 8000);
@@ -273,7 +275,9 @@ export default function LiveInterpreter() {
   const handleSend = () => {
     const text = inputText.trim();
     if (!text) return;
-    addMessage("clerk", text);
+    const tokens = textToISL(text, lang);
+    addMessage("clerk", text, tokens);
+    setLastClerkTokens(tokens);
     setInputText("");
     setTranscript("");
   };
@@ -460,7 +464,7 @@ export default function LiveInterpreter() {
                         className="flex items-center gap-1.5 px-3 py-2 bg-gray-800/80 hover:bg-gray-700 active:bg-primary-700/50 rounded-xl text-xs transition-all border border-gray-700/50 hover:border-primary-500/30"
                       >
                         <span className="text-base">{sign.icon}</span>
-                        <span className="text-gray-200">{sign.name}</span>
+                        <span className="text-gray-200">{getLocalizedName(sign, lang)}</span>
                       </button>
                     ))}
                   </div>
@@ -479,6 +483,20 @@ export default function LiveInterpreter() {
               <p className="text-2xl sm:text-3xl font-bold text-primary-400 animate-scale-in">
                 {deafDisplay}
               </p>
+              {lastClerkTokens.length > 0 && (
+                <div className="flex flex-wrap gap-2 justify-center mt-3">
+                  {lastClerkTokens.map((tok, idx) => (
+                    <span
+                      key={idx}
+                      className="flex items-center gap-1.5 px-3 py-2 bg-gray-900 rounded-xl border border-primary-500/30"
+                      title={tok.label}
+                    >
+                      <span className="text-2xl leading-none">{tok.symbol}</span>
+                      <span className="text-xs text-gray-200">{tok.label}</span>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -509,6 +527,20 @@ export default function LiveInterpreter() {
                     {msg.role === "clerk" ? "👨‍💼 Clerk" : "🧏 Citizen"}
                   </p>
                   <p className="text-sm">{msg.text}</p>
+                  {msg.role === "clerk" && msg.islTokens && msg.islTokens.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {msg.islTokens.map((tok, idx) => (
+                        <span
+                          key={idx}
+                          className="flex items-center gap-1 px-2 py-1 bg-gray-900/60 rounded-lg border border-primary-500/30"
+                          title={tok.label}
+                        >
+                          <span className="text-lg leading-none">{tok.symbol}</span>
+                          <span className="text-[10px] text-gray-300">{tok.label}</span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
