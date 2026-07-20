@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { DEPARTMENTS } from "@/lib/utils";
+import { loadGame, getLevelProgress } from "@/lib/game-storage";
+import { loadLang, t as translate } from "@/lib/hi";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -14,8 +16,17 @@ export default function LoginPage() {
   const [department, setDepartment] = useState<string>(DEPARTMENTS[0]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [gameData, setGameData] = useState<ReturnType<typeof loadGame> | null>(null);
   const { login, register } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    const saved = loadGame();
+    setGameData(saved);
+  }, []);
+
+  const hasGameData = gameData && gameData.xp > 0;
+  const progress = gameData ? getLevelProgress(gameData.xp) : null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -190,41 +201,106 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-4 text-center space-y-3">
-            <p className="text-white/60 text-sm">
-              Demo accounts:{" "}
-              <span className="text-white/80">admin / admin123</span> or{" "}
-              <span className="text-white/80">ramesh / admin123</span>
-            </p>
             <Link
               href="/learn"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-medium transition-all backdrop-blur border border-white/10"
+              className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-r from-amber-400/90 to-yellow-500/90 hover:from-amber-400 hover:to-yellow-500 text-gray-900 rounded-xl text-sm font-bold transition-all shadow-lg"
             >
-              <span>🌐</span>
-              Learn ISL as a Citizen
+              <span>🎮</span>
+              Play ISL Quest — No Login Needed
             </Link>
+            <p className="text-white/40 text-xs">
+              Demo accounts:{" "}
+              <span className="text-white/60">admin / admin123</span> or{" "}
+              <span className="text-white/60">ramesh / admin123</span>
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="hidden lg:flex relative flex-1 items-center justify-center bg-gradient-to-br from-primary-800 to-primary-950">
-        <div className="text-center p-12 animate-fade-in">
-          <div className="text-8xl mb-6">🤝</div>
-          <h2 className="text-4xl font-bold text-white mb-4">
-            Learn ISL. Serve Better.
+      <div className="hidden lg:flex relative flex-1 items-center justify-center bg-gradient-to-br from-primary-800 to-primary-950 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNCIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
+        <div className="relative text-center p-12 animate-fade-in max-w-lg">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-white/10 backdrop-blur mb-6 border border-white/10">
+            <span className="text-5xl">🎮</span>
+          </div>
+          <h2 className="text-4xl font-bold text-white mb-3">
+            ISL Quest
           </h2>
-          <p className="text-primary-200 text-lg max-w-md mx-auto leading-relaxed">
-            Empowering government clerks with Indian Sign Language skills to
-            make public services truly accessible for everyone.
+          <p className="text-primary-200 text-lg leading-relaxed mb-8">
+            Your gamified Indian Sign Language learning journey — 
+            flashcards, quizzes, webcam practice, and more.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            {DEPARTMENTS.map((dept) => (
-              <span
-                key={dept}
-                className="px-4 py-2 rounded-full bg-white/10 text-white/80 text-sm"
-              >
-                {dept}
-              </span>
-            ))}
+
+          {hasGameData && gameData && progress ? (
+            <div className="bg-white/10 backdrop-blur rounded-3xl p-6 mb-6 border border-white/10">
+              <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-white">{gameData.level}</p>
+                  <p className="text-xs text-primary-200">Level</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-white">{gameData.xp}</p>
+                  <p className="text-xs text-primary-200">XP</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-white">{gameData.streak}</p>
+                  <p className="text-xs text-primary-200">Streak</p>
+                </div>
+              </div>
+              <div className="bg-white/10 rounded-full h-2 overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-amber-400 to-yellow-300 rounded-full transition-all"
+                  style={{ width: `${progress.progress}%` }}
+                />
+              </div>
+              <p className="text-xs text-primary-200 mt-2">
+                {progress.current} / {progress.next} XP to next level
+              </p>
+            </div>
+          ) : (
+            <div className="bg-white/10 backdrop-blur rounded-3xl p-6 mb-6 border border-white/10">
+              <div className="grid grid-cols-3 gap-4">
+                {[
+                  { icon: "🃏", label: "Flashcards" },
+                  { icon: "🧠", label: "Quizzes" },
+                  { icon: "📸", label: "Webcam" },
+                ].map((f) => (
+                  <div key={f.label} className="text-center">
+                    <span className="text-3xl block mb-1">{f.icon}</span>
+                    <p className="text-xs text-primary-200">{f.label}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-2 gap-2 mt-4">
+                {[
+                  { icon: "🌙", label: "Dark Mode" },
+                  { icon: "🔊", label: "Sound FX" },
+                  { icon: "📖", label: "Dictionary" },
+                  { icon: "🏆", label: "Leaderboard" },
+                ].map((f) => (
+                  <div key={f.label} className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2">
+                    <span className="text-sm">{f.icon}</span>
+                    <span className="text-xs text-white/70">{f.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            <Link
+              href="/learn"
+              className="flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-amber-400 to-yellow-500 text-gray-900 rounded-2xl font-bold text-lg hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-amber-500/30"
+            >
+              <span>🎮</span>
+              Play ISL Quest
+              <span className="text-sm opacity-60">(Free)</span>
+            </Link>
+            <p className="text-xs text-primary-300/60">
+              {hasGameData
+                ? "Continue your learning journey — no login needed"
+                : "Start learning in seconds. No account required."}
+            </p>
           </div>
         </div>
       </div>

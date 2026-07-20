@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useAuth } from "@/lib/auth-context";
 import { getTodayIST } from "@/lib/utils";
 import SignPractice from "@/components/SignPractice";
 import CertificateGenerator from "@/components/CertificateGenerator";
+import { loadGame, getLevelProgress } from "@/lib/game-storage";
 
 interface ModuleData {
   _id: string;
@@ -211,6 +213,8 @@ export default function DashboardPage() {
           totalCompleted={streak.totalCompleted}
         />
       )}
+
+      <IslQuestCard />
 
       {showPractice ? (
         <SignPractice
@@ -565,6 +569,142 @@ function ResultCard({
             icon="📚"
           />
         </div>
+      </div>
+    </div>
+  );
+}
+
+function IslQuestCard() {
+  const [gameData, setGameData] = useState<ReturnType<typeof loadGame> | null>(null);
+  const [serverData, setServerData] = useState<{
+    islXp: number;
+    islLevel: number;
+    islStreak: number;
+    islBadges: string[];
+  } | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMsg, setSyncMsg] = useState("");
+
+  useEffect(() => {
+    setGameData(loadGame());
+    fetch("/api/game-sync")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => setServerData(data))
+      .catch(() => {});
+  }, []);
+
+  const localGame = gameData && gameData.xp > 0 ? gameData : null;
+  const progress = localGame ? getLevelProgress(localGame.xp) : null;
+
+  async function syncProgress() {
+    const game = loadGame();
+    if (!game || game.xp === 0) {
+      setSyncMsg("Play ISL Quest first to have progress to save!");
+      setTimeout(() => setSyncMsg(""), 3000);
+      return;
+    }
+    setSyncing(true);
+    try {
+      const res = await fetch("/api/game-sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          xp: game.xp,
+          level: game.level,
+          streak: game.streak,
+          badges: game.badges,
+          completedSigns: game.completedSigns,
+        }),
+      });
+      if (res.ok) {
+        setSyncMsg("Progress saved! ✅");
+        setServerData({
+          islXp: game.xp,
+          islLevel: game.level,
+          islStreak: game.streak,
+          islBadges: game.badges,
+        });
+      } else {
+        setSyncMsg("Failed to save. Try again.");
+      }
+    } catch {
+      setSyncMsg("Failed to save. Check connection.");
+    } finally {
+      setSyncing(false);
+      setTimeout(() => setSyncMsg(""), 3000);
+    }
+  }
+
+  const showData = serverData || localGame;
+  const displayXp = showData ? ("islXp" in showData ? showData.islXp : showData.xp) : 0;
+  const displayLevel = showData ? ("islLevel" in showData ? showData.islLevel : showData.level) : 1;
+  const displayStreak = showData ? ("islStreak" in showData ? showData.islStreak : showData.streak) : 0;
+  const displayBadges = showData ? ("islBadges" in showData ? showData.islBadges.length : showData.badges.length) : 0;
+
+  return (
+    <div className="bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200 rounded-3xl p-5 animate-slide-down">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center shadow-md">
+            <span className="text-lg">🎮</span>
+          </div>
+          <div>
+            <h3 className="font-bold text-gray-900">ISL Quest</h3>
+            <p className="text-xs text-gray-500">Your gamified ISL learning journey</p>
+          </div>
+        </div>
+        <Link
+          href="/learn"
+          className="px-4 py-2 bg-gradient-to-r from-amber-400 to-yellow-500 text-gray-900 rounded-xl text-sm font-bold hover:scale-105 active:scale-95 transition-all shadow-md"
+        >
+          Play Now
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-4 gap-3 mb-3">
+        <div className="bg-white/70 rounded-xl p-3 text-center">
+          <p className="text-lg font-bold text-gray-900">{displayLevel}</p>
+          <p className="text-xs text-gray-500">Level</p>
+        </div>
+        <div className="bg-white/70 rounded-xl p-3 text-center">
+          <p className="text-lg font-bold text-gray-900">{displayXp}</p>
+          <p className="text-xs text-gray-500">XP</p>
+        </div>
+        <div className="bg-white/70 rounded-xl p-3 text-center">
+          <p className="text-lg font-bold text-gray-900">{displayStreak}</p>
+          <p className="text-xs text-gray-500">Streak</p>
+        </div>
+        <div className="bg-white/70 rounded-xl p-3 text-center">
+          <p className="text-lg font-bold text-gray-900">{displayBadges}</p>
+          <p className="text-xs text-gray-500">Badges</p>
+        </div>
+      </div>
+
+      {progress && (
+        <div className="mb-3">
+          <div className="bg-white/70 rounded-full h-2 overflow-hidden">
+            <div
+              className="h-full bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full transition-all"
+              style={{ width: `${progress.progress}%` }}
+            />
+          </div>
+          <p className="text-xs text-gray-400 mt-1">
+            {progress.current} / {progress.next} XP to level {progress.current}
+          </p>
+        </div>
+      )}
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={syncProgress}
+          disabled={syncing}
+          className="px-3 py-1.5 bg-white border border-amber-200 text-amber-700 rounded-lg text-xs font-medium hover:bg-amber-50 transition-all disabled:opacity-50"
+        >
+          {syncing ? "Saving..." : "💾 Save Progress"}
+        </button>
+        {syncMsg && (
+          <span className="text-xs text-gray-500 animate-fade-in">{syncMsg}</span>
+        )}
       </div>
     </div>
   );

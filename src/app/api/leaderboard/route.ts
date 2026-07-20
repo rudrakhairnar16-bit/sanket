@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   await connectDB();
 
   const users = await User.find({ role: "learner" })
-    .select("name department currentStreak longestStreak totalCompleted")
+    .select("name department currentStreak longestStreak totalCompleted islXp islLevel islStreak islBadges")
     .sort({ currentStreak: -1 })
     .limit(20);
 

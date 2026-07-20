@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 interface LeaderboardUser {
   _id: string;
@@ -9,6 +10,10 @@ interface LeaderboardUser {
   currentStreak: number;
   longestStreak: number;
   totalCompleted: number;
+  islXp: number;
+  islLevel: number;
+  islStreak: number;
+  islBadges: string[];
 }
 
 interface DeptStat {
@@ -18,10 +23,13 @@ interface DeptStat {
   avgStreak: number;
 }
 
+type Tab = "daily" | "quest";
+
 export default function LeaderboardPage() {
   const [users, setUsers] = useState<LeaderboardUser[]>([]);
   const [departments, setDepartments] = useState<DeptStat[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<Tab>("daily");
 
   useEffect(() => {
     fetch("/api/leaderboard")
@@ -34,6 +42,11 @@ export default function LeaderboardPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const sortedByModule = [...users].sort((a, b) => b.currentStreak - a.currentStreak);
+  const sortedByQuest = [...users].sort((a, b) => b.islXp - a.islXp);
+
+  const topDept = departments[0];
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -41,8 +54,6 @@ export default function LeaderboardPage() {
       </div>
     );
   }
-
-  const topDept = departments[0];
 
   return (
     <div className="space-y-6 animate-fade-in pb-8">
@@ -53,6 +64,25 @@ export default function LeaderboardPage() {
         <p className="text-gray-500 mt-1">
           Department standings and top learners
         </p>
+      </div>
+
+      <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit">
+        <button
+          onClick={() => setTab("daily")}
+          className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+            tab === "daily" ? "bg-white text-primary-700 shadow-sm" : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          📚 Daily Lessons
+        </button>
+        <button
+          onClick={() => setTab("quest")}
+          className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+            tab === "quest" ? "bg-white text-amber-700 shadow-sm" : "text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          🎮 ISL Quest
+        </button>
       </div>
 
       {topDept && (
@@ -86,11 +116,13 @@ export default function LeaderboardPage() {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             <div className="p-6 border-b border-gray-100">
-              <h3 className="font-semibold text-gray-900">Top Learners</h3>
+              <h3 className="font-semibold text-gray-900">
+                {tab === "daily" ? "Top Learners (Streak)" : "Top ISL Quest Players"}
+              </h3>
             </div>
             <div className="divide-y divide-gray-50">
-              {users.length > 0 ? (
-                users.map((user, index) => (
+              {(tab === "daily" ? sortedByModule : sortedByQuest).length > 0 ? (
+                (tab === "daily" ? sortedByModule : sortedByQuest).map((user, index) => (
                   <div
                     key={user._id}
                     className="flex items-center gap-4 p-4 hover:bg-gray-50 transition-colors"
@@ -113,16 +145,37 @@ export default function LeaderboardPage() {
                       <p className="text-sm text-gray-500">{user.department}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-gray-900">
-                        {user.currentStreak}
-                      </p>
-                      <p className="text-xs text-gray-400">day streak</p>
+                      {tab === "daily" ? (
+                        <>
+                          <p className="font-bold text-gray-900">{user.currentStreak}</p>
+                          <p className="text-xs text-gray-400">day streak</p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="font-bold text-amber-600">{user.islXp || 0}</p>
+                          <p className="text-xs text-gray-400">
+                            Lv.{user.islLevel || 1} • {user.islStreak || 0}d
+                          </p>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))
               ) : (
                 <div className="p-8 text-center text-gray-400">
-                  No learners yet
+                  {tab === "quest" ? (
+                    <div>
+                      <p className="mb-2">No ISL Quest data yet</p>
+                      <Link
+                        href="/learn"
+                        className="text-amber-600 hover:underline text-sm font-medium"
+                      >
+                        🎮 Play ISL Quest to appear here
+                      </Link>
+                    </div>
+                  ) : (
+                    "No learners yet"
+                  )}
                 </div>
               )}
             </div>
