@@ -86,6 +86,10 @@ export default function LiveInterpreter() {
   }, [startCamera]);
 
   useEffect(() => {
+    if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
+      setIsListening(false);
+      return;
+    }
     recognizerRef.current = new SpeechRecognizer(
       (text, final) => {
         if (final) {
@@ -98,6 +102,10 @@ export default function LiveInterpreter() {
         setIsListening(status === "listening");
       }
     );
+    recognizerRef.current.start(lang);
+    return () => {
+      recognizerRef.current?.stop();
+    };
   }, []);
 
   async function loadHandLandmarker() {
