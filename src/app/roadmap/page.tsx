@@ -7,7 +7,7 @@ const PHASES = [
     timeline: "Months 1-3",
     color: "from-emerald-500 to-teal-600",
     items: [
-      "Deploy Sanket in 1 municipal office (e.g., Pune Municipal Corporation)",
+      "Deploy Sanket in 1 municipal office (e.g., Ahmedabad Municipal Corporation or Pune Municipal Corporation)",
       "Onboard 50-100 clerks from 3 departments (Water Tax, Property Tax, Health)",
       "Daily ISL lessons + streak tracking for all enrolled clerks",
       "Admin dashboard for compliance monitoring",
@@ -35,8 +35,8 @@ const PHASES = [
     timeline: "Months 7-12",
     color: "from-purple-500 to-violet-600",
     items: [
-      "Partner with 5 municipal corporations in Tier 2 cities (Nagpur, Nashik, Aurangabad, etc.)",
-      "Add regional language support (Marathi → Gujarati → Tamil → Bengali)",
+      "Partner with 5 municipal corporations in Gujarat (Ahmedabad, Surat, Vadodara, Rajkot, Bhavnagar) and Maharashtra (Nagpur, Nashik, Aurangabad)",
+      "Add regional language support (Marathi → Gujarati → Tamil → Bengali) — starting with Gujarati for AMC/SMC pilot expansion",
       "PWA offline mode for areas with unreliable internet",
       "Department-level leaderboards with inter-city rankings",
       "Train-the-trainer program: identify 1 ISL Champion per office as peer trainer",
@@ -49,8 +49,8 @@ const PHASES = [
     timeline: "Year 2",
     color: "from-amber-500 to-orange-600",
     items: [
-      "State government MoU for mandatory ISL training across all public offices",
-      "Integrate with state capacity-building commissions (e.g., Maharashtra SRC)",
+      "State government MoU for mandatory ISL training across all public offices — Gujarat SRC and Maharashtra SRC as initial partners",
+      "Pilot with Gujarat State Rural Development Mission (GSRDM) for district-level clerk training",
       "ISL proficiency certification recognized by state govt",
       "Citizen feedback dashboard shared with district collectors",
       "Annual ISL proficiency awards for top-performing departments",

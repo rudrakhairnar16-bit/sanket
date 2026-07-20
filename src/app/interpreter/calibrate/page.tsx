@@ -14,6 +14,7 @@ export default function CalibratePage() {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [recorded, setRecorded] = useState<Record<string, number>>({});
   const [isRecording, setIsRecording] = useState(false);
+  const [isQuickTraining, setIsQuickTraining] = useState(false);
   const [handCount, setHandCount] = useState(0);
   const [sampleCount, setSampleCount] = useState(0);
   const landmarkBuffer = useRef<Landmark[][]>([]);
@@ -189,6 +190,72 @@ export default function CalibratePage() {
     setCurrentIdx(0);
   };
 
+  const exportData = () => {
+    const data = classifier.serialize();
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `sanket-signs-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importData = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json";
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const text = reader.result as string;
+        classifier.deserialize(text);
+        localStorage.setItem("sanket-knn-samples", classifier.serialize());
+        const counts: Record<string, number> = {};
+        try {
+          const parsed = JSON.parse(text);
+          for (const id of Object.keys(parsed)) counts[id] = 1;
+        } catch {}
+        setRecorded(counts);
+        setCurrentIdx(MUNICIPAL_SIGNS.length);
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  };
+
+  const startQuickTrain = () => {
+    if (handCount === 0) return;
+    setIsQuickTraining(true);
+    let idx = 0;
+    const tick = () => {
+      if (idx >= MUNICIPAL_SIGNS.length) {
+        setIsQuickTraining(false);
+        setCurrentIdx(MUNICIPAL_SIGNS.length);
+        return;
+      }
+      const signId = MUNICIPAL_SIGNS[idx].id;
+      setCurrentIdx(idx);
+      setSampleCount(0);
+      landmarkBuffer.current = [];
+      setIsRecording(true);
+      setTimeout(() => {
+        setIsRecording(false);
+        if (landmarkBuffer.current.length > 15) {
+          classifier.addMultipleSamples(signId, landmarkBuffer.current);
+          localStorage.setItem("sanket-knn-samples", classifier.serialize());
+          setRecorded((prev) => ({ ...prev, [signId]: 1 }));
+        }
+        setSampleCount(0);
+        idx++;
+        setTimeout(tick, 300);
+      }, 2500);
+    };
+    tick();
+  };
+
   const progress = Object.keys(recorded).length;
 
   if (isComplete) {
@@ -243,8 +310,46 @@ export default function CalibratePage() {
               />
             </div>
           </div>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={exportData}
+              disabled={progress === 0}
+              className="px-2.5 py-1.5 bg-gray-800 hover:bg-gray-700 disabled:opacity-30 rounded-lg text-xs transition-all"
+              title="Export trained data"
+            >
+              📤 Export
+            </button>
+            <button
+              onClick={importData}
+              className="px-2.5 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-xs transition-all"
+              title="Import trained data"
+            >
+              📥 Import
+            </button>
+            <button
+              onClick={startQuickTrain}
+              disabled={handCount === 0 || isQuickTraining}
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                isQuickTraining
+                  ? "bg-red-900/50 text-red-400 animate-pulse"
+                  : handCount > 0
+                  ? "bg-amber-700/50 text-amber-300 hover:bg-amber-700/70"
+                  : "bg-gray-800 text-gray-600"
+              }`}
+              title="Auto-record all signs in sequence (3s each)"
+            >
+              {isQuickTraining ? "⏳ Training..." : "⚡ Quick Train All"}
+            </button>
+            {progress > 0 && (
+              <button
+                onClick={resetAll}
+                className="px-2.5 py-1.5 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg text-xs transition-all"
+              >
+                Reset
+              </button>
+            )}
+          </div>
         </div>
-
         <p className="text-sm text-gray-500 mb-6">
           Category: <span className="text-primary-400">{CATEGORY_LABELS[currentSign.category]}</span>
         </p>
@@ -386,6 +491,40 @@ export default function CalibratePage() {
                 {recorded[sign.id] ? "✓" : sign.icon}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Training Tips */}
+        <div className="mt-8 bg-gray-800/50 border border-gray-700 rounded-2xl p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-lg">🧠</span>
+            <h3 className="font-semibold text-sm text-gray-200">Training Tips for Best Accuracy</h3>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3 text-xs text-gray-400">
+            <div className="flex gap-2">
+              <span className="text-primary-400 shrink-0">1.</span>
+              <p><strong className="text-gray-300">Good lighting:</strong> Ensure your hand is well-lit — shadows reduce landmark accuracy.</p>
+            </div>
+            <div className="flex gap-2">
+              <span className="text-primary-400 shrink-0">2.</span>
+              <p><strong className="text-gray-300">Consistent distance:</strong> Keep your hand 30-50cm from camera, similar to how a citizen would sign at a desk.</p>
+            </div>
+            <div className="flex gap-2">
+              <span className="text-primary-400 shrink-0">3.</span>
+              <p><strong className="text-gray-300">Record 5+ samples:</strong> Use "Re-record" to add more variations — different angles, slightly different hand positions.</p>
+            </div>
+            <div className="flex gap-2">
+              <span className="text-primary-400 shrink-0">4.</span>
+              <p><strong className="text-gray-300">Export & share:</strong> One person calibrates → exports JSON → shares with team → they import it. Saves everyone time.</p>
+            </div>
+            <div className="flex gap-2">
+              <span className="text-primary-400 shrink-0">5.</span>
+              <p><strong className="text-gray-300">Quick Train:</strong> Use the "Quick Train All" button above to record all 25 signs in ~90 seconds.</p>
+            </div>
+            <div className="flex gap-2">
+              <span className="text-primary-400 shrink-0">6.</span>
+              <p><strong className="text-gray-300">For production:</strong> Train a TensorFlow.js MLP on the saved feature vectors for 3× better accuracy than k-NN.</p>
+            </div>
           </div>
         </div>
       </div>

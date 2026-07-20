@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { classifier, type Landmark } from "@/lib/knn-classifier";
 import { speak } from "@/lib/tts";
 import { SpeechRecognizer } from "@/lib/speech";
-import { MUNICIPAL_SIGNS, SIGN_MAP, CATEGORY_LABELS } from "@/data/municipal-signs";
+import { MUNICIPAL_SIGNS, SIGN_MAP, getLocalizedName, CATEGORY_LABELS } from "@/data/municipal-signs";
 
 interface ChatMessage {
   role: "citizen" | "clerk";
@@ -211,9 +211,10 @@ export default function LiveInterpreter() {
               if (stableFramesRef.current >= STABLE_THRESHOLD) {
                 const entry = SIGN_MAP.get(bestResult.signId);
                 if (entry) {
-                  setTranscript(entry.name);
-                  addMessage("citizen", entry.name);
-                  speak(entry.name, lang);
+                  const displayName = getLocalizedName(entry, lang);
+                  setTranscript(displayName);
+                  addMessage("citizen", displayName);
+                  speak(displayName, lang);
                   stableFramesRef.current = 0;
                 }
               }
@@ -277,9 +278,10 @@ export default function LiveInterpreter() {
   const handleDemoSign = (signId: string) => {
     const entry = SIGN_MAP.get(signId);
     if (!entry) return;
-    setTranscript(entry.name);
-    addMessage("citizen", entry.name);
-    speak(entry.name, lang);
+    const displayName = getLocalizedName(entry, lang);
+    setTranscript(displayName);
+    addMessage("citizen", displayName);
+    speak(displayName, lang);
   };
 
   return (
