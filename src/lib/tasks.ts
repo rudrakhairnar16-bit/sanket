@@ -142,3 +142,46 @@ export function isOnboardingComplete(): boolean {
   if (!data.newUser) return true;
   return ONBOARDING_TASKS.every((t) => data.completed[t.id]);
 }
+
+// Auto-complete tasks when a real user action is detected, so the task
+// list reflects genuine progress rather than only manual "Mark done" clicks.
+export const TASKS_UPDATED_EVENT = "sanket-tasks-updated";
+
+export function autoCompleteTasks(events: {
+  hasProfile?: boolean;
+  lessonDone?: boolean;
+  practiceDone?: boolean;
+  interpreterUsed?: boolean;
+  questXp?: number;
+}) {
+  const data = load();
+  const list = data.newUser ? ONBOARDING_TASKS : ONGOING_TASKS;
+  for (const t of list) {
+    let done = false;
+    switch (t.id) {
+      case "profile":
+        done = !!events.hasProfile;
+        break;
+      case "first-lesson":
+        done = !!events.lessonDone;
+        break;
+      case "practice":
+        done = !!events.practiceDone;
+        break;
+      case "interpreter":
+        done = !!events.interpreterUsed;
+        break;
+      case "quest":
+      case "quest-xp":
+        done = (events.questXp ?? 0) >= 50;
+        break;
+      default:
+        done = data.completed[t.id];
+    }
+    if (done) data.completed[t.id] = true;
+  }
+  save(data);
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(TASKS_UPDATED_EVENT));
+  }
+}

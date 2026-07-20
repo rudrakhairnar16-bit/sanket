@@ -7,7 +7,7 @@ import { getTodayIST } from "@/lib/utils";
 import SignPractice from "@/components/SignPractice";
 import CertificateGenerator from "@/components/CertificateGenerator";
 import { loadGame, getLevelProgress } from "@/lib/game-storage";
-import { getTasks, completeTask } from "@/lib/tasks";
+import { getTasks, completeTask, autoCompleteTasks, TASKS_UPDATED_EVENT } from "@/lib/tasks";
 
 interface ModuleData {
   _id: string;
@@ -46,6 +46,16 @@ export default function DashboardPage() {
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const game = loadGame();
+    autoCompleteTasks({
+      hasProfile: !!(user.name && user.department),
+      lessonDone: streak?.totalCompleted ? streak.totalCompleted > 0 : false,
+      questXp: game.xp,
+    });
+  }, [user, streak]);
 
   async function loadData() {
     try {
@@ -127,6 +137,11 @@ export default function DashboardPage() {
         if (data.milestone) {
           setTimeout(() => setMilestoneCert(data.milestone), 1000);
         }
+        autoCompleteTasks({
+          hasProfile: !!(user?.name && user?.department),
+          lessonDone: true,
+          questXp: loadGame().xp,
+        });
         refreshUser();
       } else {
         setError(data.error || "Submission failed");
@@ -225,6 +240,12 @@ export default function DashboardPage() {
           onComplete={() => {
             setPracticeDone(true);
             setShowPractice(false);
+            autoCompleteTasks({
+              hasProfile: !!(user?.name && user?.department),
+              lessonDone: streak?.totalCompleted ? streak.totalCompleted > 0 : false,
+              practiceDone: true,
+              questXp: loadGame().xp,
+            });
           }}
         />
       ) : completedToday && result ? (
@@ -583,6 +604,9 @@ function TasksCard() {
 
   useEffect(() => {
     setState(getTasks());
+    const handler = () => setState(getTasks());
+    window.addEventListener(TASKS_UPDATED_EVENT, handler);
+    return () => window.removeEventListener(TASKS_UPDATED_EVENT, handler);
   }, []);
 
   function handleComplete(id: string) {

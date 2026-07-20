@@ -68,3 +68,13 @@ export function mockToPublic(user: MockUser) {
     isChampion: user.isChampion,
   };
 }
+
+export function updateMockProfile(
+  id: string,
+  data: { name?: string; department?: string }
+): void {
+  const user = DEMO_USERS.find((u) => u.id === id);
+  if (!user) return;
+  if (data.name) user.name = data.name;
+  if (data.department) user.department = data.department;
+}

@@ -88,6 +88,18 @@ export default function DashboardLayout({
               >
                 Leaderboard
               </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                    pathname.startsWith("/admin")
+                      ? "bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300"
+                      : "text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-900/30"
+                  }`}
+                >
+                  ⚙ Admin
+                </Link>
+              )}
             </div>
 
             <div className="flex items-center gap-3">
@@ -145,6 +157,15 @@ export default function DashboardLayout({
               >
                 Leaderboard
               </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-2 rounded-xl text-sm font-medium text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30"
+                >
+                  ⚙ Admin
+                </Link>
+              )}
               <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2 px-4">
                 <p className="text-sm text-gray-500 dark:text-gray-400">{user.name}</p>
                 <p className="text-xs text-gray-400 dark:text-gray-500">{user.department}</p>
