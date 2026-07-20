@@ -141,10 +141,13 @@ export default function CalibratePage() {
           });
 
           if (isRecording) {
-            for (const hand of result.landmarks) {
-              landmarkBuffer.current.push(hand);
+            // Only record frames with the correct hand count for this sign
+            if (result.landmarks.length === currentSign.handCount) {
+              for (const hand of result.landmarks) {
+                landmarkBuffer.current.push(hand);
+              }
+              setSampleCount((prev) => prev + result.landmarks.length);
             }
-            setSampleCount((prev) => prev + result.landmarks.length);
           }
         } else {
           setHandCount(0);
@@ -170,6 +173,18 @@ export default function CalibratePage() {
 
   const stopRecording = () => {
     setIsRecording(false);
+    // Only save samples that match the expected hand count for this sign
+    const validSamples = landmarkBuffer.current.filter((hand) => {
+      // We don't know which hand is which, so we check if the total
+      // landmarks in buffer per frame matches expected handCount
+      // Simpler: if sign needs 2 hands, ensure we have enough samples
+      return true; // We'll filter by hand count at frame level instead
+    });
+    
+    // Count frames with correct hand count
+    let validFrameCount = 0;
+    // We can't easily separate frames here, so use a different approach
+    // Just check total samples and if we got enough
     if (landmarkBuffer.current.length > 30) {
       classifier.addMultipleSamples(currentSign.id, landmarkBuffer.current);
       localStorage.setItem("sanket-knn-samples", classifier.serialize());
