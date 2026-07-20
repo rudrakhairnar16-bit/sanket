@@ -296,6 +296,13 @@ export default function LoginPage() {
               Play ISL Quest
               <span className="text-sm opacity-60">(Free)</span>
             </Link>
+            <Link
+              href="/curriculum"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm font-medium transition-all backdrop-blur border border-white/10"
+            >
+              <span>📋</span>
+              View 12-Week Curriculum
+            </Link>
             <p className="text-xs text-primary-300/60">
               {hasGameData
                 ? "Continue your learning journey — no login needed"

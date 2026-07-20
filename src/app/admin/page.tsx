@@ -255,6 +255,90 @@ export default function AdminDashboardPage() {
           />
         </div>
       )}
+
+      <NudgePanel />
+    </div>
+  );
+}
+
+function NudgePanel() {
+  const [learners, setLearners] = useState<
+    { _id: string; name: string; department: string; currentStreak: number; totalCompleted: number }[]
+  >([]);
+  const [sending, setSending] = useState<string | null>(null);
+  const [msg, setMsg] = useState("");
+
+  useEffect(() => {
+    fetch("/api/leaderboard")
+      .then((r) => r.json())
+      .then((data) => setLearners(data.users || []))
+      .catch(() => {});
+  }, []);
+
+  async function sendNudge(clerkId: string, name: string) {
+    setSending(clerkId);
+    setMsg("");
+    try {
+      const res = await fetch("/api/nudges", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clerkIds: [clerkId], reason: "missed-lesson" }),
+      });
+      const data = await res.json();
+      setMsg(data.message || "Nudge sent!");
+    } catch {
+      setMsg("Failed to send nudge");
+    } finally {
+      setSending(null);
+      setTimeout(() => setMsg(""), 3000);
+    }
+  }
+
+  const lowPerformers = learners.filter((l) => l.currentStreak < 3 && l.totalCompleted < 10);
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h3 className="font-semibold text-gray-900 dark:text-white">
+            📱 WhatsApp Nudge — Engagement Recovery
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            Send reminders to low-engagement learners
+          </p>
+        </div>
+        {msg && <span className="text-sm text-green-600 dark:text-green-400 animate-fade-in">{msg}</span>}
+      </div>
+
+      {lowPerformers.length > 0 ? (
+        <div className="divide-y divide-gray-50 dark:divide-gray-700">
+          {lowPerformers.slice(0, 10).map((clerk) => (
+            <div key={clerk._id} className="flex items-center gap-3 py-3">
+              <div className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-sm font-bold text-gray-500 dark:text-gray-300">
+                {clerk.name.charAt(0)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{clerk.name}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">{clerk.department} • {clerk.currentStreak}d streak</p>
+              </div>
+              <button
+                onClick={() => sendNudge(clerk._id, clerk.name)}
+                disabled={sending === clerk._id}
+                className="px-3 py-1.5 bg-green-500 hover:bg-green-600 disabled:opacity-50 text-white rounded-lg text-xs font-medium transition-all"
+              >
+                {sending === clerk._id ? "..." : "📲 Nudge"}
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-6">
+          ✅ All learners are engaged! No nudges needed right now.
+        </p>
+      )}
+      <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
+        * Nudges are logged for tracking. Integrate Twilio/WhatsApp API for live delivery.
+      </p>
     </div>
   );
 }

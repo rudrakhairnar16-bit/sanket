@@ -1,0 +1,14 @@
+{
+  "name": "Sanket - ISL for Sarkari Clerks",
+  "short_name": "Sanket",
+  "description": "Learn Indian Sign Language (ISL) — a civic tech platform for government clerks",
+  "start_url": "/learn",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "orientation": "portrait",
+  "categories": ["education", "government"],
+  "icons": [
+    { "src": "/icon-192.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

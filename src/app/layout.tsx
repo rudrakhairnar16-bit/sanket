@@ -9,6 +9,13 @@ export const metadata: Metadata = {
   title: "Sanket - ISL for Sarkari Clerks",
   description:
     "A civic tech platform for government clerks to learn Indian Sign Language (ISL)",
+  manifest: "/manifest.json",
+  themeColor: "#6366f1",
+  appleWebApp: { capable: true, title: "Sanket", statusBarStyle: "default" },
+  icons: [
+    { rel: "icon", url: "/favicon.ico" },
+    { rel: "apple-touch-icon", url: "/icon-192.png" },
+  ],
 };
 
 export default function RootLayout({
@@ -26,6 +33,11 @@ export default function RootLayout({
                 var d = JSON.parse(localStorage.getItem("isl-quest-data") || "{}");
                 if (d.darkMode) document.documentElement.classList.add("dark");
               } catch(e) {}
+              if ("serviceWorker" in navigator) {
+                window.addEventListener("load", function() {
+                  navigator.serviceWorker.register("/sw.js");
+                });
+              }
             `,
           }}
         />

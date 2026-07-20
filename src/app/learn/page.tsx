@@ -177,14 +177,14 @@ function HomeScreen({
     day: "numeric",
     month: "long",
   });
-  const [lang, setLangState] = useState<"en" | "hi">("en");
+  const [lang, setLangState] = useState<"en" | "hi" | "mr">("en");
 
   useEffect(() => {
     setLangState(loadLang());
   }, []);
 
   function toggleLang() {
-    const next = lang === "en" ? "hi" : "en";
+    const next = lang === "en" ? "hi" : lang === "hi" ? "mr" : "en";
     setLangState(next);
     setLang(next);
   }
@@ -211,7 +211,7 @@ function HomeScreen({
             onClick={toggleLang}
             className="px-2 py-1 text-xs rounded-lg border border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
           >
-            {lang === "en" ? "हिंदी" : "EN"}
+            {lang === "en" ? "हिंदी" : lang === "hi" ? "मराठी" : "EN"}
           </button>
         </div>
         <div className="flex items-center gap-2">
@@ -314,6 +314,24 @@ function HomeScreen({
           </span>
         </button>
       </div>
+
+      <Link
+        href="/curriculum"
+        className="flex items-center gap-3 glass rounded-2xl p-4 mb-4 hover:shadow-md transition-all group"
+      >
+        <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shrink-0">
+          <span className="text-lg font-bold text-white">📋</span>
+        </div>
+        <div className="flex-1">
+          <p className="font-semibold text-gray-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
+            12-Week ISL Curriculum
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Structured learning path for public servants
+          </p>
+        </div>
+        <span className="text-gray-300 dark:text-gray-600 text-lg">→</span>
+      </Link>
 
       <button
         onClick={() => onNavigate("badges")}

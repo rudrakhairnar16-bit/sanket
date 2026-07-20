@@ -75,7 +75,9 @@ export const HI: Record<string, string> = {
   "Your admin hasn't added any modules yet.": "आपके प्रशासक ने अभी तक कोई मॉड्यूल नहीं जोड़ा है।",
 };
 
-export type Lang = "en" | "hi";
+import { MR } from "./mr";
+
+export type Lang = "en" | "hi" | "mr";
 
 let currentLang: Lang = "en";
 
@@ -89,10 +91,12 @@ export function setLang(lang: Lang) {
 export function loadLang(): Lang {
   if (typeof window === "undefined") return "en";
   const saved = localStorage.getItem("isl-lang") as Lang | null;
-  return saved || "en";
+  if (saved === "hi" || saved === "mr") return saved;
+  return "en";
 }
 
 export function t(key: string): string {
   if (currentLang === "hi" && HI[key]) return HI[key];
+  if (currentLang === "mr" && MR[key]) return MR[key];
   return key;
 }
