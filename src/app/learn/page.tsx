@@ -366,6 +366,23 @@ function HomeScreen({
         </div>
         <span className="text-gray-300 dark:text-gray-600 text-lg">→</span>
       </Link>
+      <Link
+        href="/interpreter"
+        className="flex items-center gap-3 glass rounded-2xl p-4 mb-4 hover:shadow-md transition-all group border-2 border-primary-200 dark:border-primary-800"
+      >
+        <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shrink-0 animate-pulse">
+          <span className="text-lg font-bold text-white">🤟</span>
+        </div>
+        <div className="flex-1">
+          <p className="font-semibold text-gray-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
+            Live ISL Interpreter
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Real-time sign-to-text &amp; two-way communication
+          </p>
+        </div>
+        <span className="text-gray-300 dark:text-gray-600 text-lg">→</span>
+      </Link>
 
       <button
         onClick={() => onNavigate("badges")}
