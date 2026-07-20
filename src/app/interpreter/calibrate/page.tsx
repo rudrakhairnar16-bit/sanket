@@ -8,7 +8,7 @@ import {
   MUNICIPAL_SIGNS,
   SIGN_MAP,
   getLocalizedName,
-  CATEGORY_LABELS,
+  textToISL,
 } from "@/data/municipal-signs";
 import Link from "next/link";
 
@@ -332,6 +332,23 @@ export default function TwoWayInterpreterPage() {
                 >
                   🔊 Speak to Citizen
                 </button>
+              )}
+              {clerkText && textToISL(clerkText, lang).length > 0 && (
+                <div className="mt-4 bg-gradient-to-br from-purple-600/30 to-indigo-600/30 border border-purple-400/30 rounded-2xl p-4">
+                  <p className="text-xs text-purple-200 mb-2">👋 SHOWN TO DEAF CITIZEN (ISL Symbols)</p>
+                  <div className="flex flex-wrap gap-2">
+                    {textToISL(clerkText, lang).map((t, i) => (
+                      <span
+                        key={i}
+                        className="flex items-center gap-1.5 px-3 py-2 bg-slate-900/70 rounded-xl border border-white/10"
+                        title={t.label}
+                      >
+                        <span className="text-2xl">{t.symbol}</span>
+                        <span className="text-xs text-slate-300">{t.label}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           </div>
