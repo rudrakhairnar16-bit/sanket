@@ -224,19 +224,19 @@ export default function SignPractice({
 
   return (
     <div className="space-y-4 animate-fade-in">
-      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="font-semibold text-gray-900">
+            <h3 className="font-semibold text-gray-900 dark:text-white">
               Practice Sign: {targetSign}
             </h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Show the sign to your camera
             </p>
           </div>
           <div className="text-center">
             <span className="text-4xl block">{targetRef.icon}</span>
-            <span className="text-xs text-gray-400 mt-1 block">
+            <span className="text-xs text-gray-400 dark:text-gray-300 mt-1 block">
               {targetRef.description}
             </span>
           </div>
@@ -300,18 +300,18 @@ export default function SignPractice({
         {status === "practicing" && (
           <div className="mt-4">
             <div className="flex items-center gap-4 mb-3">
-              <div className="flex-1 bg-gray-100 rounded-full h-2.5 overflow-hidden">
+              <div className="flex-1 bg-gray-100 dark:bg-gray-600 rounded-full h-2.5 overflow-hidden">
                 <div
                   className="h-full gradient-primary rounded-full transition-all duration-300"
                   style={{ width: `${Math.min(accuracy, 100)}%` }}
                 />
               </div>
-              <span className="text-sm font-medium text-gray-600 w-12 text-right">
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400 w-12 text-right">
                 {accuracy}%
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {targetSign === "Namaste"
                   ? "🙏 Bring both palms together"
                   : targetRef.hint}
@@ -319,7 +319,7 @@ export default function SignPractice({
               <div className="flex gap-2">
                 <button
                   onClick={skip}
-                  className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl"
+                  className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-xl"
                 >
                   Skip
                 </button>
@@ -329,9 +329,9 @@ export default function SignPractice({
         )}
 
         {status === "success" && (
-          <div className="mt-4 bg-green-50 border border-green-200 rounded-2xl p-4 text-center animate-scale-in">
+          <div className="mt-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-2xl p-4 text-center animate-scale-in">
             <span className="text-3xl block mb-2">🎉</span>
-            <p className="text-green-700 font-semibold">
+            <p className="text-green-700 dark:text-green-300 font-semibold">
               Sign recognized! Great job!
             </p>
           </div>

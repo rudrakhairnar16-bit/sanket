@@ -70,22 +70,22 @@ export default function AdminQRPage() {
   return (
     <div className="space-y-6 animate-fade-in pb-8">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
           QR Code Generator
         </h1>
-        <p className="text-gray-500 mt-1">
+        <p className="text-gray-500 mt-1 dark:text-gray-400">
           Generate citizen feedback QR codes for each desk
         </p>
       </div>
 
-      <div className="bg-gradient-to-br from-primary-50 to-indigo-50 border border-primary-200 rounded-3xl p-6">
+      <div className="bg-gradient-to-br from-primary-50 to-indigo-50 border border-primary-200 rounded-3xl p-6 dark:from-gray-800 dark:to-gray-800 dark:border-gray-700">
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 rounded-2xl bg-primary-100 flex items-center justify-center shrink-0">
             <span className="text-2xl">📋</span>
           </div>
           <div>
-            <h3 className="font-semibold text-primary-800">How it works</h3>
-            <p className="text-primary-600 text-sm mt-1">
+            <h3 className="font-semibold text-primary-800 dark:text-primary-300">How it works</h3>
+            <p className="text-primary-600 text-sm mt-1 dark:text-primary-400">
               Print these QR codes and place them at each desk. Citizens scan
               with their phone to answer: &ldquo;Did this staff member try to
               use sign language?&rdquo;
@@ -95,16 +95,16 @@ export default function AdminQRPage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 text-sm p-4 rounded-2xl">{error}</div>
+        <div className="bg-red-50 text-red-600 text-sm p-4 rounded-2xl dark:bg-red-900/20 dark:text-red-400">{error}</div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.length > 0 ? filtered.map((learner) => (
           <div
             key={learner._id}
-            className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-md transition-shadow"
+            className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700"
           >
-            <div className="w-32 h-32 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden">
+            <div className="w-32 h-32 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden dark:bg-gray-700">
               {selected === learner.username ? (
                 <img
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(getQRUrl(learner.username))}`}
@@ -112,7 +112,7 @@ export default function AdminQRPage() {
                   className="w-full h-full object-contain"
                 />
               ) : (
-                <div className="text-center text-gray-400">
+                <div className="text-center text-gray-400 dark:text-gray-500">
                   <span className="text-3xl block">📱</span>
                   <span className="text-xs mt-1 block">
                     Click to preview
@@ -120,8 +120,8 @@ export default function AdminQRPage() {
                 </div>
               )}
             </div>
-            <h3 className="font-semibold text-gray-900">{learner.name}</h3>
-            <p className="text-sm text-gray-500">{learner.department}</p>
+            <h3 className="font-semibold text-gray-900 dark:text-white">{learner.name}</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{learner.department}</p>
             <div className="flex gap-2 mt-3 justify-center">
               <button
                 onClick={() =>
@@ -129,22 +129,22 @@ export default function AdminQRPage() {
                     selected === learner.username ? null : learner.username
                   )
                 }
-                className="px-4 py-2 text-sm text-primary-600 hover:bg-primary-50 rounded-xl transition-all"
+                className="px-4 py-2 text-sm text-primary-600 hover:bg-primary-50 rounded-xl transition-all dark:hover:bg-primary-900/20"
               >
                 {selected === learner.username ? "Hide" : "Preview"}
               </button>
               <button
                 onClick={() => downloadQR(learner.username)}
-                className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl transition-all"
+                className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-xl transition-all dark:text-gray-400 dark:hover:bg-gray-700"
               >
                 Download
               </button>
             </div>
           </div>
         )) : (
-          <div className="col-span-full text-center py-16 text-gray-400">
+          <div className="col-span-full text-center py-16 text-gray-400 dark:text-gray-500">
             <div className="text-6xl mb-4">👥</div>
-            <p className="text-gray-500">No learners found</p>
+            <p className="text-gray-500 dark:text-gray-400">No learners found</p>
           </div>
         )}
       </div>

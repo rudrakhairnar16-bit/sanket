@@ -106,48 +106,48 @@ export default function EditModulePage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6 animate-fade-in pb-8">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
           Edit Module
         </h1>
-        <p className="text-gray-500 mt-1">{form.title}</p>
+        <p className="text-gray-500 mt-1 dark:text-gray-400">{form.title}</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-5">
+      <form onSubmit={handleSubmit} className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-5 dark:bg-gray-800 dark:border-gray-700">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Lesson Title
           </label>
           <input
             type="text"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Video URL
           </label>
           <input
             type="url"
             value={form.videoUrl}
             onChange={(e) => setForm({ ...form, videoUrl: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Quiz Question
           </label>
           <input
             type="text"
             value={form.question}
             onChange={(e) => setForm({ ...form, question: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
             required
           />
         </div>
@@ -155,7 +155,7 @@ export default function EditModulePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {form.options.map((opt, i) => (
             <div key={i}>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
                 Option {String.fromCharCode(65 + i)}
               </label>
               <input
@@ -166,7 +166,7 @@ export default function EditModulePage() {
                   opts[i] = e.target.value;
                   setForm({ ...form, options: opts });
                 }}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
                 placeholder={i < 2 ? `Option ${String.fromCharCode(65 + i)}` : "Optional"}
               />
             </div>
@@ -174,13 +174,13 @@ export default function EditModulePage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Correct Answer
           </label>
           <select
             value={form.correctAnswer}
             onChange={(e) => setForm({ ...form, correctAnswer: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none bg-white"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
             required
           >
             <option value="">Select correct answer</option>
@@ -193,14 +193,14 @@ export default function EditModulePage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Display Order
           </label>
           <input
             type="number"
             value={form.order}
             onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 1 })}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
             min={1}
           />
         </div>
@@ -213,13 +213,13 @@ export default function EditModulePage() {
               onChange={(e) => setForm({ ...form, active: e.target.checked })}
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500" />
-            <span className="ml-3 text-sm text-gray-700">Active</span>
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500 dark:bg-gray-600" />
+            <span className="ml-3 text-sm text-gray-700 dark:text-gray-300">Active</span>
           </label>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 text-sm p-4 rounded-2xl animate-slide-down">
+          <div className="bg-red-50 text-red-600 text-sm p-4 rounded-2xl animate-slide-down dark:bg-red-900/20 dark:text-red-400">
             {error}
           </div>
         )}
@@ -235,7 +235,7 @@ export default function EditModulePage() {
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-6 py-3.5 text-gray-600 hover:bg-gray-100 rounded-xl font-medium transition-all"
+            className="px-6 py-3.5 text-gray-600 hover:bg-gray-100 rounded-xl font-medium transition-all dark:text-gray-400 dark:hover:bg-gray-700"
           >
             Cancel
           </button>

@@ -63,53 +63,53 @@ export default function NewModulePage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6 animate-fade-in pb-8">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
           New Module
         </h1>
-        <p className="text-gray-500 mt-1">Create a new ISL lesson</p>
+        <p className="text-gray-500 mt-1 dark:text-gray-400">Create a new ISL lesson</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-5">
+      <form onSubmit={handleSubmit} className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-5 dark:bg-gray-800 dark:border-gray-700">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Lesson Title
           </label>
           <input
             type="text"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
             placeholder="e.g., Sign: Thank You"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Video URL
           </label>
           <input
             type="url"
             value={form.videoUrl}
             onChange={(e) => setForm({ ...form, videoUrl: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
             placeholder="https://res.cloudinary.com/.../video.mp4"
             required
           />
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-gray-400 mt-1 dark:text-gray-500">
             Upload to Cloudinary and paste the URL
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Quiz Question
           </label>
           <input
             type="text"
             value={form.question}
             onChange={(e) => setForm({ ...form, question: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
             placeholder="What does this sign mean?"
             required
           />
@@ -117,65 +117,65 @@ export default function NewModulePage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
               Option A
             </label>
             <input
               type="text"
               value={form.optionA}
               onChange={(e) => setForm({ ...form, optionA: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
               placeholder="Option A"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
               Option B
             </label>
             <input
               type="text"
               value={form.optionB}
               onChange={(e) => setForm({ ...form, optionB: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
               placeholder="Option B"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
               Option C
             </label>
             <input
               type="text"
               value={form.optionC}
               onChange={(e) => setForm({ ...form, optionC: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
               placeholder="Option C (optional)"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
               Option D
             </label>
             <input
               type="text"
               value={form.optionD}
               onChange={(e) => setForm({ ...form, optionD: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
               placeholder="Option D (optional)"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Correct Answer
           </label>
           <select
             value={form.correctAnswer}
             onChange={(e) => setForm({ ...form, correctAnswer: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none bg-white"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600"
             required
           >
             <option value="">Select correct answer</option>
@@ -190,21 +190,21 @@ export default function NewModulePage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
             Display Order
           </label>
           <input
             type="number"
             value={form.order}
             onChange={(e) => setForm({ ...form, order: parseInt(e.target.value) || 1 })}
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600"
             min={1}
             required
           />
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-600 text-sm p-4 rounded-2xl animate-slide-down">
+          <div className="bg-red-50 text-red-600 text-sm p-4 rounded-2xl animate-slide-down dark:bg-red-900/20 dark:text-red-400">
             {error}
           </div>
         )}
@@ -220,7 +220,7 @@ export default function NewModulePage() {
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-6 py-3.5 text-gray-600 hover:bg-gray-100 rounded-xl font-medium transition-all"
+            className="px-6 py-3.5 text-gray-600 hover:bg-gray-100 rounded-xl font-medium transition-all dark:text-gray-400 dark:hover:bg-gray-700"
           >
             Cancel
           </button>

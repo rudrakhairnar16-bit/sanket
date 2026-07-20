@@ -59,6 +59,12 @@ Sanket makes ISL training frictionless — **3 minutes a day**, integrated into 
 - First sign "Namaste" auto-assigned (not random)
 - Progress tracking for onboarding completion
 
+### 🔄 Game Progress Sync
+- Logged-in users' ISL Quest progress auto-syncs to MongoDB
+- Leaderboard shows both daily lesson streaks and ISL Quest XP
+- Data merges across devices (takes max XP on conflict)
+- "Save Progress" button in dashboard for manual sync
+
 ---
 
 ## Tech Stack
@@ -162,6 +168,12 @@ curl -X POST http://localhost:3000/api/admin/seed
 | Spaced repetition | ✅ Real | 2-3 day window for wrong-answer review |
 | PDF certificate | ✅ Real | jsPDF-generated with streak info |
 | QR code generation | ⚠️ Partially real | QR links to live form; print-ready download provided |
+| Hindi bilingual UI | ✅ Real | 70+ translation map across all learner screens |
+| Dark mode | ✅ Real | Tailwind `dark:class` — toggle on learn page, dashboard, admin |
+| ISL Dictionary (search) | ✅ Real | 35 signs searchable by name/meaning with category filter |
+| Sound effects | ✅ Real | Web Audio API tones for quiz correct/incorrect |
+| ISL Quest leaderboard | ✅ Real | XP-based ranking with top-7 display |
+| Game progress sync | ✅ Real | Auto-syncs to MongoDB for logged-in users |
 | WhatsApp/SMS nudge | ❌ Planned | Pitch mentions this as next step; not implemented |
 | Video content | ⚠️ Placeholder | Demo uses placeholder video URLs. Real content should use ISLRTC dictionary |
 
@@ -181,13 +193,17 @@ All ISL sign content is curated from the **Indian Sign Language Research and Tra
 
 ## Live Demo
 
-**Deployed at:** `https://sanket.vercel.app` (after Vercel deploy)
+**Deployed at:** [https://sanket.vercel.app](https://sanket.vercel.app)
 
 | Login | URL |
 |-------|-----|
 | Clerk Dashboard | `/dashboard` |
 | Admin Panel | `/admin` |
-| ISL Quest (Public) | `/learn` — no login required |
+| ISL Quest (Public) | `/learn` |
+| Citizen Feedback | `/feedback/[username]` |
+| Playground (guest) | `/login` → click "Play ISL Quest" |
+
+> **Tip:** Visit `/learn` first to try ISL Quest without logging in! 🎮
 
 ---
 

@@ -131,23 +131,23 @@ export default function CertificateGenerator({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center animate-scale-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 dark:bg-black/70 backdrop-blur-sm animate-fade-in">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 max-w-md w-full text-center animate-scale-in">
         <div className="text-6xl mb-4">🏆</div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
           {streak}-Day Milestone!
         </h2>
-        <p className="text-gray-500 mb-6">
+        <p className="text-gray-500 dark:text-gray-400 mb-6">
           Congratulations {name}! You&apos;ve earned a certificate for your{" "}
           {streak}-day learning streak.
         </p>
 
-        <div className="bg-gradient-to-br from-amber-50 to-yellow-50 border border-amber-200 rounded-2xl p-4 mb-6">
-          <div className="flex items-center justify-center gap-2 text-amber-700">
+        <div className="bg-gradient-to-br from-amber-50 dark:from-amber-900/30 to-yellow-50 dark:to-yellow-900/30 border border-amber-200 dark:border-amber-700 rounded-2xl p-4 mb-6">
+          <div className="flex items-center justify-center gap-2 text-amber-700 dark:text-amber-300">
             <span className="text-2xl">🔥</span>
             <span className="font-bold text-xl">{streak} Day Streak</span>
           </div>
-          <p className="text-amber-600 text-sm mt-1">{department}</p>
+          <p className="text-amber-600 dark:text-amber-400 text-sm mt-1">{department}</p>
         </div>
 
         <div className="flex gap-3">
@@ -160,13 +160,13 @@ export default function CertificateGenerator({
           </button>
           <button
             onClick={onClose}
-            className="px-6 py-3.5 text-gray-600 hover:bg-gray-100 rounded-xl font-medium transition-all"
+            className="px-6 py-3.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-xl font-medium transition-all"
           >
             Close
           </button>
         </div>
 
-        <p className="text-xs text-gray-400 mt-4">
+        <p className="text-xs text-gray-400 dark:text-gray-500 mt-4">
           Content attribution: ISLRTC, Ministry of Social Justice &
           Empowerment, Govt. of India
         </p>
