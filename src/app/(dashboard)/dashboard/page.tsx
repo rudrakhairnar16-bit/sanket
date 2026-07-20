@@ -165,10 +165,10 @@ export default function DashboardPage() {
     <div className="space-y-6 animate-fade-in pb-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
             {completedToday ? "Great work today! 🎉" : "Today's Lesson"}
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
             {getTodayIST()} • {user?.department}
           </p>
         </div>
@@ -180,14 +180,14 @@ export default function DashboardPage() {
       </div>
 
       {streak && streak.totalCompleted === 0 && !completedToday && (
-        <div className="bg-gradient-to-br from-primary-50 to-indigo-50 border border-primary-200 rounded-3xl p-6 animate-slide-down">
+        <div className="bg-gradient-to-br from-primary-50 to-indigo-50 dark:from-primary-950/50 dark:to-indigo-950/50 border border-primary-200 dark:border-primary-800 rounded-3xl p-6 animate-slide-down">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 rounded-2xl gradient-primary flex items-center justify-center shrink-0 shadow-lg">
               <span className="text-2xl">👋</span>
             </div>
             <div>
-              <h2 className="text-lg font-bold text-primary-900">Welcome to Sanket!</h2>
-              <p className="text-primary-700 text-sm mt-1">
+              <h2 className="text-lg font-bold text-primary-900 dark:text-primary-200">Welcome to Sanket!</h2>
+              <p className="text-primary-700 dark:text-primary-300 text-sm mt-1">
                 Complete your first lesson below to start your ISL learning journey.
               </p>
               <div className="flex gap-3 mt-3">
@@ -720,10 +720,10 @@ function StatCard({
   icon: string;
 }) {
   return (
-    <div className="bg-gray-50 rounded-2xl p-4 text-center">
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 text-center">
       <span className="text-2xl block mb-1">{icon}</span>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-      <p className="text-xs text-gray-500">{label}</p>
+      <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+      <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
     </div>
   );
 }
