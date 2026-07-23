@@ -928,6 +928,18 @@ function PracticeScreen({
     if (knn && knn.length > 20) {
       classifier.deserialize(knn);
       setHasSamples(classifier.getSignCount() > 0);
+    } else {
+      // Load baseline model if no user model exists
+      fetch("/models/sanket-knn-baseline.json")
+        .then((res) => res.text())
+        .then((json) => {
+          if (json && json.length > 2) {
+            classifier.deserialize(json);
+            localStorage.setItem("sanket-knn-samples", json);
+            setHasSamples(classifier.getSignCount() > 0);
+          }
+        })
+        .catch(() => {});
     }
   }, []);
 
@@ -1186,34 +1198,102 @@ function PracticeScreen({
                 ? <>Capturing <strong className="text-orange-600 dark:text-orange-300">{ALL_SIGNS.find((s) => s.id === trainSignId)?.name}</strong> — hold the sign to camera ~1.5s…</>
                 : "Select a sign to train:"}
             </p>
+            <p className="text-xs text-amber-600 dark:text-amber-400 mb-2">
+              Need {classifier.getMinSamplesPerSign()}+ samples per sign before recognition works
+            </p>
             <div className="flex flex-wrap gap-2">
-              {webcamSignList.map((sign) => (
-                <button
-                  key={sign.id}
-                  onClick={() => setTrainSignId(sign.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs transition-all border ${
-                    trainSignId === sign.id
-                      ? "bg-orange-500 text-white border-orange-400"
-                      : "bg-white dark:bg-primary-950 hover:bg-primary-50 dark:hover:bg-primary-900 border-primary-200 dark:border-primary-800 text-primary-600 dark:text-primary-300"
-                  }`}
-                >
-                  {sign.icon} {sign.name}
-                </button>
-              ))}
+              {webcamSignList.map((sign) => {
+                const samplesPerSign = classifier.getSamplesPerSign();
+                const count = samplesPerSign[sign.id] || 0;
+                const minSamples = classifier.getMinSamplesPerSign();
+                const progress = Math.min(count / minSamples, 1);
+                const isReady = count >= minSamples;
+                return (
+                  <button
+                    key={sign.id}
+                    onClick={() => setTrainSignId(sign.id)}
+                    className={`px-3 py-2 rounded-xl text-xs transition-all border flex flex-col items-center gap-1 ${
+                      trainSignId === sign.id
+                        ? "bg-orange-500 text-white border-orange-400"
+                        : isReady
+                        ? "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-300 text-emerald-700 dark:text-emerald-300"
+                        : "bg-white dark:bg-primary-950 hover:bg-primary-50 dark:hover:bg-primary-900 border-primary-200 dark:border-primary-800 text-primary-600 dark:text-primary-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1">
+                      {sign.icon} {sign.name}
+                      {isReady && <span className="text-xs">✓</span>}
+                    </div>
+                    <div className="w-24 h-1.5 bg-primary-100 dark:bg-primary-800 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all ${
+                          isReady ? "bg-emerald-500" : "bg-orange-500"
+                        }`}
+                        style={{ width: `${progress * 100}%` }}
+                      />
+                    </div>
+                    <span className="text-[10px]">
+                      {count}/{minSamples}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
             {trainCount > 0 && (
-              <button
-                onClick={() => {
-                  classifier.reset();
-                  localStorage.removeItem("sanket-knn-samples");
-                  setHasSamples(false);
-                  setTrainCount(0);
-                  setTrainSignId(null);
-                }}
-                className="mt-3 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-300 rounded-xl text-xs transition-all"
-              >
-                Reset All Training
-              </button>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  onClick={() => {
+                    const json = classifier.serialize();
+                    const blob = new Blob([json], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "sanket-knn-model.json";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-300 rounded-xl text-xs transition-all hover:bg-emerald-200 dark:hover:bg-emerald-900/60"
+                >
+                  📤 Export Model
+                </button>
+                <label className="px-3 py-1.5 bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-300 rounded-xl text-xs cursor-pointer transition-all hover:bg-primary-200 dark:hover:bg-primary-900/60 flex items-center gap-1">
+                  📥 Import Model
+                  <input
+                    type="file"
+                    accept=".json"
+                    className="sr-only"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = (ev) => {
+                        try {
+                          classifier.deserialize(ev.target?.result as string);
+                          localStorage.setItem("sanket-knn-samples", classifier.serialize());
+                          setHasSamples(classifier.getSignCount() > 0);
+                          setTrainCount(classifier.getSampleCount());
+                        } catch {
+                          alert("Invalid model file");
+                        }
+                      };
+                      reader.readAsText(file);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+                <button
+                  onClick={() => {
+                    classifier.reset();
+                    localStorage.removeItem("sanket-knn-samples");
+                    setHasSamples(false);
+                    setTrainCount(0);
+                    setTrainSignId(null);
+                  }}
+                  className="px-3 py-1.5 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-300 rounded-xl text-xs transition-all hover:bg-red-200 dark:hover:bg-red-900/60"
+                >
+                  Reset All Training
+                </button>
+              </div>
             )}
           </div>
         )}
@@ -1260,7 +1340,7 @@ function PracticeScreen({
         )}
 
         {(status === "loading" || status === "ready" || status === "practicing") && (
-          <div className="relative aspect-video bg-gray-900 rounded-2xl overflow-hidden">
+          <div className="relative aspect-video bg-primary-900 rounded-2xl overflow-hidden">
             <video
               ref={videoRef}
               autoPlay
@@ -1274,7 +1354,7 @@ function PracticeScreen({
             />
 
             {status === "loading" && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80">
+              <div className="absolute inset-0 flex items-center justify-center bg-primary-900/80">
                 <div className="text-center">
                   <div className="w-10 h-10 rounded-full border-4 border-primary-200 border-t-primary-600 animate-spin mx-auto mb-3" />
                   <p className="text-white/80 text-sm">{t("Starting camera...")}</p>

@@ -79,6 +79,7 @@ export class KNNClassifier {
   private readonly historySize = 15;
   private readonly k = 3;
   private readonly minConfidence = 0.55;
+  private readonly minSamplesPerSign = 5; // Minimum samples needed before a sign is recognized
 
   addSample(signId: string, landmarks: Landmark[]) {
     const features = normalizeLandmarks(landmarks);
@@ -105,6 +106,9 @@ export class KNNClassifier {
     let bestScore = 0;
 
     for (const [signId, refs] of Array.from(this.samples.entries())) {
+      // Skip signs with insufficient training samples
+      if (refs.length < this.minSamplesPerSign) continue;
+      
       let totalSim = 0;
       const count = Math.min(refs.length, 5); // Use up to 5 nearest refs
       const sims = refs.map((ref) => cosineSimilarity(features, ref));
@@ -162,6 +166,18 @@ export class KNNClassifier {
 
   getSignCount(): number {
     return this.samples.size;
+  }
+
+  getSamplesPerSign(): Record<string, number> {
+    const result: Record<string, number> = {};
+    for (const [id, refs] of Array.from(this.samples.entries())) {
+      result[id] = refs.length;
+    }
+    return result;
+  }
+
+  getMinSamplesPerSign(): number {
+    return this.minSamplesPerSign;
   }
 
   getHistorySize(): number {

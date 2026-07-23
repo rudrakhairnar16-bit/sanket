@@ -457,35 +457,103 @@ export default function TwoWayInterpreterPage() {
                 "Select a sign to train:"
               )}
             </p>
+            <p className="text-xs text-amber-400 mb-2">
+              Need {classifier.getMinSamplesPerSign()}+ samples per sign before recognition works
+            </p>
             <div className="flex flex-wrap gap-2">
-              {MUNICIPAL_SIGNS.map((sign) => (
-                <button
-                  key={sign.id}
-                  onClick={() => setTrainSignId(sign.id)}
-                  className={`px-3 py-2 rounded-xl text-sm transition-all border ${
-                    trainSignId === sign.id
-                      ? "bg-emerald-500 text-white border-emerald-400"
-                      : "bg-slate-800 hover:bg-slate-700 border-white/10 text-slate-300"
-                  }`}
-                >
-                  {sign.icon} {getLocalizedName(sign, lang)}
-                </button>
-              ))}
+              {MUNICIPAL_SIGNS.map((sign) => {
+                const samplesPerSign = classifier.getSamplesPerSign();
+                const count = samplesPerSign[sign.id] || 0;
+                const minSamples = classifier.getMinSamplesPerSign();
+                const progress = Math.min(count / minSamples, 1);
+                const isReady = count >= minSamples;
+                return (
+                  <button
+                    key={sign.id}
+                    onClick={() => setTrainSignId(sign.id)}
+                    className={`px-3 py-2 rounded-xl text-sm transition-all border flex flex-col items-center gap-1 ${
+                      trainSignId === sign.id
+                        ? "bg-emerald-500 text-white border-emerald-400"
+                        : isReady
+                        ? "bg-emerald-900/30 border-emerald-500/50 text-emerald-300"
+                        : "bg-slate-800 hover:bg-slate-700 border-white/10 text-slate-300"
+                    }`}
+                  >
+                    <div className="flex items-center gap-1">
+                      {sign.icon} {getLocalizedName(sign, lang)}
+                      {isReady && <span className="text-xs">✓</span>}
+                    </div>
+                    <div className="w-24 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all ${
+                          isReady ? "bg-emerald-500" : "bg-amber-500"
+                        }`}
+                        style={{ width: `${progress * 100}%` }}
+                      />
+                    </div>
+                    <span className="text-[10px] text-slate-400">
+                      {count}/{minSamples}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
 
             {trainCount > 0 && (
-              <button
-                onClick={() => {
-                  classifier.reset();
-                  localStorage.removeItem("sanket-knn-samples");
-                  setHasSamples(false);
-                  setTrainCount(0);
-                  setTrainSignId(null);
-                }}
-                className="mt-4 px-4 py-2 bg-red-900/40 hover:bg-red-900/60 text-red-300 rounded-xl text-sm transition-all"
-              >
-                Reset All Training
-              </button>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button
+                  onClick={() => {
+                    const json = classifier.serialize();
+                    const blob = new Blob([json], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "sanket-knn-model.json";
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  }}
+                  className="px-4 py-2 bg-emerald-900/40 hover:bg-emerald-900/60 text-emerald-300 rounded-xl text-sm transition-all"
+                >
+                  📤 Export Model
+                </button>
+                <label className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-white/10 text-slate-300 rounded-xl text-sm cursor-pointer transition-all flex items-center gap-1">
+                  📥 Import Model
+                  <input
+                    type="file"
+                    accept=".json"
+                    className="sr-only"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = (ev) => {
+                        try {
+                          classifier.deserialize(ev.target?.result as string);
+                          localStorage.setItem("sanket-knn-samples", classifier.serialize());
+                          setHasSamples(classifier.getSignCount() > 0);
+                          setTrainCount(classifier.getSampleCount());
+                        } catch {
+                          alert("Invalid model file");
+                        }
+                      };
+                      reader.readAsText(file);
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+                <button
+                  onClick={() => {
+                    classifier.reset();
+                    localStorage.removeItem("sanket-knn-samples");
+                    setHasSamples(false);
+                    setTrainCount(0);
+                    setTrainSignId(null);
+                  }}
+                  className="px-4 py-2 bg-red-900/40 hover:bg-red-900/60 text-red-300 rounded-xl text-sm transition-all"
+                >
+                  Reset All Training
+                </button>
+              </div>
             )}
           </div>
         )}
