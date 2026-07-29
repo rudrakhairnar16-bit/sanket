@@ -98,15 +98,24 @@ export function addXP(state: GameState, amount: number): GameState {
 
 export function updateStreak(state: GameState): GameState {
   const today = new Date().toISOString().split("T")[0];
-  if (state.lastPracticeDate === today) return state;
+  if (state.lastPracticeDate === today) {
+    const streakXP = state.streak >= 2 ? Math.min(state.streak * 2, 50) : 0;
+    if (streakXP <= 0) return state;
+    const result = addXP(state, streakXP);
+    return { ...result, streak: state.streak, lastPracticeDate: state.lastPracticeDate };
+  }
 
   const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
   const newStreak = state.lastPracticeDate === yesterday ? state.streak + 1 : 1;
-  const newBadges = [...state.badges];
+  let newBadges = [...state.badges];
+
+  const bonus = getStreakBonus(newStreak);
+  let xpGain = newStreak * 2;
+  if (bonus > 0) xpGain += bonus;
 
   if (newStreak > state.streak && newStreak >= 2) {
     import("./notify").then((m) =>
-      m.notify(`${newStreak}-day streak!`, { body: `Come back tomorrow to keep your streak alive!` })
+      m.notify(`${newStreak}-day streak!`, { body: bonus > 0 ? `Bonus +${bonus} XP earned!` : `Come back tomorrow to keep your streak alive!` })
     );
   }
 
@@ -114,7 +123,9 @@ export function updateStreak(state: GameState): GameState {
   if (newStreak >= 7 && !newBadges.includes("streak-7")) newBadges.push("streak-7");
   if (newStreak >= 30 && !newBadges.includes("streak-30")) newBadges.push("streak-30");
 
-  return { ...state, streak: newStreak, lastPracticeDate: today, badges: newBadges };
+  let stateWithXp: GameState = { ...state, streak: newStreak, lastPracticeDate: today, badges: newBadges };
+  stateWithXp = addXP(stateWithXp, xpGain);
+  return stateWithXp;
 }
 
 export function completeSign(state: GameState, signId: string): GameState {
@@ -167,4 +178,28 @@ const ALL_SIGNS_COUNT = 35;
 export function getAccuracy(state: GameState): number {
   if (state.totalAttempted === 0) return 0;
   return Math.round((state.totalCorrect / state.totalAttempted) * 100);
+}
+
+const STREAK_MILESTONES = [
+  { streak: 3, bonus: 30, badge: "streak-3" },
+  { streak: 7, bonus: 70, badge: "streak-7" },
+  { streak: 14, bonus: 150, badge: null },
+  { streak: 21, bonus: 250, badge: null },
+  { streak: 30, bonus: 500, badge: "streak-30" },
+  { streak: 60, bonus: 1000, badge: null },
+  { streak: 100, bonus: 2000, badge: null },
+];
+
+export function getStreakBonus(streak: number): number {
+  for (let i = STREAK_MILESTONES.length - 1; i >= 0; i--) {
+    if (streak >= STREAK_MILESTONES[i].streak) return STREAK_MILESTONES[i].bonus;
+  }
+  return 0;
+}
+
+export function getNextStreakMilestone(streak: number): { next: number; bonus: number } | null {
+  for (const m of STREAK_MILESTONES) {
+    if (streak < m.streak) return { next: m.streak, bonus: m.bonus };
+  }
+  return null;
 }
