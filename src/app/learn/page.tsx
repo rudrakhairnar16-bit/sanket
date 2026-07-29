@@ -103,8 +103,8 @@ export default function LearnPage() {
 
   if (!game) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-50 flex items-center justify-center">
-        <div className="w-12 h-12 rounded-full border-4 border-primary-200 border-t-primary-600 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full border-2 border-primary-500/30 border-t-primary-500 animate-spin" />
       </div>
     );
   }
@@ -113,7 +113,7 @@ export default function LearnPage() {
   const accuracy = getAccuracy(game);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-50">
+    <div>
       {screen === "home" && (
         <HomeScreen
           game={game}
@@ -199,19 +199,18 @@ function HomeScreen({
   }
 
   return (
-    <div className={`max-w-4xl mx-auto px-4 py-6 ${animateIn}`}>
-      <div className="flex items-center justify-between mb-6">
+    <div className={`max-w-2xl mx-auto px-4 py-6 ${animateIn}`}>
+      <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           <Link
             href="/login"
-            className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 flex items-center gap-1 transition-all"
+            className="text-xs text-surface-400 hover:text-surface-300 transition-all"
           >
             ← {t("Login")}
           </Link>
           <button
             onClick={toggleLang}
-            className="px-2 py-1 text-xs rounded-lg border border-primary-200 dark:border-primary-700
-          text-primary-500 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900 transition-all"
+            className="btn-ghost text-[10px] px-2 py-0.5"
           >
             {lang === "en" ? "हिंदी" : lang === "hi" ? "मराठी" : "EN"}
           </button>
@@ -219,45 +218,48 @@ function HomeScreen({
         <div className="flex items-center gap-2">
           <button
             onClick={toggleDark}
-            className="px-2 py-1 text-xs rounded-lg border border-primary-200 dark:border-primary-700
-          text-primary-500 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900 transition-all"
+            className="btn-ghost text-[10px] px-2 py-0.5"
           >
-            {game.darkMode ? "☀️" : "🌙"}
+            {game.darkMode ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+            )}
           </button>
           <Link
             href="/dashboard"
-            className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 flex items-center gap-1 transition-all"
+            className="text-xs text-surface-400 hover:text-surface-300 transition-all"
           >
             {t("Clerk Dashboard")} →
           </Link>
         </div>
       </div>
 
-      <div className="glass rounded-3xl p-6 mb-6">
-        <div className="flex items-center justify-between mb-4">
+      <div className="surface-card p-5 mb-5">
+        <div className="flex items-center justify-between mb-3">
           <div>
-            <p className="text-xs text-primary-400 uppercase tracking-wide">ISL Quest</p>
-            <h1 className="text-2xl font-bold text-primary-900 mt-0.5">
+            <p className="text-[10px] text-primary-400 uppercase tracking-wider">ISL Quest</p>
+            <h1 className="text-xl font-bold text-surface-900 dark:text-white mt-0.5">
               Learn Indian Sign Language
             </h1>
-            <p className="text-sm text-primary-500 mt-0.5">{today}</p>
+            <p className="text-xs text-surface-500 mt-0.5">{today}</p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold text-primary-600">Lv.{game.level}</div>
-            <p className="text-xs text-primary-400">{game.xp} XP</p>
+            <div className="text-2xl font-bold text-primary-400">Lv.{game.level}</div>
+            <p className="text-[10px] text-surface-500">{game.xp} XP</p>
           </div>
         </div>
 
-        <div className="bg-white/60 rounded-2xl p-4 mb-4">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-primary-500 font-medium">
+        <div className="bg-surface-50 dark:bg-surface-800/50 rounded-xl p-3 mb-3">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] text-surface-500 font-medium">
               Level {game.level} → {game.level + 1}
             </span>
-            <span className="text-xs text-primary-400">
+            <span className="text-[10px] text-surface-500">
               {progress.current} / {progress.next} XP
             </span>
           </div>
-          <div className="w-full bg-primary-200 rounded-full h-2.5 overflow-hidden">
+          <div className="w-full bg-surface-200 dark:bg-surface-700 rounded-full h-2 overflow-hidden">
             <div
               className="h-full gradient-primary rounded-full transition-all duration-500"
               style={{ width: `${Math.min(progress.progress, 100)}%` }}
@@ -265,54 +267,57 @@ function HomeScreen({
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-3">
-          <StatBox icon="🔥" value={game.streak} label="Day Streak" />
-          <StatBox icon="🎯" value={`${accuracy}%`} label="Accuracy" />
-          <StatBox icon="🏆" value={game.badges.length} label="Badges" />
-          <StatBox icon="✅" value={game.completedSigns.length} label="Learned" />
+        <div className="grid grid-cols-4 gap-2">
+          <StatBox value={game.streak} label="Day Streak" />
+          <StatBox value={`${accuracy}%`} label="Accuracy" />
+          <StatBox value={game.badges.length} label="Badges" />
+          <StatBox value={game.completedSigns.length} label="Learned" />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
         <ModeCard
-          icon="🃏"
           title="Flashcards"
           description="Flip cards to learn signs and their meanings"
-          color="from-primary-500 to-primary-700"
+          color="from-primary-600 to-primary-800"
           onClick={() => onNavigate("flashcards")}
-        />
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </ModeCard>
         <ModeCard
-          icon="🧠"
           title="Quiz Challenge"
           description="Test your knowledge with quick quizzes"
-          color="from-emerald-500 to-teal-600"
+          color="from-emerald-600 to-teal-700"
           onClick={() => onNavigate("quiz")}
-        />
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </ModeCard>
         <ModeCard
-          icon="📸"
           title="Webcam Practice"
           description="Use your camera to practice real signs"
-          color="from-orange-500 to-orange-700"
+          color="from-orange-600 to-orange-800"
           onClick={() => onNavigate("practice")}
-        />
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </ModeCard>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      <div className="grid grid-cols-2 gap-2 mb-5">
         <button
           onClick={() => onNavigate("dictionary")}
-          className="glass rounded-2xl p-4 text-center hover:shadow-md transition-all"
+          className="surface-card p-3.5 text-center hover:shadow-btn transition-all flex items-center justify-center gap-2"
         >
-          <span className="text-2xl block mb-1">📖</span>
-          <span className="text-sm font-medium text-primary-600 dark:text-primary-300">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-400"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+          <span className="text-xs font-medium text-surface-700 dark:text-surface-300">
             {t("ISL Dictionary") || "ISL Dictionary"}
           </span>
         </button>
         <button
           onClick={() => onNavigate("leaderboard")}
-          className="glass rounded-2xl p-4 text-center hover:shadow-md transition-all"
+          className="surface-card p-3.5 text-center hover:shadow-btn transition-all flex items-center justify-center gap-2"
         >
-          <span className="text-2xl block mb-1">🏆</span>
-          <span className="text-sm font-medium text-primary-600 dark:text-primary-300">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-400"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
+          <span className="text-xs font-medium text-surface-700 dark:text-surface-300">
             {t("Leaderboard")}
           </span>
         </button>
@@ -320,84 +325,85 @@ function HomeScreen({
 
       <Link
         href="/curriculum"
-        className="flex items-center gap-3 glass rounded-2xl p-4 mb-2 hover:shadow-md transition-all group"
+        className="flex items-center gap-3 surface-card p-3.5 mb-1.5 hover:shadow-btn transition-all group"
       >
-        <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shrink-0">
-          <span className="text-lg font-bold text-white">📋</span>
+        <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center shrink-0 shadow-glow-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
         </div>
         <div className="flex-1">
-          <p className="font-semibold text-primary-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
+          <p className="font-semibold text-surface-900 dark:text-white text-xs group-hover:text-primary-400 transition-colors">
             12-Week ISL Curriculum
           </p>
-          <p className="text-xs text-primary-500 dark:text-primary-400">
+          <p className="text-[10px] text-surface-500">
             Structured learning path for public servants
           </p>
         </div>
-        <span className="text-primary-300 dark:text-primary-700 text-lg">→</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-surface-400"><polyline points="9 18 15 12 9 6"/></svg>
       </Link>
       <Link
         href="/roadmap"
-        className="flex items-center gap-3 glass rounded-2xl p-4 mb-2 hover:shadow-md transition-all group"
+        className="flex items-center gap-3 surface-card p-3.5 mb-1.5 hover:shadow-btn transition-all group"
       >
-        <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shrink-0">
-          <span className="text-lg font-bold text-white">🗺️</span>
+        <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center shrink-0 shadow-glow-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
         <div className="flex-1">
-          <p className="font-semibold text-primary-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
+          <p className="font-semibold text-surface-900 dark:text-white text-xs group-hover:text-primary-400 transition-colors">
             Scalability Roadmap
           </p>
-          <p className="text-xs text-primary-500 dark:text-primary-400">
+          <p className="text-[10px] text-surface-500">
             Pilot → City → State → National rollout plan
           </p>
         </div>
-        <span className="text-primary-300 dark:text-primary-700 text-lg">→</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-surface-400"><polyline points="9 18 15 12 9 6"/></svg>
       </Link>
       <Link
         href="/policy"
-        className="flex items-center gap-3 glass rounded-2xl p-4 mb-4 hover:shadow-md transition-all group"
+        className="flex items-center gap-3 surface-card p-3.5 mb-1.5 hover:shadow-btn transition-all group"
       >
-        <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shrink-0">
-          <span className="text-lg font-bold text-white">📄</span>
+        <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center shrink-0 shadow-glow-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         </div>
         <div className="flex-1">
-          <p className="font-semibold text-primary-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
+          <p className="font-semibold text-surface-900 dark:text-white text-xs group-hover:text-primary-400 transition-colors">
             Policy Whitepaper
           </p>
-          <p className="text-xs text-primary-500 dark:text-primary-400">
+          <p className="text-[10px] text-surface-500">
             Municipal adoption blueprint aligned with RPwD Act 2016
           </p>
         </div>
-        <span className="text-primary-300 dark:text-primary-700 text-lg">→</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-surface-400"><polyline points="9 18 15 12 9 6"/></svg>
       </Link>
       <Link
         href="/interpreter"
-        className="flex items-center gap-3 glass rounded-2xl p-4 mb-4 hover:shadow-md transition-all group border-2 border-primary-200 dark:border-primary-800"
+        className="flex items-center gap-3 surface-card p-3.5 mb-3 hover:shadow-btn transition-all group border border-primary-500/20"
       >
-        <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shrink-0 animate-pulse">
-          <span className="text-lg font-bold text-white">🤟</span>
+        <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center shrink-0 shadow-glow-primary animate-pulse">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
         </div>
         <div className="flex-1">
-          <p className="font-semibold text-primary-900 dark:text-white text-sm group-hover:text-primary-600 transition-colors">
+          <p className="font-semibold text-surface-900 dark:text-white text-xs group-hover:text-primary-400 transition-colors">
             Live ISL Interpreter
           </p>
-          <p className="text-xs text-primary-500 dark:text-primary-400">
+          <p className="text-[10px] text-surface-500">
             Real-time sign-to-text &amp; two-way communication
           </p>
         </div>
-        <span className="text-primary-300 dark:text-primary-700 text-lg">→</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-surface-400"><polyline points="9 18 15 12 9 6"/></svg>
       </Link>
 
       <button
         onClick={() => onNavigate("badges")}
-        className="w-full glass rounded-2xl p-4 text-center hover:shadow-md transition-all"
+        className="w-full surface-card p-3.5 text-center hover:shadow-btn transition-all flex items-center justify-center gap-2"
       >
-        <span className="text-sm font-medium text-primary-600 dark:text-primary-300">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-400"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+        <span className="text-xs font-medium text-surface-700 dark:text-surface-300">
           {t("View All Badges")} ({game.badges.length}/{BADGES.length})
         </span>
       </button>
 
-      <div className="mt-4 p-4 bg-white/40 rounded-2xl text-center">
-        <p className="text-xs text-primary-400">
+      <div className="mt-4 p-3 rounded-xl text-center bg-surface-50 dark:bg-surface-800/50">
+        <p className="text-[10px] text-surface-500">
           Content sourced from ISLRTC, Ministry of Social Justice & Empowerment, Govt. of India
         </p>
       </div>
@@ -406,46 +412,45 @@ function HomeScreen({
 }
 
 function StatBox({
-  icon,
   value,
   label,
 }: {
-  icon: string;
   value: string | number;
   label: string;
 }) {
   return (
-    <div className="bg-white dark:bg-primary-950 rounded-2xl p-3 text-center">
-      <span className="text-xl block mb-0.5">{icon}</span>
-      <p className="text-lg font-bold text-primary-900 dark:text-white">{value}</p>
-      <p className="text-xs text-primary-400 dark:text-primary-400">{t(label) || label}</p>
+    <div className="bg-surface-50 dark:bg-surface-800/50 rounded-xl p-2.5 text-center">
+      <p className="text-base font-bold text-surface-900 dark:text-white">{value}</p>
+      <p className="text-[10px] text-surface-500">{t(label) || label}</p>
     </div>
   );
 }
 
 function ModeCard({
-  icon,
   title,
   description,
   color,
   onClick,
+  children,
 }: {
-  icon: string;
   title: string;
   description: string;
   color: string;
   onClick: () => void;
+  children: React.ReactNode;
 }) {
   return (
     <button
       onClick={onClick}
-      className="group relative overflow-hidden rounded-3xl p-6 text-white text-left hover:shadow-xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+      className="group relative overflow-hidden rounded-xl p-5 text-white text-left hover:shadow-glow transition-all hover:scale-[1.02] active:scale-[0.98]"
     >
       <div className={`absolute inset-0 bg-gradient-to-br ${color}`} />
       <div className="relative">
-        <span className="text-4xl block mb-3">{icon}</span>
-        <h3 className="text-lg font-bold mb-1">{t(title) || title}</h3>
-        <p className="text-sm text-white/80">{t(description) || description}</p>
+        <div className="w-10 h-10 rounded-lg bg-white/15 backdrop-blur-sm flex items-center justify-center mb-3">
+          {children}
+        </div>
+        <h3 className="text-sm font-bold mb-0.5">{t(title) || title}</h3>
+        <p className="text-xs text-white/70">{t(description) || description}</p>
       </div>
     </button>
   );
@@ -518,18 +523,19 @@ function FlashcardScreen({
   if (!currentSign || allDone) {
     return (
       <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
-        <div className="bg-white dark:bg-primary-950 rounded-3xl shadow-sm border border-primary-100
-          dark:border-primary-800 p-8 text-center">
-          <span className="text-6xl block mb-4">🎉</span>
-          <h2 className="text-2xl font-bold text-primary-900 dark:text-white mb-2">
+        <div className="surface-card p-8 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-primary flex items-center justify-center shadow-glow-primary">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h2 className="text-xl font-bold text-surface-900 dark:text-white mb-1">
             {t("All Categories Done!")}
           </h2>
-          <p className="text-primary-500 dark:text-primary-400 mb-6">
+          <p className="text-surface-500 text-sm mb-5">
             {t("You reviewed")} {knownCount} {t("signs. Keep practicing daily!")}
           </p>
           <button
             onClick={onBack}
-            className="px-6 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all"
+            className="btn-primary"
           >
             {t("Back to Home")}
           </button>
@@ -540,20 +546,20 @@ function FlashcardScreen({
 
   return (
     <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-5">
         <button
           onClick={onBack}
-          className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 transition-all"
+          className="btn-ghost text-xs"
         >
           ← {t("Exit")}
         </button>
-        <span className="text-xs text-primary-400 dark:text-primary-400">
+        <span className="text-[10px] text-surface-500">
           {t(category.name)} • {signIndex + 1}/{signs.length}
         </span>
       </div>
 
       <div
-        className="cursor-pointer perspective-[1000px] mb-6"
+        className="cursor-pointer perspective-[1000px] mb-5"
         onClick={() => setFlipped(!flipped)}
         style={{ perspective: "1000px" }}
       >
@@ -562,80 +568,79 @@ function FlashcardScreen({
           style={{
             transformStyle: "preserve-3d",
             transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)",
-            minHeight: "320px",
+            minHeight: "300px",
           }}
         >
           <div
-            className="absolute inset-0 bg-white dark:bg-primary-950 rounded-3xl shadow-lg border border-primary-100
-           dark:border-primary-800 p-8 flex flex-col items-center justify-center text-center"
+            className="absolute inset-0 surface-card p-6 flex flex-col items-center justify-center text-center"
             style={{ backfaceVisibility: "hidden" }}
           >
-            <span className="text-7xl mb-4">{currentSign.icon}</span>
-            <h2 className="text-2xl font-bold text-primary-900 dark:text-white mb-2">
+            <span className="text-6xl mb-3">{currentSign.icon}</span>
+            <h2 className="text-xl font-bold text-surface-900 dark:text-white mb-1">
               {currentSign.name}
             </h2>
-            <p className="text-primary-400 dark:text-primary-400 text-sm">{t("Tap to reveal meaning")}</p>
+            <p className="text-surface-500 text-xs">{t("Tap to reveal meaning")}</p>
           </div>
 
           <div
-            className="bg-white dark:bg-primary-950 rounded-3xl shadow-lg border border-primary-200 dark:border-primary-800 p-8 flex flex-col items-center justify-center text-center"
+            className="surface-card p-6 flex flex-col items-center justify-center text-center"
             style={{
               backfaceVisibility: "hidden",
               transform: "rotateY(180deg)",
-              minHeight: "320px",
+              minHeight: "300px",
             }}
           >
-            <span className="text-6xl mb-4">💡</span>
-            <h2 className="text-2xl font-bold text-primary-700 dark:text-primary-300 mb-2">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-accent/20 flex items-center justify-center">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <h2 className="text-xl font-bold text-accent-300 mb-1">
               {currentSign.meaning}
             </h2>
             {currentSign.hint && (
-              <p className="text-primary-500 dark:text-primary-400 text-sm mt-2">
-                💬 {currentSign.hint}
+              <p className="text-surface-500 text-xs mt-1">
+                {currentSign.hint}
               </p>
             )}
             {currentSign.webcamSupported && (
-              <span className="mt-3 px-3 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs rounded-full font-medium">
-                📸 {t("Webcam practice available")}
+              <span className="mt-2 px-2.5 py-0.5 bg-emerald-500/15 text-emerald-400 text-[10px] rounded-lg font-medium">
+                {t("Webcam practice available")}
               </span>
             )}
           </div>
         </div>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex gap-2">
         <button
           onClick={skipSign}
-          className="flex-1 px-6 py-3 bg-white dark:bg-primary-950 border border-primary-200
-          dark:border-primary-700 text-primary-600 dark:text-primary-300 rounded-xl font-medium hover:bg-primary-50
-          dark:hover:bg-primary-900 transition-all"
+          className="btn-secondary flex-1 text-xs"
         >
           {t("Skip")}
         </button>
         <button
           onClick={markKnown}
-          className="flex-1 px-6 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all shadow-lg"
+          className="btn-primary flex-1 text-xs"
         >
           ✓ {t("I Know This")}
         </button>
       </div>
 
-      <div className="mt-4 flex justify-center gap-1.5">
+      <div className="mt-3 flex justify-center gap-1">
         {signs.map((_, i) => (
           <div
             key={i}
-            className={`w-2 h-2 rounded-full transition-all ${
+            className={`w-1.5 h-1.5 rounded-full transition-all ${
               i === signIndex
-                ? "bg-primary-500 w-4"
+                ? "bg-primary-500 w-3"
                 : i < signIndex
-                ? "bg-green-400"
-                : "bg-primary-200"
+                ? "bg-emerald-500"
+                : "bg-surface-300 dark:bg-surface-700"
             }`}
           />
         ))}
       </div>
 
-      <p className="text-xs text-primary-400 text-center mt-4">
+      <p className="text-[10px] text-surface-500 text-center mt-3">
         +15 XP per sign • Tap card to flip
       </p>
     </div>
@@ -720,28 +725,31 @@ function QuizScreen({
     const pct = Math.round((correctCount / total) * 100);
     return (
       <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
-        <div className="bg-white dark:bg-primary-950 rounded-3xl shadow-lg border border-primary-100
-          dark:border-primary-800 p-8 text-center">
-          {pct >= 80 ? (
-            <span className="text-7xl block mb-4">🏆</span>
-          ) : pct >= 50 ? (
-            <span className="text-6xl block mb-4">💪</span>
-          ) : (
-            <span className="text-6xl block mb-4">📚</span>
-          )}
-          <h2 className="text-2xl font-bold text-primary-900 dark:text-white mb-2">
+        <div className="surface-card p-8 text-center">
+          <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center shadow-glow ${
+            pct >= 80 ? "gradient-primary" : pct >= 50 ? "gradient-accent" : "bg-surface-100 dark:bg-surface-800"
+          }`}>
+            {pct >= 80 ? (
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            ) : pct >= 50 ? (
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+            ) : (
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-surface-500"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+            )}
+          </div>
+          <h2 className="text-xl font-bold text-surface-900 dark:text-white mb-1">
             {t(pct >= 80 ? "Outstanding!" : pct >= 50 ? "Good Effort!" : "Keep Practicing!")}
           </h2>
-          <p className="text-primary-500 dark:text-primary-400 mb-6">
+          <p className="text-surface-500 text-sm mb-4">
             {t("You scored")} {correctCount}/{total} {t("across")} {CATEGORIES.length} {t("categories")}
           </p>
-          <p className="text-3xl font-bold text-primary-600 mb-6">
+          <p className="text-2xl font-bold text-primary-400 mb-2">
             {pct}% Accuracy
           </p>
-          <p className="text-sm text-primary-400 mb-6">+{score} XP earned</p>
+          <p className="text-xs text-surface-500 mb-5">+{score} XP earned</p>
           <button
             onClick={onBack}
-            className="px-6 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all shadow-lg"
+            className="btn-primary"
           >
             Back to Home
           </button>
@@ -753,9 +761,9 @@ function QuizScreen({
   if (!q) {
     return (
       <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in text-center">
-        <p className="text-primary-500 mb-4">Not enough signs in this category.</p>
-        <button onClick={onBack} className="text-primary-600 hover:underline">
-          Go back
+        <p className="text-surface-500 text-sm mb-3">Not enough signs in this category.</p>
+        <button onClick={onBack} className="btn-ghost text-xs">
+          ← Go back
         </button>
       </div>
     );
@@ -763,66 +771,65 @@ function QuizScreen({
 
   return (
     <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-5">
         <button
           onClick={onBack}
-          className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 transition-all"
+          className="btn-ghost text-xs"
         >
           ← {t("Exit")}
         </button>
-        <span className="text-xs text-primary-400 dark:text-primary-400">
+        <span className="text-[10px] text-surface-500">
           {t(category.name)} • Q{questionIndex + 1}/{quizData.length}
         </span>
       </div>
 
-      <div className="bg-white dark:bg-primary-950 rounded-3xl shadow-lg border border-primary-100
-           dark:border-primary-800 p-6 sm:p-8 mb-4">
-        <div className="text-center mb-6">
-          <span className="text-6xl block mb-3">{q.sign.icon}</span>
-          <h2 className="text-xl font-bold text-primary-900 dark:text-white">
+      <div className="surface-card p-5 mb-3">
+        <div className="text-center mb-5">
+          <span className="text-5xl block mb-2">{q.sign.icon}</span>
+          <h2 className="text-base font-bold text-surface-900 dark:text-white">
             {t("What does this sign mean?")}
           </h2>
-          <p className="text-sm text-primary-400 dark:text-primary-400 mt-1">
+          <p className="text-xs text-surface-500 mt-0.5">
             {t("Sign")}: {q.sign.name}
           </p>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2">
           {q.options.map((option, i) => (
             <button
               key={i}
               onClick={() => handleAnswer(option)}
               disabled={!!selected}
-              className={`w-full text-left p-4 rounded-2xl border-2 transition-all ${
+              className={`w-full text-left p-3.5 rounded-xl border transition-all ${
                 selected === option
                   ? option === q.sign.meaning
-                    ? "border-green-500 bg-green-50 shadow-md"
-                    : "border-red-500 bg-red-50 shadow-md"
+                    ? "border-emerald-500 bg-emerald-500/10 shadow-glow"
+                    : "border-red-500 bg-red-500/10"
                   : selected
                   ? option === q.sign.meaning
-                    ? "border-green-400 bg-green-50"
-                    : "border-primary-100 bg-primary-50 opacity-60"
-                  : "border-primary-100 bg-primary-50 hover:border-primary-200 hover:bg-primary-100"
+                    ? "border-emerald-400 bg-emerald-500/5"
+                    : "border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50 opacity-50"
+                  : "border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50 hover:border-surface-300 dark:hover:border-surface-600"
               }`}
             >
               <div className="flex items-center gap-3">
                 <div
-                  className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold ${
+                  className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
                     selected === option
                       ? option === q.sign.meaning
-                        ? "bg-green-500 text-white"
+                        ? "bg-emerald-500 text-white"
                         : "bg-red-500 text-white"
-                      : "bg-primary-200 text-primary-500"
+                      : "bg-surface-200 dark:bg-surface-700 text-surface-500"
                   }`}
                 >
                   {String.fromCharCode(65 + i)}
                 </div>
-                <span className="font-medium dark:text-white">{option}</span>
+                <span className="font-medium text-sm text-surface-700 dark:text-surface-300">{option}</span>
                 {selected && option === q.sign.meaning && (
-                  <span className="ml-auto text-green-600 dark:text-green-400 text-sm font-medium">✓</span>
+                  <span className="ml-auto text-emerald-400 text-xs font-medium">✓</span>
                 )}
                 {selected === option && option !== q.sign.meaning && (
-                  <span className="ml-auto text-red-600 dark:text-red-400 text-sm font-medium">✗</span>
+                  <span className="ml-auto text-red-400 text-xs font-medium">✗</span>
                 )}
               </div>
             </button>
@@ -831,31 +838,29 @@ function QuizScreen({
       </div>
 
       {selected && (
-        <div className="animate-slide-up">
+        <div className="animate-slide-up space-y-3">
           <div
-            className={`rounded-2xl p-4 mb-4 text-center ${
+            className={`rounded-xl p-3.5 text-center ${
               isCorrect
-                ? "bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800"
-                : "bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800"
+                ? "glass border-emerald-500/20"
+                : "glass border-red-500/20"
             }`}
           >
-            <p
-              className={`font-medium ${
-                isCorrect ? "text-green-700 dark:text-green-300" : "text-red-700 dark:text-red-300"
-              }`}
-            >
+            <p className={`font-medium text-sm ${
+              isCorrect ? "text-emerald-400" : "text-red-400"
+            }`}>
               {isCorrect
-                ? "✅ " + t("Correct") + "! +20 XP"
+                ? "✓ " + t("Correct") + "! +20 XP"
                 : `✗ ${t("The answer was")}: ${q.sign.meaning}`}
             </p>
-            <p className="text-xs text-primary-500 dark:text-primary-400 mt-1">{q.sign.hint}</p>
+            <p className="text-[10px] text-surface-500 mt-0.5">{q.sign.hint}</p>
             {q.sign.webcamSupported && (
-              <p className="text-xs text-green-600 dark:text-green-400 mt-1">📸 {t("Try with webcam!")}</p>
+              <p className="text-[10px] text-emerald-400 mt-0.5">{t("Try with webcam!")}</p>
             )}
           </div>
           <button
             onClick={nextQuestion}
-            className="w-full gradient-primary text-white py-4 rounded-2xl font-semibold hover:opacity-90 transition-all shadow-lg"
+            className="btn-primary w-full text-sm"
           >
             {questionIndex + 1 >= quizData.length &&
             categoryIndex + 1 >= CATEGORIES.length
@@ -865,22 +870,22 @@ function QuizScreen({
         </div>
       )}
 
-      <div className="flex justify-center gap-1.5 mt-4">
+      <div className="flex justify-center gap-1 mt-3">
         {quizData.slice(0, 5).map((_, i) => (
           <div
             key={i}
-            className={`w-2 h-2 rounded-full transition-all ${
+            className={`w-1.5 h-1.5 rounded-full transition-all ${
               i === questionIndex
-                ? "bg-primary-500 w-4"
+                ? "bg-primary-500 w-3"
                 : i < questionIndex
-                ? "bg-green-400"
-                : "bg-primary-200"
+                ? "bg-emerald-500"
+                : "bg-surface-300 dark:bg-surface-700"
             }`}
           />
         ))}
       </div>
 
-      <p className="text-xs text-primary-400 text-center mt-3">
+      <p className="text-[10px] text-surface-500 text-center mt-2">
         Score: {score} XP • {correctCount}/{questionIndex + (selected ? 1 : 0)} correct
       </p>
     </div>
@@ -1147,61 +1152,55 @@ function PracticeScreen({
 
   return (
     <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-5">
         <button
           onClick={() => { stopAll(); onBack(); }}
-          className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 transition-all"
+          className="btn-ghost text-xs"
         >
           ← {t("Exit")}
         </button>
         {status !== "idle" && (
           <button
             onClick={stopAll}
-            className="text-sm text-red-400 hover:text-red-600 dark:text-red-300 dark:hover:text-red-200 transition-all"
+            className="text-xs text-red-400 hover:text-red-300 transition-all"
           >
             {t("Restart")}
           </button>
         )}
       </div>
 
-      <div className="bg-white dark:bg-primary-950 rounded-3xl shadow-lg border border-primary-100
-           dark:border-primary-800 p-6 mb-4">
-        <div className="text-center mb-4">
-          <h2 className="text-lg font-bold text-primary-900 dark:text-white">{t("Webcam Practice")}</h2>
-          <p className="text-sm text-primary-500 dark:text-primary-400">
+      <div className="surface-card p-5 mb-3">
+        <div className="text-center mb-3">
+          <h2 className="text-base font-bold text-surface-900 dark:text-white">{t("Webcam Practice")}</h2>
+          <p className="text-xs text-surface-500">
             {t("Show the sign to your camera")}
           </p>
           <button
             onClick={() => { setTrainMode((v) => !v); setTrainSignId(null); }}
-            className={`mt-3 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-              trainMode
-                ? "bg-orange-500 text-white"
-                : "bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-300 hover:bg-primary-200 dark:hover:bg-primary-800"
-            }`}
+            className={`mt-2 btn-sm text-xs ${trainMode ? "btn-accent" : "btn-ghost"}`}
           >
-            🎯 {trainMode ? "Training ON" : "Train Model"}
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            {trainMode ? "Training ON" : "Train Model"}
           </button>
         </div>
 
         {trainMode && (
-          <div className="mb-4 bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-2xl p-4">
-            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-              <p className="text-sm font-semibold text-orange-600 dark:text-orange-300">
-                🎯 Train Sign Model
-              </p>
-              <span className="text-xs px-2.5 py-1 rounded-full bg-orange-100 dark:bg-orange-900 text-orange-600 dark:text-orange-300">
+          <div className="mb-3 glass border-accent/20 p-4">
+            <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
+              <p className="text-xs font-semibold text-accent-300">Train Sign Model</p>
+              <span className="text-[10px] px-2 py-0.5 rounded-lg bg-accent/10 text-accent-400">
                 {classifier.getSignCount()} signs • {trainCount} captures
               </span>
             </div>
-            <p className="text-xs text-primary-500 dark:text-primary-400 mb-2">
+            <p className="text-[10px] text-surface-500 mb-1">
               {trainSignId
-                ? <>Capturing <strong className="text-orange-600 dark:text-orange-300">{ALL_SIGNS.find((s) => s.id === trainSignId)?.name}</strong> — hold the sign to camera ~1.5s…</>
+                ? <>Capturing <strong className="text-accent-400">{ALL_SIGNS.find((s) => s.id === trainSignId)?.name}</strong> — hold the sign ~1.5s…</>
                 : "Select a sign to train:"}
             </p>
-            <p className="text-xs text-amber-600 dark:text-amber-400 mb-2">
+            <p className="text-[10px] text-amber-400 mb-2">
               Need {classifier.getMinSamplesPerSign()}+ samples per sign before recognition works
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
               {webcamSignList.map((sign) => {
                 const samplesPerSign = classifier.getSamplesPerSign();
                 const count = samplesPerSign[sign.id] || 0;
@@ -1212,86 +1211,34 @@ function PracticeScreen({
                   <button
                     key={sign.id}
                     onClick={() => setTrainSignId(sign.id)}
-                    className={`px-3 py-2 rounded-xl text-xs transition-all border flex flex-col items-center gap-1 ${
+                    className={`px-2.5 py-1.5 rounded-lg text-[10px] transition-all border flex flex-col items-center gap-0.5 ${
                       trainSignId === sign.id
-                        ? "bg-orange-500 text-white border-orange-400"
+                        ? "bg-accent text-white border-accent"
                         : isReady
-                        ? "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-300 text-emerald-700 dark:text-emerald-300"
-                        : "bg-white dark:bg-primary-950 hover:bg-primary-50 dark:hover:bg-primary-900 border-primary-200 dark:border-primary-800 text-primary-600 dark:text-primary-300"
+                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                        : "border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800"
                     }`}
                   >
-                    <div className="flex items-center gap-1">
-                      {sign.icon} {sign.name}
-                      {isReady && <span className="text-xs">✓</span>}
+                    <span>{sign.icon} {sign.name}</span>
+                    <div className="w-20 h-1 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+                      <div className={`h-full transition-all ${isReady ? "bg-emerald-500" : "bg-accent"}`} style={{ width: `${progress * 100}%` }} />
                     </div>
-                    <div className="w-24 h-1.5 bg-primary-100 dark:bg-primary-800 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full transition-all ${
-                          isReady ? "bg-emerald-500" : "bg-orange-500"
-                        }`}
-                        style={{ width: `${progress * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-[10px]">
-                      {count}/{minSamples}
-                    </span>
+                    <span className="text-[8px]">{count}/{minSamples}</span>
                   </button>
                 );
               })}
             </div>
             {trainCount > 0 && (
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button
-                  onClick={() => {
-                    const json = classifier.serialize();
-                    const blob = new Blob([json], { type: "application/json" });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = "sanket-knn-model.json";
-                    a.click();
-                    URL.revokeObjectURL(url);
-                  }}
-                  className="px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-300 rounded-xl text-xs transition-all hover:bg-emerald-200 dark:hover:bg-emerald-900/60"
-                >
-                  📤 Export Model
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                <button onClick={() => { const json = classifier.serialize(); const blob = new Blob([json], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "sanket-knn-model.json"; a.click(); URL.revokeObjectURL(url); }} className="btn-ghost text-[10px]">
+                  Export Model
                 </button>
-                <label className="px-3 py-1.5 bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-300 rounded-xl text-xs cursor-pointer transition-all hover:bg-primary-200 dark:hover:bg-primary-900/60 flex items-center gap-1">
-                  📥 Import Model
-                  <input
-                    type="file"
-                    accept=".json"
-                    className="sr-only"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      const reader = new FileReader();
-                      reader.onload = (ev) => {
-                        try {
-                          classifier.deserialize(ev.target?.result as string);
-                          localStorage.setItem("sanket-knn-samples", classifier.serialize());
-                          setHasSamples(classifier.getSignCount() > 0);
-                          setTrainCount(classifier.getSampleCount());
-                        } catch {
-                          alert("Invalid model file");
-                        }
-                      };
-                      reader.readAsText(file);
-                      e.target.value = "";
-                    }}
-                  />
+                <label className="btn-ghost text-[10px] cursor-pointer">
+                  Import Model
+                  <input type="file" accept=".json" className="sr-only" onChange={(e) => { const file = e.target.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = (ev) => { try { classifier.deserialize(ev.target?.result as string); localStorage.setItem("sanket-knn-samples", classifier.serialize()); setHasSamples(classifier.getSignCount() > 0); setTrainCount(classifier.getSampleCount()); } catch { alert("Invalid model file"); } }; reader.readAsText(file); e.target.value = ""; }} />
                 </label>
-                <button
-                  onClick={() => {
-                    classifier.reset();
-                    localStorage.removeItem("sanket-knn-samples");
-                    setHasSamples(false);
-                    setTrainCount(0);
-                    setTrainSignId(null);
-                  }}
-                  className="px-3 py-1.5 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-300 rounded-xl text-xs transition-all hover:bg-red-200 dark:hover:bg-red-900/60"
-                >
-                  Reset All Training
+                <button onClick={() => { classifier.reset(); localStorage.removeItem("sanket-knn-samples"); setHasSamples(false); setTrainCount(0); setTrainSignId(null); }} className="text-[10px] px-2 py-1 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all">
+                  Reset All
                 </button>
               </div>
             )}
@@ -1299,144 +1246,94 @@ function PracticeScreen({
         )}
 
         {status === "idle" && (
-          <div className="text-center py-8">
-            <span className="text-6xl block mb-4">📸</span>
-            <p className="text-primary-500 dark:text-primary-400 mb-2">{t("Choose a sign to practice:")}</p>
-            <select
-              value={selectedSign}
-              onChange={(e) => setSelectedSign(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-primary-200 dark:border-primary-700 mb-4 bg-white dark:bg-primary-950 dark:text-white"
-            >
-              {WEBCAM_SIGNS.map((name) => (
-                <option key={name} value={name}>{name}</option>
-              ))}
+          <div className="text-center py-6">
+            <div className="w-14 h-14 mx-auto mb-3 rounded-full gradient-primary flex items-center justify-center shadow-glow-primary">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            <p className="text-xs text-surface-500 mb-2">{t("Choose a sign to practice:")}</p>
+            <select value={selectedSign} onChange={(e) => setSelectedSign(e.target.value)} className="input-field w-full mb-3">
+              {WEBCAM_SIGNS.map((name) => (<option key={name} value={name}>{name}</option>))}
             </select>
             {signInfo && (
-              <div className="mb-4 p-3 bg-primary-50 dark:bg-primary-900 rounded-2xl">
-                <span className="text-3xl block mb-2">{signInfo.icon}</span>
-                <p className="text-sm text-primary-600 dark:text-primary-300">{signInfo.hint}</p>
+              <div className="mb-3 p-3 bg-surface-50 dark:bg-surface-800/50 rounded-xl">
+                <span className="text-2xl block mb-1">{signInfo.icon}</span>
+                <p className="text-xs text-surface-600 dark:text-surface-400">{signInfo.hint}</p>
               </div>
             )}
-            <button
-              onClick={startCamera}
-              className="px-8 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all shadow-lg"
-            >
-              {t("Start Camera")}
-            </button>
+            <button onClick={startCamera} className="btn-primary text-sm">{t("Start Camera")}</button>
           </div>
         )}
 
         {status === "error" && (
-          <div className="text-center py-8">
-            <span className="text-6xl block mb-4">😞</span>
-            <p className="text-red-600 dark:text-red-400 font-medium mb-2">{errorMsg}</p>
-            <button
-              onClick={startCamera}
-              className="px-6 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all shadow-lg"
-            >
-              {t("Try Again")}
-            </button>
+          <div className="text-center py-6">
+            <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-red-500/20 flex items-center justify-center">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2M9 9h.01M15 9h.01"/></svg>
+            </div>
+            <p className="text-red-400 text-sm font-medium mb-2">{errorMsg}</p>
+            <button onClick={startCamera} className="btn-primary text-sm">{t("Try Again")}</button>
           </div>
         )}
 
         {(status === "loading" || status === "ready" || status === "practicing") && (
-          <div className="relative aspect-video bg-primary-900 rounded-2xl overflow-hidden">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
-            />
-            <canvas
-              ref={canvasRef}
-              className="absolute inset-0 w-full h-full scale-x-[-1]"
-            />
-
+          <div className="relative aspect-video bg-primary-900 rounded-xl overflow-hidden">
+            <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover scale-x-[-1]" />
+            <canvas ref={canvasRef} className="absolute inset-0 w-full h-full scale-x-[-1]" />
             {status === "loading" && (
               <div className="absolute inset-0 flex items-center justify-center bg-primary-900/80">
                 <div className="text-center">
-                  <div className="w-10 h-10 rounded-full border-4 border-primary-200 border-t-primary-600 animate-spin mx-auto mb-3" />
-                  <p className="text-white/80 text-sm">{t("Starting camera...")}</p>
+                  <div className="w-8 h-8 rounded-full border-2 border-primary-500/30 border-t-primary-500 animate-spin mx-auto mb-2" />
+                  <p className="text-white/70 text-xs">{t("Starting camera...")}</p>
                 </div>
               </div>
             )}
-
             {status === "practicing" && (
-              <div className="absolute top-3 left-3 right-3 flex justify-between">
-                <span className="px-3 py-1.5 bg-black/50 text-white text-xs rounded-xl backdrop-blur">
-                  {handCount > 0 ? `${handCount} hand${handCount > 1 ? "s" : ""}` : "No hand"}
-                </span>
-                <span className="px-3 py-1.5 bg-black/50 text-white text-xs rounded-xl backdrop-blur">
-                  Target: {selectedSign}
-                </span>
+              <div className="absolute top-2 left-2 right-2 flex justify-between">
+                <span className="px-2 py-1 bg-black/50 text-white text-[10px] rounded-lg backdrop-blur-sm">{handCount > 0 ? `${handCount} hand${handCount > 1 ? "s" : ""}` : "No hand"}</span>
+                <span className="px-2 py-1 bg-black/50 text-white text-[10px] rounded-lg backdrop-blur-sm">{selectedSign}</span>
               </div>
             )}
           </div>
         )}
 
         {status === "practicing" && (
-          <div className="mt-4">
-            <div className="flex items-center gap-4">
-              <div className="flex-1 bg-primary-100 rounded-full h-2.5 overflow-hidden">
-                <div
-                  className="h-full gradient-primary rounded-full transition-all duration-300"
-                  style={{ width: `${Math.min(accuracy, 100)}%` }}
-                />
+          <div className="mt-3">
+            <div className="flex items-center gap-3">
+              <div className="flex-1 bg-surface-200 dark:bg-surface-700 rounded-full h-1.5 overflow-hidden">
+                <div className="h-full gradient-primary rounded-full transition-all duration-300" style={{ width: `${Math.min(accuracy, 100)}%` }} />
               </div>
-              <span className="text-sm font-medium text-primary-600 w-12 text-right">
-                {accuracy}%
-              </span>
+              <span className="text-xs font-medium text-primary-400 w-10 text-right">{accuracy}%</span>
             </div>
-            <p className="text-sm text-primary-500 mt-2 text-center">
+            <p className="text-[10px] text-surface-500 mt-1.5 text-center">
               {trainMode ? "Training mode — samples are captured live" : signInfo?.hint}
             </p>
             {!trainMode && hasSamples && (
-              <p className="text-sm text-center mt-1">
-                <span className="text-xs text-primary-400">Detected: </span>
-                <span className="font-semibold text-orange-600 dark:text-orange-300">
-                  {detectedName ?? "—"}
-                </span>
+              <p className="text-[10px] text-center mt-1">
+                <span className="text-surface-500">Detected: </span>
+                <span className="font-semibold text-accent-400">{detectedName ?? "—"}</span>
               </p>
             )}
             {!trainMode && !hasSamples && (
-              <p className="text-xs text-center text-orange-500 dark:text-orange-400 mt-1">
-                No trained signs yet — tap “Train Model” to teach a sign.
-              </p>
+              <p className="text-[10px] text-center text-amber-400 mt-1">No trained signs yet — tap "Train Model" to teach a sign.</p>
             )}
           </div>
         )}
 
         {status === "success" && (
-          <div className="mt-4 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-2xl p-6 text-center animate-scale-in">
-            <span className="text-5xl block mb-3">🎉</span>
-            <p className="text-green-700 dark:text-green-300 font-bold text-lg mb-1">
-              {t("Sign Recognized!")}
-            </p>
-            <p className="text-green-600 dark:text-green-400 text-sm mb-3">
-              {t("You signed")} {selectedSign} {t("correctly!")} +50 XP
-            </p>
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={stopAll}
-                className="px-6 py-2.5 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all"
-              >
-                {t("Practice Again")}
-              </button>
-              <button
-                onClick={() => { stopAll(); onBack(); }}
-                className="px-6 py-2.5 bg-white dark:bg-primary-950 border border-primary-200
-          dark:border-primary-700 text-primary-600 dark:text-primary-300 rounded-xl font-medium hover:bg-primary-50
-          dark:hover:bg-primary-900 transition-all"
-              >
-                {t("Done")}
-              </button>
+          <div className="mt-3 glass border-emerald-500/20 p-5 text-center animate-scale-in">
+            <div className="w-14 h-14 mx-auto mb-2 rounded-full gradient-primary flex items-center justify-center shadow-glow-primary">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <p className="text-surface-900 dark:text-white font-bold text-sm mb-0.5">{t("Sign Recognized!")}</p>
+            <p className="text-surface-500 text-xs mb-3">{t("You signed")} {selectedSign} {t("correctly!")} +50 XP</p>
+            <div className="flex gap-2 justify-center">
+              <button onClick={stopAll} className="btn-primary text-xs">{t("Practice Again")}</button>
+              <button onClick={() => { stopAll(); onBack(); }} className="btn-secondary text-xs">{t("Done")}</button>
             </div>
           </div>
         )}
       </div>
 
-      <p className="text-xs text-primary-400 dark:text-primary-400 text-center">
+      <p className="text-[10px] text-surface-500 text-center">
         {t("Practice count")}: {practiceCount} • +50 XP {t("per successful practice")}
       </p>
     </div>
@@ -1456,32 +1353,29 @@ function DictionaryScreen({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 animate-fade-in">
-      <button
-        onClick={onBack}
-        className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 mb-6 flex items-center gap-1 transition-all"
-      >
+      <button onClick={onBack} className="btn-ghost text-xs mb-5">
         ← {t("Back to Home") || "Back"}
       </button>
 
-      <h2 className="text-2xl font-bold text-primary-900 dark:text-white mb-2">
-        📖 {t("ISL Dictionary") || "ISL Dictionary"}
+      <h2 className="text-xl font-bold text-surface-900 dark:text-white mb-1">
+        {t("ISL Dictionary") || "ISL Dictionary"}
       </h2>
-      <p className="text-primary-500 dark:text-primary-400 text-sm mb-6">
+      <p className="text-surface-500 text-xs mb-5">
         {ALL_SIGNS.length} {t("signs") || "signs"} across {CATEGORIES.length} categories
       </p>
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-5">
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={t("Search signs...")}
-          className="flex-1 px-4 py-3 rounded-xl border border-primary-200 dark:border-primary-700 bg-white dark:bg-primary-950 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
+          className="input-field flex-1"
         />
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="px-4 py-3 rounded-xl border border-primary-200 dark:border-primary-700 bg-white dark:bg-primary-950 dark:text-white outline-none"
+          className="input-field"
         >
           <option value="all">{t("All Categories")}</option>
           {CATEGORIES.map((c) => (
@@ -1490,32 +1384,27 @@ function DictionaryScreen({ onBack }: { onBack: () => void }) {
         </select>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         {filtered.length > 0 ? filtered.map((sign) => (
-          <div
-            key={sign.id}
-          className="bg-white dark:bg-primary-950 rounded-2xl p-4 flex items-center gap-4 border
-           border-primary-100 dark:border-primary-800"
-          >
-            <span className="text-3xl w-12 text-center">{sign.icon}</span>
+          <div key={sign.id} className="surface-card p-3.5 flex items-center gap-3">
+            <span className="text-2xl w-10 text-center">{sign.icon}</span>
             <div className="flex-1">
-              <p className="font-semibold text-primary-900 dark:text-white">{sign.name}</p>
-              <p className="text-sm text-primary-500 dark:text-primary-400">{sign.meaning}</p>
+              <p className="font-semibold text-surface-900 dark:text-white text-sm">{sign.name}</p>
+              <p className="text-xs text-surface-500">{sign.meaning}</p>
             </div>
-<span className="text-xs px-2 py-1 rounded-full bg-primary-100 dark:bg-primary-900 text-primary-500
-           dark:text-primary-400">
+            <span className="text-[10px] px-2 py-0.5 rounded-lg bg-surface-100 dark:bg-surface-800 text-surface-500">
               {t(sign.category)}
             </span>
             {sign.webcamSupported && (
-              <span className="text-xs px-2 py-1 rounded-full bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300">
-                📸
+              <span className="text-[10px] px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-400">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
               </span>
             )}
           </div>
         )) : (
-          <div className="text-center py-12 text-primary-400 dark:text-primary-400">
-            <span className="text-4xl block mb-3">🔍</span>
-            <p>{t("No results found")}</p>
+          <div className="text-center py-10 text-surface-500">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto mb-2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <p className="text-xs">{t("No results found")}</p>
           </div>
         )}
       </div>
@@ -1536,52 +1425,48 @@ function LeaderboardScreen({ game, onBack }: { game: GameState; onBack: () => vo
 
   return (
     <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
-      <button
-        onClick={onBack}
-        className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 mb-6 flex items-center gap-1 transition-all"
-      >
+      <button onClick={onBack} className="btn-ghost text-xs mb-5">
         ← {t("Back to Home") || "Back"}
       </button>
 
-      <h2 className="text-2xl font-bold text-primary-900 dark:text-white mb-2">
-        🏆 {t("Leaderboard")}
+      <h2 className="text-xl font-bold text-surface-900 dark:text-white mb-1">
+        {t("Leaderboard")}
       </h2>
-      <p className="text-primary-500 dark:text-primary-400 text-sm mb-6">
+      <p className="text-surface-500 text-xs mb-5">
         {t("Top ISL learners") || "Top ISL learners"}
       </p>
 
-      <div className="bg-white dark:bg-primary-950 rounded-3xl shadow-sm border border-primary-100
-           dark:border-primary-800 overflow-hidden">
+      <div className="surface-card overflow-hidden">
         {allPlayers.map((player, i) => (
           <div
             key={i}
-            className={`flex items-center gap-4 p-4 ${
+            className={`flex items-center gap-3 p-3.5 ${
               player.name === "You"
-                ? "bg-primary-50 dark:bg-primary-900/20 border-l-4 border-primary-500"
-                : "border-b border-primary-50 dark:border-primary-800"
+                ? "bg-primary-500/10 border-l-2 border-primary-500"
+                : "border-b border-surface-100 dark:border-surface-800"
             }`}
           >
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold ${
-              i === 0 ? "bg-orange-100 dark:bg-orange-900 text-orange-600" :
-              i === 1 ? "bg-primary-100 dark:bg-primary-900 text-primary-600" :
-              i === 2 ? "bg-orange-100 dark:bg-orange-900 text-orange-600" :
-              "bg-primary-50 dark:bg-primary-900 text-primary-500"
+            <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
+              i === 0 ? "bg-accent/20 text-accent-400" :
+              i === 1 ? "bg-surface-200 dark:bg-surface-700 text-surface-600 dark:text-surface-400" :
+              i === 2 ? "bg-accent/10 text-accent-500" :
+              "bg-surface-100 dark:bg-surface-800 text-surface-500"
             }`}>
               {i + 1}
             </div>
             <div className="flex-1">
-              <p className={`font-semibold ${
-                player.name === "You" ? "text-primary-700 dark:text-primary-300" : "text-primary-900 dark:text-white"
+              <p className={`font-semibold text-sm ${
+                player.name === "You" ? "text-primary-400" : "text-surface-900 dark:text-white"
               }`}>
                 {player.name}
               </p>
-              <p className="text-xs text-primary-400">
+              <p className="text-[10px] text-surface-500">
                 {t("Level")} {player.level} • {player.streak}-day {t("streak") || "streak"}
               </p>
             </div>
             <div className="text-right">
-              <p className="font-bold text-primary-900 dark:text-white">{player.xp}</p>
-              <p className="text-xs text-primary-400">{t("XP")}</p>
+              <p className="font-bold text-surface-900 dark:text-white text-sm">{player.xp}</p>
+              <p className="text-[10px] text-surface-500">{t("XP")}</p>
             </div>
           </div>
         ))}
@@ -1599,45 +1484,42 @@ function BadgesScreen({
 }) {
   return (
     <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
-      <button
-        onClick={onBack}
-        className="text-sm text-primary-400 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 mb-6 flex items-center gap-1 transition-all"
-      >
+      <button onClick={onBack} className="btn-ghost text-xs mb-5">
         ← {t("Back")}
       </button>
 
-      <h2 className="text-2xl font-bold text-primary-900 dark:text-white mb-2">{t("Achievements")}</h2>
-      <p className="text-primary-500 dark:text-primary-400 text-sm mb-6">
+      <h2 className="text-xl font-bold text-surface-900 dark:text-white mb-1">{t("Achievements")}</h2>
+      <p className="text-surface-500 text-xs mb-5">
         {game.badges.length} {t("of")} {BADGES.length} {t("unlocked")}
       </p>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {BADGES.map((badge) => {
           const unlocked = game.badges.includes(badge.id);
           return (
             <div
               key={badge.id}
-              className={`rounded-2xl p-4 flex items-center gap-4 transition-all ${
+              className={`rounded-xl p-3.5 flex items-center gap-3 transition-all ${
                 unlocked
-                  ? "bg-white dark:bg-primary-950 border border-orange-200 dark:border-orange-700 shadow-sm"
-                  : "bg-primary-50 dark:bg-primary-950/50 border border-primary-100 dark:border-primary-800 opacity-60"
+                  ? "surface-card"
+                  : "bg-surface-50 dark:bg-surface-900/50 border border-surface-200 dark:border-surface-800 opacity-50"
               }`}
             >
-              <span className={`text-3xl ${unlocked ? "" : "grayscale"}`}>
+              <span className={`text-2xl ${unlocked ? "" : "grayscale"}`}>
                 {badge.icon}
               </span>
               <div>
-                <p
-                  className={`font-semibold ${
-                    unlocked ? "text-primary-900 dark:text-white" : "text-primary-400 dark:text-primary-400"
-                  }`}
-                >
+                <p className={`font-semibold text-sm ${
+                  unlocked ? "text-surface-900 dark:text-white" : "text-surface-500"
+                }`}>
                   {badge.name}
                 </p>
-                <p className="text-xs text-primary-500 dark:text-primary-400">{badge.requirement}</p>
+                <p className="text-[10px] text-surface-500">{badge.requirement}</p>
               </div>
               {unlocked && (
-                <span className="ml-auto text-green-500 text-xl">✅</span>
+                <span className="ml-auto text-emerald-400">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
               )}
             </div>
           );
