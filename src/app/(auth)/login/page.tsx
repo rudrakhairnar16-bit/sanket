@@ -196,7 +196,7 @@ export default function LoginPage() {
             </form>
 
             <p className="text-center text-xs text-gray-400 mt-6">
-              Sanket v1.0 — Built for Yuva 6.0 Hackathon
+              Sanket v1.0 — Team KPGU · Dr. Kiran &amp; Pallavi Patel Global University · Inter-University Round
             </p>
           </div>
 

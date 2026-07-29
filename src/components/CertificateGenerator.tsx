@@ -121,7 +121,7 @@ export default function CertificateGenerator({
       doc.setFontSize(9);
       doc.setTextColor(100, 116, 139);
       doc.text("Sanket v1.0", w - 30, h - 16, { align: "right" });
-      doc.text("Yuva 6.0 Hackathon", w - 30, h - 10, { align: "right" });
+      doc.text("Team KPGU · Inter-University Round", w - 30, h - 10, { align: "right" });
 
       doc.save(`sanket-certificate-${streak}-day-streak.pdf`);
     } finally {
