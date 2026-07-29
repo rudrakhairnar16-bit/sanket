@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -46,7 +47,11 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} bg-surface-50 dark:bg-surface-950 text-surface-900 dark:text-surface-100`}>
-        <AuthProvider><main className="page-enter">{children}</main></AuthProvider>
+        <AuthProvider>
+          <ErrorBoundary>
+            <main className="page-enter">{children}</main>
+          </ErrorBoundary>
+        </AuthProvider>
       </body>
     </html>
   );

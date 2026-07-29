@@ -46,6 +46,15 @@ export const MUNICIPAL_SIGNS: SignEntry[] = [
   { id: "time", name: "Time", nameHi: "समय", nameMr: "वेळ", description: "Point to wrist like watch", hint: "Tap wrist where watch sits", icon: "⏰", islSymbol: "⏰", category: "civic", handCount: 1 },
   { id: "office", name: "Office", nameHi: "कार्यालय", nameMr: "कार्यालय", description: "O handshape circle outward", hint: "Circle shape with fingers, push out", icon: "🏢", islSymbol: "🏢", category: "civic", handCount: 1 },
   { id: "complaint", name: "Complaint", nameHi: "शिकायत", nameMr: "तक्रार", description: "Open palm taps chest twice", hint: "Palm to chest, two taps", icon: "📋", islSymbol: "📋", category: "civic", handCount: 1 },
+  { id: "hospital", name: "Hospital", nameHi: "अस्पताल", nameMr: "रुग्णालय", description: "Cross on forehead with index finger", hint: "Draw cross on forehead", icon: "🏥", islSymbol: "🏥", category: "civic", handCount: 1 },
+  { id: "police", name: "Police", nameHi: "पुलिस", nameMr: "पोलिस", description: "Salute motion from forehead", hint: "Hand to forehead in salute", icon: "👮", islSymbol: "👮", category: "civic", handCount: 1 },
+  { id: "school", name: "School", nameHi: "स्कूल", nameMr: "शाळा", description: "Clap hands then open like book", hint: "Clap once, open palms", icon: "🏫", islSymbol: "🏫", category: "civic", handCount: 2 },
+  { id: "bank", name: "Bank", nameHi: "बैंक", nameMr: "बँक", description: "B handshape circle on palm", hint: "Form B, circle on other palm", icon: "🏦", islSymbol: "🏦", category: "service", handCount: 2 },
+  { id: "emergency", name: "Emergency", nameHi: "आपातकाल", nameMr: "आणीबाणी", description: "Both fists shake above head", hint: "Two fists shaking overhead", icon: "🚨", islSymbol: "🚨", category: "civic", handCount: 2 },
+  { id: "toilet", name: "Toilet", nameHi: "शौचालय", nameMr: "स्वच्छतागृह", description: "T handshape shakes side to side", hint: "T hand, twist wrist", icon: "🚻", islSymbol: "🚻", category: "basic", handCount: 1 },
+  { id: "drink", name: "Drink", nameHi: "पीना", nameMr: "पिणे", description: "C handshape tilts toward mouth", hint: "C shape hand, tilt to mouth", icon: "🥤", islSymbol: "🥤", category: "basic", handCount: 1 },
+  { id: "eat", name: "Eat", nameHi: "खाना", nameMr: "खाणे", description: "Pinched fingers move toward mouth", hint: "Fingers pinched, move to mouth", icon: "🍽️", islSymbol: "🍽️", category: "basic", handCount: 1 },
+  { id: "sick", name: "Sick", nameHi: "बीमार", nameMr: "आजारी", description: "Palm on forehead, lean back", hint: "Palm to forehead, slight lean", icon: "🤒", islSymbol: "🤒", category: "basic", handCount: 1 },
 ];
 
 export const SIGN_MAP = new Map(MUNICIPAL_SIGNS.map((s) => [s.id, s]));

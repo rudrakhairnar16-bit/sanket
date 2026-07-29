@@ -584,7 +584,7 @@ function ResultCard({
 
       <div className="surface-card p-5">
         <h3 className="font-semibold text-surface-900 dark:text-white text-sm mb-3">Your Stats</h3>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <StatCard
             label="Current Streak"
             value={streak.currentStreak}
@@ -816,7 +816,7 @@ function IslQuestCard() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-4 gap-2 mb-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
         <div className="bg-surface-100 dark:bg-surface-800/50 rounded-xl p-2.5 text-center">
           <p className="text-lg font-bold text-surface-900 dark:text-white">{displayLevel}</p>
           <p className="text-[10px] text-surface-500">Level</p>

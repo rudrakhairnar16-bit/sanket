@@ -104,6 +104,14 @@ export async function POST(req: NextRequest) {
       totalCompleted: 0,
       lastCompletedDate: null,
     };
+
+    if (prev.lastCompletedDate === today) {
+      return NextResponse.json(
+        { error: "Already completed today's module" },
+        { status: 409 }
+      );
+    }
+
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayIST = new Date(yesterday.getTime() + 5.5 * 60 * 60 * 1000)

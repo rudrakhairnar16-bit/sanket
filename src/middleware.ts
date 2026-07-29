@@ -15,6 +15,14 @@ export function middleware(req: NextRequest) {
     if (!token) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
+    try {
+      const payload = decodeToken(token);
+      if (!payload) {
+        return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+      }
+    } catch {
+      return NextResponse.json({ error: "Invalid token" }, { status: 401 });
+    }
   }
 
   if (pathname.startsWith("/admin")) {

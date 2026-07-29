@@ -73,21 +73,39 @@ function cosineSimilarity(a: number[], b: number[]): number {
   return denom === 0 ? 0 : dot / denom;
 }
 
+function euclideanDistance(a: number[], b: number[]): number {
+  let sum = 0;
+  for (let i = 0; i < a.length; i++) sum += (a[i] - b[i]) ** 2;
+  return Math.sqrt(sum);
+}
+
+function augmentFeatures(features: number[], noise = 0.02): number[] {
+  return features.map((f) => f + (Math.random() - 0.5) * noise);
+}
+
 export class KNNClassifier {
   private samples: Map<string, number[][]> = new Map();
   private history: { signId: string | null; confidence: number }[] = [];
   private readonly historySize = 15;
   private readonly k = 3;
   private readonly minConfidence = 0.55;
-  private readonly minSamplesPerSign = 5; // Minimum samples needed before a sign is recognized
+  private readonly minSamplesPerSign = 5;
 
-  addSample(signId: string, landmarks: Landmark[]) {
-    const features = normalizeLandmarks(landmarks);
-    if (features.length === 0) return;
+  private get entries() { return Array.from(this.samples.entries()); }
+  private get sampleValues() { return Array.from(this.samples.values()); }
+
+  addSample(signId: string, landmarks: Landmark[], augment = true) {
+    const base = normalizeLandmarks(landmarks);
+    if (base.length === 0) return;
     if (!this.samples.has(signId)) {
       this.samples.set(signId, []);
     }
-    this.samples.get(signId)!.push(features);
+    this.samples.get(signId)!.push(base);
+    if (augment) {
+      for (let i = 0; i < 3; i++) {
+        this.samples.get(signId)!.push(augmentFeatures(base));
+      }
+    }
   }
 
   addMultipleSamples(signId: string, allLandmarks: Landmark[][]) {
@@ -105,15 +123,14 @@ export class KNNClassifier {
     let bestSign: string | null = null;
     let bestScore = 0;
 
-    for (const [signId, refs] of Array.from(this.samples.entries())) {
-      // Skip signs with insufficient training samples
+    for (const [signId, refs] of this.entries) {
       if (refs.length < this.minSamplesPerSign) continue;
-      
+
       let totalSim = 0;
-      const count = Math.min(refs.length, 5); // Use up to 5 nearest refs
-      const sims = refs.map((ref) => cosineSimilarity(features, ref));
-      sims.sort((a, b) => b - a);
-      for (let i = 0; i < count; i++) totalSim += sims[i];
+      const count = Math.min(refs.length, 5);
+      const dists = refs.map((ref) => euclideanDistance(features, ref));
+      dists.sort((a, b) => a - b);
+      for (let i = 0; i < count; i++) totalSim += 1 / (1 + dists[i]);
       const avgSim = totalSim / count;
 
       if (avgSim > bestScore) {
@@ -144,12 +161,12 @@ export class KNNClassifier {
 
     let bestSign: string | null = null;
     let bestVotes = 0;
-    for (const [sign, count] of Array.from(votes.entries())) {
+    votes.forEach((count, sign) => {
       if (count > bestVotes) {
         bestVotes = count;
         bestSign = sign;
       }
-    }
+    });
 
     const confidence = this.history.length > 0
       ? Math.round((bestVotes / this.history.length) * 100) / 100
@@ -160,7 +177,7 @@ export class KNNClassifier {
 
   getSampleCount(): number {
     let total = 0;
-    for (const refs of Array.from(this.samples.values())) total += refs.length;
+    for (const refs of this.sampleValues) total += refs.length;
     return total;
   }
 
@@ -170,7 +187,7 @@ export class KNNClassifier {
 
   getSamplesPerSign(): Record<string, number> {
     const result: Record<string, number> = {};
-    for (const [id, refs] of Array.from(this.samples.entries())) {
+    for (const [id, refs] of this.entries) {
       result[id] = refs.length;
     }
     return result;
@@ -192,7 +209,7 @@ export class KNNClassifier {
   // Serialize for localStorage
   serialize(): string {
     const data: Record<string, number[][]> = {};
-    for (const [id, refs] of Array.from(this.samples.entries())) {
+    for (const [id, refs] of this.entries) {
       data[id] = refs;
     }
     return JSON.stringify(data);
@@ -201,7 +218,7 @@ export class KNNClassifier {
   deserialize(json: string) {
     try {
       const data = JSON.parse(json);
-      for (const [id, refs] of Array.from(Object.entries(data))) {
+      for (const [id, refs] of Object.entries(data)) {
         this.samples.set(id, refs as number[][]);
       }
     } catch {}

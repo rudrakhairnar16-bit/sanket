@@ -87,3 +87,12 @@ export function toggleMockChampion(
   user.isChampion = !user.isChampion;
   return { isChampion: user.isChampion, name: user.name };
 }
+
+export function toggleMockChampionByUsername(
+  username: string
+): { isChampion: boolean; name: string } | null {
+  const user = DEMO_USERS.find((u) => u.username === username);
+  if (!user) return null;
+  user.isChampion = !user.isChampion;
+  return { isChampion: user.isChampion, name: user.name };
+}

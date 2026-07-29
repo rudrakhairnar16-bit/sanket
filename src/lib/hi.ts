@@ -73,6 +73,9 @@ export const HI: Record<string, string> = {
   "Download Certificate": "प्रमाणपत्र डाउनलोड करें",
   "No Lessons Available": "कोई पाठ उपलब्ध नहीं",
   "Your admin hasn't added any modules yet.": "आपके प्रशासक ने अभी तक कोई मॉड्यूल नहीं जोड़ा है।",
+  "DEAF PERSON IS SIGNING": "बधिर व्यक्ति संकेत कर रहा है",
+  "CLERK SEES": "क्लर्क देखता है - नागरिक कहना चाहता है:",
+  "CLERK REPLIES": "क्लर्क जवाब देता है",
 };
 
 import { MR } from "./mr";

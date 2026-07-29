@@ -1,6 +1,7 @@
 export interface MockLearner {
   _id: string;
   name: string;
+  username: string;
   department: string;
   role: "learner";
   currentStreak: number;
@@ -18,6 +19,7 @@ export const MOCK_LEARNERS: MockLearner[] = [
   {
     _id: "ml-1",
     name: "Priya Sharma",
+    username: "priya",
     department: "Revenue",
     role: "learner",
     currentStreak: 42,
@@ -33,6 +35,7 @@ export const MOCK_LEARNERS: MockLearner[] = [
   {
     _id: "ml-2",
     name: "Amit Patel",
+    username: "amit",
     department: "Revenue",
     role: "learner",
     currentStreak: 38,
@@ -48,6 +51,7 @@ export const MOCK_LEARNERS: MockLearner[] = [
   {
     _id: "ml-3",
     name: "Sneha Reddy",
+    username: "sneha",
     department: "Health",
     role: "learner",
     currentStreak: 31,
@@ -63,6 +67,7 @@ export const MOCK_LEARNERS: MockLearner[] = [
   {
     _id: "ml-4",
     name: "Rahul Verma",
+    username: "rahul",
     department: "Health",
     role: "learner",
     currentStreak: 27,
@@ -78,6 +83,7 @@ export const MOCK_LEARNERS: MockLearner[] = [
   {
     _id: "ml-5",
     name: "Kavya Nair",
+    username: "kavya",
     department: "Education",
     role: "learner",
     currentStreak: 21,
@@ -93,6 +99,7 @@ export const MOCK_LEARNERS: MockLearner[] = [
   {
     _id: "ml-6",
     name: "Vikram Singh",
+    username: "vikram",
     department: "Education",
     role: "learner",
     currentStreak: 16,
@@ -108,6 +115,7 @@ export const MOCK_LEARNERS: MockLearner[] = [
   {
     _id: "ml-7",
     name: "Meera Joshi",
+    username: "meera",
     department: "Transport",
     role: "learner",
     currentStreak: 12,
@@ -123,6 +131,7 @@ export const MOCK_LEARNERS: MockLearner[] = [
   {
     _id: "ml-8",
     name: "Arjun Mehta",
+    username: "arjun",
     department: "Transport",
     role: "learner",
     currentStreak: 8,
@@ -138,6 +147,7 @@ export const MOCK_LEARNERS: MockLearner[] = [
   {
     _id: "ml-9",
     name: "Ananya Das",
+    username: "ananya",
     department: "Revenue",
     role: "learner",
     currentStreak: 5,
@@ -153,6 +163,7 @@ export const MOCK_LEARNERS: MockLearner[] = [
   {
     _id: "ml-10",
     name: "Rohan Kulkarni",
+    username: "rohan",
     department: "Health",
     role: "learner",
     currentStreak: 3,
@@ -168,6 +179,7 @@ export const MOCK_LEARNERS: MockLearner[] = [
   {
     _id: "ml-11",
     name: "Ishita Banerjee",
+    username: "ishita",
     department: "Education",
     role: "learner",
     currentStreak: 1,

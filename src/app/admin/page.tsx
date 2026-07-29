@@ -26,6 +26,7 @@ interface DashboardData {
   leaderboard: {
     _id: string;
     name: string;
+    username: string;
     department: string;
     currentStreak: number;
     longestStreak: number;
@@ -168,19 +169,23 @@ export default function AdminDashboardPage() {
             Department Compliance
           </h3>
           {chartData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#9ca3af' }} />
-                <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} />
-                <Tooltip />
-                <Bar
-                  dataKey="Completions"
-                  fill="#6366f1"
-                  radius={[8, 8, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="overflow-x-auto -mx-5 px-5">
+              <div className="min-w-[400px]">
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#9ca3af' }} />
+                    <YAxis tick={{ fontSize: 12, fill: '#9ca3af' }} />
+                    <Tooltip />
+                    <Bar
+                      dataKey="Completions"
+                      fill="#6366f1"
+                      radius={[8, 8, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
             ) : (
               <p className="text-surface-500 text-center py-12 text-sm">No data</p>
             )}
@@ -223,7 +228,7 @@ export default function AdminDashboardPage() {
                     <button
                       onClick={async () => {
                         try {
-                          const res = await fetch(`/api/users/${clerk._id}/champion`, { method: "PATCH" });
+                          const res = await fetch(`/api/users/${clerk.username}/champion`, { method: "PATCH" });
                           if (res.ok) loadData();
                         } catch {}
                       }}
@@ -342,7 +347,7 @@ function NudgePanel() {
                 disabled={sending === clerk._id}
                 className="btn-primary text-[10px] px-2.5 py-1"
               >
-                {sending === clerk._id ? "..." : "Nudge"}
+                {sending === clerk._id ? "..." : "Log Nudge"}
               </button>
             </div>
           ))}
@@ -354,7 +359,7 @@ function NudgePanel() {
         </p>
       )}
       <p className="text-[10px] text-surface-500 mt-2">
-        * Nudges are logged for tracking. Integrate Twilio/WhatsApp API for live delivery.
+        Nudge logged for tracking. WhatsApp API integration pending for pilot deployment.
       </p>
     </div>
   );

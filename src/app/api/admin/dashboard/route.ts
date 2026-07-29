@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
     ]);
 
     const leaderboard = await User.find({ role: "learner" })
-      .select("name department currentStreak longestStreak totalCompleted isChampion")
+      .select("name username department currentStreak longestStreak totalCompleted isChampion")
       .sort({ currentStreak: -1, totalCompleted: -1 })
       .limit(10);
 
@@ -92,6 +92,7 @@ export async function GET(req: NextRequest) {
       leaderboard: mock.users.slice(0, 10).map((u) => ({
         _id: u._id,
         name: u.name,
+        username: u.username,
         department: u.department,
         currentStreak: u.currentStreak,
         longestStreak: u.longestStreak,

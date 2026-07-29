@@ -20,6 +20,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (password.length < 8 || !/[A-Z]/.test(password) || !/\d/.test(password)) {
+      return NextResponse.json(
+        { error: "Password must be at least 8 characters with 1 uppercase letter and 1 digit" },
+        { status: 400 }
+      );
+    }
+
     try {
       await connectDB();
       const existing = await User.findOne({ username });
@@ -57,8 +64,8 @@ export async function POST(req: NextRequest) {
 
       res.cookies.set("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true,
+        sameSite: "strict",
         path: "/",
         maxAge: 7 * 24 * 60 * 60,
       });
@@ -89,8 +96,8 @@ export async function POST(req: NextRequest) {
       const res = NextResponse.json({ user: mockToPublic(user) });
       res.cookies.set("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true,
+        sameSite: "strict",
         path: "/",
         maxAge: 7 * 24 * 60 * 60,
       });

@@ -11,6 +11,7 @@ import {
   textToISL,
 } from "@/data/municipal-signs";
 import Link from "next/link";
+import { t, loadLang, setLang } from "@/lib/hi";
 
 const LANG_LABELS: Record<string, string> = {
   en: "English",
@@ -45,6 +46,11 @@ export default function TwoWayInterpreterPage() {
   const trainActiveRef = useRef(false);
   const trainModeRef = useRef(false);
   const trainSignIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const saved = loadLang();
+    setLang(saved);
+  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem("sanket-knn-samples");
@@ -250,7 +256,11 @@ export default function TwoWayInterpreterPage() {
   }, [status, hasSamples, lang]);
 
   const cycleLang = () => {
-    setLang((prev) => (prev === "en" ? "hi" : prev === "hi" ? "mr" : "en"));
+    setLang((prev) => {
+      const next = prev === "en" ? "hi" : prev === "hi" ? "mr" : "en";
+      setLang(next);
+      return next;
+    });
   };
 
   const toggleMic = () => {
@@ -337,7 +347,7 @@ export default function TwoWayInterpreterPage() {
             </div>
 
             <div className="bg-slate-900/70 border border-white/10 rounded-3xl p-6 min-h-[140px] flex flex-col items-center justify-center text-center">
-              <p className="text-xs text-slate-500 mb-2">DEAF PERSON IS SIGNING</p>
+              <p className="text-xs text-slate-500 mb-2">{t("DEAF PERSON IS SIGNING")}</p>
               {currentName ? (
                 <>
                   <p className="text-3xl font-bold text-indigo-300">{currentName}</p>
@@ -357,7 +367,7 @@ export default function TwoWayInterpreterPage() {
           {/* Clerk side: what deaf person wants + clerk reply */}
           <div className="space-y-4">
             <div className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl p-6 min-h-[200px] flex flex-col">
-              <p className="text-xs text-white/70 mb-2">CLERK SEES — “Citizen wants to say:”</p>
+              <p className="text-xs text-white/70 mb-2">{t("CLERK SEES")}</p>
               <div className="flex-1 flex items-center justify-center text-center">
                 {deafDisplay ? (
                   <p className="text-2xl font-bold text-white">{deafDisplay}</p>
@@ -368,7 +378,7 @@ export default function TwoWayInterpreterPage() {
             </div>
 
             <div className="bg-slate-900/70 border border-white/10 rounded-3xl p-5">
-              <p className="text-xs text-slate-500 mb-2">CLERK REPLIES (typed or spoken)</p>
+              <p className="text-xs text-slate-500 mb-2">{t("CLERK REPLIES")}</p>
               <textarea
                 value={clerkText}
                 onChange={(e) => setClerkText(e.target.value)}

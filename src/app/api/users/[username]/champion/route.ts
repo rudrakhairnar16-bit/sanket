@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { getAuthUser } from "@/lib/auth";
-import { toggleMockChampion } from "@/lib/mock-users";
+import { toggleMockChampionByUsername } from "@/lib/mock-users";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { username: string } }
 ) {
   const admin = await getAuthUser(req);
   if (!admin || (admin.role !== "admin" && admin.role !== "superadmin")) {
@@ -16,7 +16,7 @@ export async function PATCH(
   try {
     await connectDB();
 
-    const user = await User.findById(params.id);
+    const user = await User.findOne({ username: params.username });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -30,7 +30,7 @@ export async function PATCH(
       name: user.name,
     });
   } catch {
-    const result = toggleMockChampion(params.id);
+    const result = toggleMockChampionByUsername(params.username);
     if (!result) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }

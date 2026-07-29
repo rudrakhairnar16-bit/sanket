@@ -4,9 +4,18 @@ import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { signToken } from "@/lib/auth";
 import { mockFindByUsername, mockToPublic } from "@/lib/mock-users";
+import { checkRateLimit, getRateLimitRemaining } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
+    if (!checkRateLimit(`login:${ip}`)) {
+      return NextResponse.json(
+        { error: "Too many attempts. Try again in 60 seconds." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const { username, password } = body;
 
@@ -54,8 +63,8 @@ export async function POST(req: NextRequest) {
 
       res.cookies.set("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true,
+        sameSite: "strict",
         path: "/",
         maxAge: 7 * 24 * 60 * 60,
       });
@@ -80,8 +89,8 @@ export async function POST(req: NextRequest) {
       const res = NextResponse.json({ user: mockToPublic(user) });
       res.cookies.set("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true,
+        sameSite: "strict",
         path: "/",
         maxAge: 7 * 24 * 60 * 60,
       });

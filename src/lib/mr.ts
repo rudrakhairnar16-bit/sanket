@@ -78,4 +78,7 @@ export const MR: Record<string, string> = {
   "streak": "क्रम",
   "Play ISL Quest": "ISL Quest खेळा",
   "View 12-Week Curriculum": "12-आठवड्याचा अभ्यासक्रम पहा",
+  "DEAF PERSON IS SIGNING": "बधिर व्यक्ती संकेत करत आहे",
+  "CLERK SEES": "क्लार्क पाहतो - नागरिक म्हणू इच्छितो:",
+  "CLERK REPLIES": "क्लार्क उत्तर देतो",
 };
