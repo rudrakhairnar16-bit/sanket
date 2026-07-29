@@ -322,22 +322,24 @@ export default function LiveInterpreter() {
   return (
     <div className="flex flex-col h-screen bg-gray-950 text-white">
       {/* Top Bar */}
-      <div className="flex items-center justify-between px-4 py-3 bg-gray-900 border-b border-gray-800 shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 bg-gray-900/80 border-b border-gray-800 shrink-0">
         <div className="flex items-center gap-2">
-          <span className="text-lg">🤟</span>
-          <span className="font-semibold hidden sm:inline">Live Interpreter</span>
+          <div className="w-8 h-8 rounded-lg bg-primary-500/20 flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#818cf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </div>
+          <span className="font-semibold text-sm hidden sm:inline">Live Interpreter</span>
           <button
             onClick={() => setDemoMode(!demoMode)}
-            className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+            className={`px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all ${
               demoMode
-                ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                : "bg-primary-500/20 text-primary-400 border border-primary-500/30"
+                ? "bg-amber-500/15 text-amber-400 border border-amber-500/25"
+                : "bg-primary-500/15 text-primary-400 border border-primary-500/25"
             }`}
           >
-            {demoMode ? "🎯 Demo" : "📷 Camera"}
+            {demoMode ? "Demo" : "Camera"}
           </button>
           {calibrated && (
-            <span className="text-xs bg-green-900/50 text-green-400 px-2 py-0.5 rounded-full hidden sm:inline-block">
+            <span className="text-[10px] bg-emerald-900/40 text-emerald-400 px-2 py-0.5 rounded-full hidden sm:inline-block">
               {classifier.getSignCount()} signs
             </span>
           )}
@@ -345,19 +347,19 @@ export default function LiveInterpreter() {
         <div className="flex items-center gap-2">
           <button
             onClick={cycleLang}
-            className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-xs font-medium transition-all"
+            className="px-2.5 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-[10px] font-medium transition-all"
           >
-            {lang === "en" ? "🇬🇧 EN" : lang === "hi" ? "🇮🇳 HI" : "🇮🇳 MR"}
+            {lang === "en" ? "EN" : lang === "hi" ? "HI" : "MR"}
           </button>
           <a
             href="/interpreter/calibrate"
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all hidden sm:inline-block ${
+            className={`px-2.5 py-1.5 rounded-lg text-[10px] font-medium transition-all hidden sm:inline-block ${
               calibrated
-                ? "bg-emerald-900/50 text-emerald-400 hover:bg-emerald-800/50"
-                : "bg-amber-900/50 text-amber-400 hover:bg-amber-800/50 animate-pulse"
+                ? "bg-emerald-900/40 text-emerald-400 hover:bg-emerald-800/40"
+                : "bg-amber-900/40 text-amber-400 hover:bg-amber-800/40 animate-pulse"
             }`}
           >
-            {calibrated ? "✓ Calibrated" : "⚙ Calibrate"}
+            {calibrated ? "Calibrated" : "Calibrate"}
           </a>
         </div>
       </div>
@@ -401,11 +403,11 @@ export default function LiveInterpreter() {
           {/* Camera overlay info */}
           {!demoMode && (
             <div className="absolute top-3 left-3 right-3 flex justify-between pointer-events-none z-10">
-              <span className="px-2.5 py-1 bg-black/60 text-xs rounded-lg backdrop-blur">
+              <span className="px-2 py-1 bg-black/60 text-[10px] rounded-lg backdrop-blur-sm">
                 {handCount > 0 ? `${handCount} hand${handCount > 1 ? "s" : ""}` : "No hands"}
               </span>
               {currentSign && confidence > 0 && (
-                <span className="px-2.5 py-1 bg-black/60 text-xs rounded-lg backdrop-blur flex items-center gap-1">
+                <span className="px-2 py-1 bg-black/60 text-[10px] rounded-lg backdrop-blur-sm flex items-center gap-1">
                   {SIGN_MAP.get(currentSign)?.icon} {Math.round(confidence * 100)}%
                 </span>
               )}
@@ -414,9 +416,9 @@ export default function LiveInterpreter() {
 
           {!demoMode && transcript && (
             <div className="absolute bottom-4 left-4 right-4 pointer-events-none z-10">
-              <div className="bg-primary-600/90 backdrop-blur px-4 py-3 rounded-2xl text-center">
-                <p className="text-lg font-bold">{transcript}</p>
-                <p className="text-xs text-white/70 mt-0.5">Sign detected</p>
+              <div className="bg-primary-600/90 backdrop-blur-sm px-4 py-3 rounded-xl text-center">
+                <p className="text-base font-bold">{transcript}</p>
+                <p className="text-[10px] text-white/70 mt-0.5">Sign detected</p>
               </div>
             </div>
           )}
@@ -424,9 +426,11 @@ export default function LiveInterpreter() {
           {!demoMode && !calibrated && status === "running" && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-950/70 pointer-events-none z-10">
               <div className="text-center max-w-xs">
-                <span className="text-4xl block mb-2">⚙️</span>
+                <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-amber-500/20 flex items-center justify-center">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c-1.5 0-3-.5-4-2-1 0-2-.5-2.5-1.5-.5 0-1-.5-1-1.5s.5-1.5 1-2c0-.5 0-1-.5-1.5"/></svg>
+                </div>
                 <p className="text-sm text-gray-300">No sign data loaded</p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-[10px] text-gray-500 mt-1">
                   Switch to Demo mode to present instantly
                 </p>
               </div>
@@ -437,11 +441,11 @@ export default function LiveInterpreter() {
           {demoMode && (
             <div className="flex-1 overflow-y-auto p-3 space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-xs text-amber-400 font-medium flex items-center gap-1.5">
-                  <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
+                <p className="text-[10px] text-amber-400 font-medium flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse" />
                   Demo Mode — click signs to simulate citizen input
                 </p>
-                <span className="text-xs text-gray-600">{MUNICIPAL_SIGNS.length} signs</span>
+                <span className="text-[10px] text-gray-600">{MUNICIPAL_SIGNS.length} signs</span>
               </div>
               {MUNICIPAL_SIGNS.reduce((groups, sign) => {
                 const key = sign.category;
@@ -478,21 +482,21 @@ export default function LiveInterpreter() {
         <div className="lg:w-1/2 flex flex-col bg-gray-900">
           {/* Deaf user display */}
           {deafDisplay && (
-            <div className="bg-gray-800 border-b border-gray-700 p-4 text-center">
-              <p className="text-xs text-gray-500 mb-1">👨‍💼 Clerk says:</p>
-              <p className="text-2xl sm:text-3xl font-bold text-primary-400 animate-scale-in">
+            <div className="bg-gray-800/80 border-b border-gray-700 p-4 text-center">
+              <p className="text-[10px] text-gray-500 mb-1">Clerk says:</p>
+              <p className="text-xl sm:text-2xl font-bold text-primary-400 animate-scale-in">
                 {deafDisplay}
               </p>
               {lastClerkTokens.length > 0 && (
-                <div className="flex flex-wrap gap-2 justify-center mt-3">
+                <div className="flex flex-wrap gap-1.5 justify-center mt-2">
                   {lastClerkTokens.map((tok, idx) => (
                     <span
                       key={idx}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-gray-900 rounded-xl border border-primary-500/30"
+                      className="flex items-center gap-1 px-2.5 py-1.5 bg-gray-900 rounded-lg border border-primary-500/25"
                       title={tok.label}
                     >
-                      <span className="text-2xl leading-none">{tok.symbol}</span>
-                      <span className="text-xs text-gray-200">{tok.label}</span>
+                      <span className="text-xl leading-none">{tok.symbol}</span>
+                      <span className="text-[10px] text-gray-200">{tok.label}</span>
                     </span>
                   ))}
                 </div>
@@ -504,9 +508,11 @@ export default function LiveInterpreter() {
           <div ref={chatRef} className="flex-1 overflow-y-auto p-4 space-y-3">
             {messages.length === 0 && (
               <div className="text-center text-gray-500 mt-12">
-                <span className="text-5xl block mb-4">🤟</span>
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                </div>
                 <p className="text-sm">Conversation will appear here</p>
-                <p className="text-xs text-gray-600 mt-1">
+                <p className="text-[10px] text-gray-600 mt-1">
                   Deaf citizen signs → text appears → clerk speaks/types back
                 </p>
               </div>
@@ -523,8 +529,8 @@ export default function LiveInterpreter() {
                       : "bg-gray-800 text-gray-200 rounded-tl-md"
                   }`}
                 >
-                  <p className="text-xs opacity-60 mb-0.5">
-                    {msg.role === "clerk" ? "👨‍💼 Clerk" : "🧏 Citizen"}
+                  <p className="text-[10px] opacity-60 mb-0.5">
+                    {msg.role === "clerk" ? "Clerk" : "Citizen"}
                   </p>
                   <p className="text-sm">{msg.text}</p>
                   {msg.role === "clerk" && msg.islTokens && msg.islTokens.length > 0 && (
@@ -558,7 +564,7 @@ export default function LiveInterpreter() {
                 }`}
                 title={isListening ? "Stop listening" : "Start voice input"}
               >
-                🎤
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
               </button>
               <div className="flex-1 relative">
                 <input
@@ -566,10 +572,10 @@ export default function LiveInterpreter() {
                   onChange={(e) => setInputText(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Type a message..."
-                  className="w-full bg-gray-800 text-white rounded-xl px-4 py-3 text-sm placeholder-gray-500 border border-gray-700 focus:border-primary-500 focus:outline-none"
+                  className="w-full bg-gray-800 text-white rounded-xl px-4 py-3 text-sm placeholder-gray-500 border border-gray-700 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500/30"
                 />
                 {isListening && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-red-400 animate-pulse">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-red-400 animate-pulse">
                     Listening...
                   </span>
                 )}
@@ -579,14 +585,14 @@ export default function LiveInterpreter() {
                 disabled={!inputText.trim()}
                 className="p-3 bg-primary-600 hover:bg-primary-500 disabled:bg-gray-800 disabled:text-gray-600 text-white rounded-xl transition-all shrink-0"
               >
-                ➤
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
               </button>
             </div>
             <div className="flex justify-between items-center mt-2">
-              <p className="text-xs text-gray-600">
-                {handCount > 0 ? `📷 ${handCount} hand(s) detected` : "📷 No hands"}
+              <p className="text-[10px] text-gray-600">
+                {handCount > 0 ? `${handCount} hand(s) detected` : "No hands"}
               </p>
-              <p className="text-xs text-gray-600">
+              <p className="text-[10px] text-gray-600">
                 {clock}
               </p>
             </div>

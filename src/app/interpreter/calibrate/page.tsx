@@ -274,32 +274,35 @@ export default function TwoWayInterpreterPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={cycleLang}
-              className="px-3 py-1.5 rounded-xl text-sm font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 transition-all"
+              className="px-3 py-1.5 rounded-xl text-xs font-medium bg-indigo-500/15 text-indigo-300 border border-indigo-500/25 transition-all flex items-center gap-1.5"
             >
-              🌐 {LANG_LABELS[lang]}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+              {LANG_LABELS[lang]}
             </button>
             <button
               onClick={toggleMic}
-              className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 ${
                 isListening
                   ? "bg-red-600 text-white animate-pulse"
                   : "bg-slate-800 text-slate-300 hover:bg-slate-700"
               }`}
             >
-              🎤 {isListening ? "Listening" : "Clerk Mic"}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              {isListening ? "Listening" : "Clerk Mic"}
             </button>
             <button
               onClick={() => {
                 setTrainMode((v) => !v);
                 setTrainSignId(null);
               }}
-              className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all flex items-center gap-1.5 ${
                 trainMode
                   ? "bg-emerald-600 text-white"
                   : "bg-slate-800 text-slate-300 hover:bg-slate-700"
               }`}
             >
-              🎯 {trainMode ? "Training ON" : "Train Model"}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              {trainMode ? "Training ON" : "Train Model"}
             </button>
           </div>
         </div>
@@ -377,19 +380,24 @@ export default function TwoWayInterpreterPage() {
                 <button
                   onClick={() => speak(clerkText, lang)}
                   disabled={!clerkText.trim()}
-                  className="px-4 py-2 bg-indigo-500 hover:bg-indigo-400 disabled:opacity-40 text-white rounded-xl text-sm font-medium transition-all"
+                  className="px-4 py-2 bg-indigo-500 hover:bg-indigo-400 disabled:opacity-40 text-white rounded-xl text-sm font-medium transition-all flex items-center gap-1.5"
                 >
-                  🔊 Speak to Citizen
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+                  Speak to Citizen
                 </button>
                 {!micSupported && (
-                  <span className="text-xs text-amber-400">
-                    🎤 Mic unavailable in this browser — type your reply instead.
+                  <span className="text-xs text-amber-400 flex items-center gap-1">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    Mic unavailable in this browser — type your reply instead.
                   </span>
                 )}
               </div>
               {clerkText.trim() && (
-                <div className="mt-4 bg-gradient-to-br from-purple-600/30 to-indigo-600/30 border border-purple-400/30 rounded-2xl p-4">
-                  <p className="text-xs text-purple-200 mb-2">👋 SHOWN TO DEAF CITIZEN (ISL Signs)</p>
+                <div className="mt-4 bg-gradient-to-br from-purple-600/20 to-indigo-600/20 border border-purple-400/25 rounded-xl p-4">
+                  <p className="text-[10px] text-purple-200 mb-2 flex items-center gap-1.5">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    SHOWN TO DEAF CITIZEN (ISL Signs)
+                  </p>
                   {textToISL(clerkText, lang).length > 0 ? (
                     <div className="flex flex-wrap gap-2">
                       {textToISL(clerkText, lang).map((t, i) => (
@@ -437,15 +445,18 @@ export default function TwoWayInterpreterPage() {
 
         {/* Train Mode panel */}
         {trainMode && (
-          <div className="mt-8 bg-emerald-900/20 border border-emerald-500/30 rounded-3xl p-6">
-            <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <div className="mt-8 bg-emerald-900/15 border border-emerald-500/25 rounded-xl p-5">
+            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <div>
-                <h3 className="font-semibold text-emerald-300">🎯 Train Sign Model</h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  Pick a sign, then hold it to the camera for ~1.5s. Samples are captured live so fast signs get recognized.
+                <h3 className="font-semibold text-emerald-300 text-sm flex items-center gap-1.5">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                  Train Sign Model
+                </h3>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Pick a sign, then hold it to the camera for ~1.5s.
                 </p>
               </div>
-              <span className="text-xs px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300">
+              <span className="text-[10px] px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-300">
                 {classifier.getSignCount()} signs • {trainCount} captures
               </span>
             </div>
@@ -500,7 +511,7 @@ export default function TwoWayInterpreterPage() {
             </div>
 
             {trainCount > 0 && (
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   onClick={() => {
                     const json = classifier.serialize();
@@ -512,12 +523,14 @@ export default function TwoWayInterpreterPage() {
                     a.click();
                     URL.revokeObjectURL(url);
                   }}
-                  className="px-4 py-2 bg-emerald-900/40 hover:bg-emerald-900/60 text-emerald-300 rounded-xl text-sm transition-all"
+                  className="px-3 py-1.5 bg-emerald-900/30 hover:bg-emerald-900/50 text-emerald-300 rounded-lg text-xs transition-all flex items-center gap-1.5"
                 >
-                  📤 Export Model
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  Export Model
                 </button>
-                <label className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-white/10 text-slate-300 rounded-xl text-sm cursor-pointer transition-all flex items-center gap-1">
-                  📥 Import Model
+                <label className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-white/10 text-slate-300 rounded-lg text-xs cursor-pointer transition-all flex items-center gap-1.5">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  Import Model
                   <input
                     type="file"
                     accept=".json"
@@ -549,9 +562,9 @@ export default function TwoWayInterpreterPage() {
                     setTrainCount(0);
                     setTrainSignId(null);
                   }}
-                  className="px-4 py-2 bg-red-900/40 hover:bg-red-900/60 text-red-300 rounded-xl text-sm transition-all"
+                  className="px-3 py-1.5 bg-red-900/30 hover:bg-red-900/50 text-red-300 rounded-lg text-xs transition-all"
                 >
-                  Reset All Training
+                  Reset All
                 </button>
               </div>
             )}
