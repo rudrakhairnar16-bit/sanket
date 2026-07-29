@@ -19,6 +19,8 @@ import { PracticeScreen } from "@/components/PracticeScreen";
 import { DictionaryScreen } from "@/components/DictionaryScreen";
 import { LeaderboardScreen } from "@/components/LeaderboardScreen";
 import { BadgesScreen } from "@/components/BadgesScreen";
+import { NotificationBell } from "@/components/NotificationBell";
+import { notify } from "@/lib/notify";
 
 type Screen = "home" | "flashcards" | "quiz" | "practice" | "badges" | "dictionary" | "leaderboard";
 
@@ -210,6 +212,7 @@ function HomeScreen({
           </button>
         </div>
         <div className="flex items-center gap-2">
+          <NotificationBell />
           <button
             onClick={toggleDark}
             className="btn-ghost text-[10px] px-2 py-0.5"

@@ -79,8 +79,15 @@ export function saveGame(state: GameState): void {
 
 export function addXP(state: GameState, amount: number): GameState {
   const newXP = state.xp + amount;
+  const oldLevel = state.level;
   const newLevel = getLevelFromXP(newXP);
   const newBadges = [...state.badges];
+
+  if (newLevel > oldLevel) {
+    import("./notify").then((m) =>
+      m.notify(`Level ${newLevel} reached!`, { body: `You advanced from Level ${oldLevel} to Level ${newLevel}. Keep learning!` })
+    );
+  }
 
   if (newLevel >= 5 && !newBadges.includes("level-5")) newBadges.push("level-5");
   if (newLevel >= 10 && !newBadges.includes("level-10")) newBadges.push("level-10");
@@ -97,6 +104,12 @@ export function updateStreak(state: GameState): GameState {
   const newStreak = state.lastPracticeDate === yesterday ? state.streak + 1 : 1;
   const newBadges = [...state.badges];
 
+  if (newStreak > state.streak && newStreak >= 2) {
+    import("./notify").then((m) =>
+      m.notify(`${newStreak}-day streak!`, { body: `Come back tomorrow to keep your streak alive!` })
+    );
+  }
+
   if (newStreak >= 3 && !newBadges.includes("streak-3")) newBadges.push("streak-3");
   if (newStreak >= 7 && !newBadges.includes("streak-7")) newBadges.push("streak-7");
   if (newStreak >= 30 && !newBadges.includes("streak-30")) newBadges.push("streak-30");
@@ -108,6 +121,20 @@ export function completeSign(state: GameState, signId: string): GameState {
   const alreadyDone = state.completedSigns.includes(signId);
   const newCompleted = alreadyDone ? state.completedSigns : [...state.completedSigns, signId];
   const newBadges = [...state.badges];
+
+  if (!alreadyDone) {
+    const oldLen = state.completedSigns.length;
+    if (oldLen === 0) {
+      import("./notify").then((m) =>
+        m.notify("First sign completed!", { body: "You learned your first ISL sign. Keep going!" })
+      );
+    }
+    if (newCompleted.length >= ALL_SIGNS_COUNT) {
+      import("./notify").then((m) =>
+        m.notify("All signs collected!", { body: "You completed every sign. Amazing dedication!" })
+      );
+    }
+  }
 
   if (newCompleted.length >= 1 && !newBadges.includes("first-sign")) newBadges.push("first-sign");
   if (newCompleted.length >= ALL_SIGNS_COUNT && !newBadges.includes("all-signs")) newBadges.push("all-signs");
