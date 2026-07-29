@@ -97,8 +97,8 @@ export function FlashcardScreen({
   return (
     <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
       <div className="flex items-center justify-between mb-5">
-        <button onClick={onBack} className="btn-ghost text-xs">← {t("Exit")}</button>
-        <span className="text-[10px] text-surface-500">
+        <button onClick={onBack} className="btn-ghost text-xs" aria-label={t("Exit")}>← {t("Exit")}</button>
+        <span className="text-[10px] text-surface-500" role="status" aria-label={`${t(category.name)} ${t("category")}, card ${signIndex + 1} of ${signs.length}`}>
           {t(category.name)} • {signIndex + 1}/{signs.length}
         </span>
       </div>
@@ -106,6 +106,10 @@ export function FlashcardScreen({
       <div
         className="cursor-pointer perspective-[1000px] mb-5"
         onClick={() => setFlipped(!flipped)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setFlipped(!flipped); } }}
+        aria-label={flipped ? currentSign.meaning : currentSign.name}
         style={{ perspective: "1000px" }}
       >
         <div

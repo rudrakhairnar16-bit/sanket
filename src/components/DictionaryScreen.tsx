@@ -22,23 +22,25 @@ export function DictionaryScreen({ onBack }: { onBack: () => void }) {
         <h2 className="font-bold text-surface-900 dark:text-white text-sm">ISL Dictionary</h2>
       </div>
 
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-4" role="search">
         <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
           placeholder={t("Search signs...")}
           className="input-field flex-1 text-xs"
+          aria-label={t("Search signs...")}
         />
         <select value={category} onChange={(e) => setCategory(e.target.value)}
           className="input-field text-xs w-auto"
+          aria-label={t("Filter by category")}
         >
           <option value="all">{t("All Categories")}</option>
           {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{t(c.name)}</option>)}
         </select>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2" role="list" aria-label={t("Signs")}>
         {filtered.map((sign) => (
-          <div key={sign.id} className="surface-card p-3.5 text-center hover:border-primary-500/30 transition-all cursor-pointer">
-            <span className="text-3xl block mb-1">{sign.icon}</span>
+          <div key={sign.id} className="surface-card p-3.5 text-center hover:border-primary-500/30 transition-all cursor-pointer" role="listitem" aria-label={`${sign.name}: ${sign.meaning}`}>
+            <span className="text-3xl block mb-1" role="img" aria-label={sign.name}>{sign.icon}</span>
             <p className="font-medium text-xs text-surface-900 dark:text-white truncate">{sign.name}</p>
             <p className="text-[10px] text-surface-500 truncate">{sign.meaning}</p>
           </div>

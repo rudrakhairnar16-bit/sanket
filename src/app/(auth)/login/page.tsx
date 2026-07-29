@@ -82,7 +82,7 @@ export default function LoginPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex gap-1 bg-white/5 p-1 rounded-btn mb-4 border border-white/5">
+              <div className="flex gap-1 bg-white/5 p-1 rounded-btn mb-4 border border-white/5" role="tablist" aria-label="Authentication mode">
                 <button
                   type="button"
                   onClick={() => setIsLogin(true)}
@@ -91,6 +91,9 @@ export default function LoginPage() {
                       ? "bg-primary-500 text-white shadow-sm"
                       : "text-surface-400 hover:text-surface-200"
                   }`}
+                  role="tab"
+                  aria-selected={isLogin}
+                  aria-label="Sign in to existing account"
                 >
                   Sign In
                 </button>
@@ -102,6 +105,9 @@ export default function LoginPage() {
                       ? "bg-primary-500 text-white shadow-sm"
                       : "text-surface-400 hover:text-surface-200"
                   }`}
+                  role="tab"
+                  aria-selected={!isLogin}
+                  aria-label="Create new account"
                 >
                   Register
                 </button>

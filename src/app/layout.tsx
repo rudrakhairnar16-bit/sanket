@@ -47,9 +47,12 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} bg-surface-50 dark:bg-surface-950 text-surface-900 dark:text-surface-100`}>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary-500 focus:text-white focus:rounded-btn focus:text-sm focus:font-medium">
+          Skip to main content
+        </a>
         <AuthProvider>
           <ErrorBoundary>
-            <main className="page-enter">{children}</main>
+            <main id="main-content" className="page-enter" role="main">{children}</main>
           </ErrorBoundary>
         </AuthProvider>
       </body>

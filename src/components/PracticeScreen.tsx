@@ -122,11 +122,11 @@ export function PracticeScreen({
   return (
     <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
       <div className="flex items-center justify-between mb-4">
-        <button onClick={onBack} className="btn-ghost text-xs">← {t("Back to Home")}</button>
-        <span className="text-[10px] text-surface-500">{practiceCount} {t("practiced")}</span>
+        <button onClick={onBack} className="btn-ghost text-xs" aria-label={t("Back to Home")}>← {t("Back to Home")}</button>
+        <span className="text-[10px] text-surface-500" aria-live="polite">{practiceCount} {t("practiced")}</span>
       </div>
 
-      <div className="relative aspect-video bg-surface-900 rounded-3xl overflow-hidden border border-white/10 mb-4">
+      <div className="relative aspect-video bg-surface-900 rounded-3xl overflow-hidden border border-white/10 mb-4" role="region" aria-label={t("Webcam practice area")}>
         <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover scale-x-[-1]" />
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full scale-x-[-1]" />
         {status === "loading" && (

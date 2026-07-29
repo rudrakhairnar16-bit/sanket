@@ -276,7 +276,7 @@ export default function TwoWayInterpreterPage() {
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
           <div className="flex items-center gap-3">
-            <Link href="/interpreter" className="text-gray-400 hover:text-white transition-all">
+            <Link href="/interpreter" className="text-gray-400 hover:text-white transition-all" aria-label="Back to interpreter">
               ← Back
             </Link>
             <h1 className="text-xl font-bold">Deaf ↔ Clerk Interpreter</h1>
@@ -285,6 +285,7 @@ export default function TwoWayInterpreterPage() {
             <button
               onClick={cycleLang}
               className="px-3 py-1.5 rounded-xl text-xs font-medium bg-indigo-500/15 text-indigo-300 border border-indigo-500/25 transition-all flex items-center gap-1.5"
+              aria-label={`Current language: ${LANG_LABELS[lang]}. Click to change.`}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
               {LANG_LABELS[lang]}
@@ -296,6 +297,7 @@ export default function TwoWayInterpreterPage() {
                   ? "bg-red-600 text-white animate-pulse"
                   : "bg-slate-800 text-slate-300 hover:bg-slate-700"
               }`}
+              aria-label={isListening ? "Stop listening" : "Start microphone"}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
               {isListening ? "Listening" : "Clerk Mic"}
@@ -310,6 +312,8 @@ export default function TwoWayInterpreterPage() {
                   ? "bg-emerald-600 text-white"
                   : "bg-slate-800 text-slate-300 hover:bg-slate-700"
               }`}
+              aria-pressed={trainMode}
+              aria-label={`${trainMode ? "Disable" : "Enable"} training mode`}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
               {trainMode ? "Training ON" : "Train Model"}
@@ -346,7 +350,7 @@ export default function TwoWayInterpreterPage() {
               </div>
             </div>
 
-            <div className="bg-slate-900/70 border border-white/10 rounded-3xl p-6 min-h-[140px] flex flex-col items-center justify-center text-center">
+            <div className="bg-slate-900/70 border border-white/10 rounded-3xl p-6 min-h-[140px] flex flex-col items-center justify-center text-center" role="status" aria-live="polite">
               <p className="text-xs text-slate-500 mb-2">{t("DEAF PERSON IS SIGNING")}</p>
               {currentName ? (
                 <>
@@ -445,7 +449,7 @@ export default function TwoWayInterpreterPage() {
                   speak(meaning, lang);
                 }}
                 className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/10 text-sm transition-all"
-                title={sign.description}
+                aria-label={`Demo sign: ${getLocalizedName(sign, lang)} - ${sign.description}`}
               >
                 {sign.icon} {getLocalizedName(sign, lang)}
               </button>
@@ -499,6 +503,8 @@ export default function TwoWayInterpreterPage() {
                         ? "bg-emerald-900/30 border-emerald-500/50 text-emerald-300"
                         : "bg-slate-800 hover:bg-slate-700 border-white/10 text-slate-300"
                     }`}
+                    aria-label={`${isReady ? "Trained" : "Train"} sign: ${getLocalizedName(sign, lang)} (${count} of ${minSamples} samples)`}
+                    aria-pressed={trainSignId === sign.id}
                   >
                     <div className="flex items-center gap-1">
                       {sign.icon} {getLocalizedName(sign, lang)}

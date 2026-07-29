@@ -277,7 +277,7 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
-          <div className="surface-card overflow-hidden">
+          <div className="surface-card overflow-hidden" aria-label="Video lesson">
             <div className="aspect-video bg-gradient-to-br from-primary-900 to-indigo-900 flex items-center justify-center relative group">
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
@@ -299,7 +299,7 @@ export default function DashboardPage() {
               {module.question}
             </h2>
 
-            <div className="space-y-2.5">
+            <div className="space-y-2.5" role="group" aria-label="Answer options">
               {module.options.map((option, index) => (
                 <button
                   key={index}
@@ -332,7 +332,7 @@ export default function DashboardPage() {
             </div>
 
             {error && (
-              <div className="mt-3 bg-red-500/10 text-red-400 text-sm p-3.5 rounded-xl border border-red-500/20 animate-slide-down">
+              <div className="mt-3 bg-red-500/10 text-red-400 text-sm p-3.5 rounded-xl border border-red-500/20 animate-slide-down" role="alert">
                 {error}
               </div>
             )}
@@ -417,7 +417,7 @@ function StreakBar({
   startOfWeek.setDate(startOfWeek.getDate() - ((today + 6) % 7));
 
   return (
-    <div className="surface-card p-5">
+    <div className="surface-card p-5" role="progressbar" aria-valuenow={currentStreak} aria-valuemin={0} aria-valuemax={Math.max(longestStreak, 1)}>
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-semibold text-surface-900 dark:text-white text-sm">Your Streak</h3>
         <div className="flex items-center gap-3 text-xs">
@@ -505,6 +505,7 @@ function ResultCard({
             ? "glass border-emerald-500/20"
             : "glass border-red-500/20"
         }`}
+        aria-live="polite"
       >
         <div className={`w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center ${
           correct ? "gradient-primary shadow-glow-primary" : "bg-red-500/20"
@@ -582,7 +583,7 @@ function ResultCard({
         </div>
       )}
 
-      <div className="surface-card p-5">
+      <div className="surface-card p-5" aria-live="polite">
         <h3 className="font-semibold text-surface-900 dark:text-white text-sm mb-3">Your Stats</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <StatCard

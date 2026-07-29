@@ -197,12 +197,14 @@ function HomeScreen({
           <Link
             href="/login"
             className="text-xs text-surface-400 hover:text-surface-300 transition-all"
+            aria-label={t("Login")}
           >
             ← {t("Login")}
           </Link>
           <button
             onClick={toggleLang}
             className="btn-ghost text-[10px] px-2 py-0.5"
+            aria-label={`Switch language to ${lang === "en" ? "Hindi" : lang === "hi" ? "Marathi" : "English"}`}
           >
             {lang === "en" ? "हिंदी" : lang === "hi" ? "मराठी" : "EN"}
           </button>
@@ -211,6 +213,7 @@ function HomeScreen({
           <button
             onClick={toggleDark}
             className="btn-ghost text-[10px] px-2 py-0.5"
+            aria-label={game.darkMode ? "Switch to light mode" : "Switch to dark mode"}
           >
             {game.darkMode ? (
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -267,7 +270,7 @@ function HomeScreen({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5" role="group" aria-label={t("Learning modes")}>
         <ModeCard
           title="Flashcards"
           description="Flip cards to learn signs and their meanings"
@@ -295,10 +298,11 @@ function HomeScreen({
       </div>
 
       <div className="grid grid-cols-2 gap-2 mb-5">
-        <button
-          onClick={() => onNavigate("dictionary")}
-          className="surface-card p-3.5 text-center hover:shadow-btn transition-all flex items-center justify-center gap-2"
-        >
+          <button
+            onClick={() => onNavigate("dictionary")}
+            className="surface-card p-3.5 text-center hover:shadow-btn transition-all flex items-center justify-center gap-2"
+            aria-label={t("ISL Dictionary") || "ISL Dictionary"}
+          >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-400"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
           <span className="text-xs font-medium text-surface-700 dark:text-surface-300">
             {t("ISL Dictionary") || "ISL Dictionary"}
@@ -307,6 +311,7 @@ function HomeScreen({
         <button
           onClick={() => onNavigate("leaderboard")}
           className="surface-card p-3.5 text-center hover:shadow-btn transition-all flex items-center justify-center gap-2"
+          aria-label={t("Leaderboard")}
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-400"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0012 0V2z"/></svg>
           <span className="text-xs font-medium text-surface-700 dark:text-surface-300">
@@ -318,6 +323,7 @@ function HomeScreen({
       <Link
         href="/curriculum"
         className="flex items-center gap-3 surface-card p-3.5 mb-1.5 hover:shadow-btn transition-all group"
+        aria-label="12-Week ISL Curriculum"
       >
         <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center shrink-0 shadow-glow-primary">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
@@ -384,10 +390,11 @@ function HomeScreen({
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-surface-400"><polyline points="9 18 15 12 9 6"/></svg>
       </Link>
 
-      <button
-        onClick={() => onNavigate("badges")}
-        className="w-full surface-card p-3.5 text-center hover:shadow-btn transition-all flex items-center justify-center gap-2"
-      >
+        <button
+          onClick={() => onNavigate("badges")}
+          className="w-full surface-card p-3.5 text-center hover:shadow-btn transition-all flex items-center justify-center gap-2"
+          aria-label={`${t("View All Badges")} (${game.badges.length}/${BADGES.length})`}
+        >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-400"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
         <span className="text-xs font-medium text-surface-700 dark:text-surface-300">
           {t("View All Badges")} ({game.badges.length}/{BADGES.length})

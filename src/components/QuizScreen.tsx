@@ -111,20 +111,22 @@ export function QuizScreen({
   return (
     <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
       <div className="flex items-center justify-between mb-5">
-        <button onClick={onBack} className="btn-ghost text-xs">← {t("Exit")}</button>
+        <button onClick={onBack} className="btn-ghost text-xs" aria-label={t("Exit")}>← {t("Exit")}</button>
         <span className="text-[10px] text-surface-500">{t(category.name)} • Q{questionIndex + 1}/{quizData.length}</span>
       </div>
 
-      <div className="surface-card p-5 mb-3">
+      <div className="surface-card p-5 mb-3" role="region" aria-label={t("Question")}>
         <div className="text-center mb-5">
-          <span className="text-5xl block mb-2">{q.sign.icon}</span>
+          <span className="text-5xl block mb-2" role="img" aria-label={q.sign.name}>{q.sign.icon}</span>
           <h2 className="text-base font-bold text-surface-900 dark:text-white">{t("What does this sign mean?")}</h2>
           <p className="text-xs text-surface-500 mt-0.5">{t("Sign")}: {q.sign.name}</p>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2" role="group" aria-label={t("Answer options")}>
           {q.options.map((option, i) => (
             <button key={i} onClick={() => handleAnswer(option)} disabled={!!selected}
+              aria-pressed={selected === option}
+              aria-label={`${t("Option")} ${String.fromCharCode(65 + i)}: ${option}`}
               className={`w-full text-left p-3.5 rounded-xl border transition-all ${
                 selected === option
                   ? option === q.sign.meaning ? "border-emerald-500 bg-emerald-500/10 shadow-glow" : "border-red-500 bg-red-500/10"
@@ -146,7 +148,7 @@ export function QuizScreen({
       </div>
 
       {selected && (
-        <div className="animate-slide-up space-y-3">
+        <div className="animate-slide-up space-y-3" role="alert" aria-live="assertive">
           <div className={`rounded-xl p-3.5 text-center ${isCorrect ? "glass border-emerald-500/20" : "glass border-red-500/20"}`}>
             <p className={`font-medium text-sm ${isCorrect ? "text-emerald-400" : "text-red-400"}`}>
               {isCorrect ? "✓ " + t("Correct") + "! +20 XP" : `✗ ${t("The answer was")}: ${q.sign.meaning}`}
@@ -160,13 +162,13 @@ export function QuizScreen({
         </div>
       )}
 
-      <div className="flex justify-center gap-1 mt-3">
+      <div className="flex justify-center gap-1 mt-3" role="progressbar" aria-valuenow={questionIndex + 1} aria-valuemin={1} aria-valuemax={quizData.length} aria-label={`${t("Question")} ${questionIndex + 1} ${t("of")} ${quizData.length}`}>
         {quizData.slice(0, 5).map((_, i) => (
           <div key={i} className={`w-1.5 h-1.5 rounded-full transition-all ${i === questionIndex ? "bg-primary-500 w-3" : i < questionIndex ? "bg-emerald-500" : "bg-surface-300 dark:bg-surface-700"}`} />
         ))}
       </div>
 
-      <p className="text-[10px] text-surface-500 text-center mt-2">Score: {score} XP • {correctCount}/{questionIndex + (selected ? 1 : 0)} correct</p>
+      <p className="text-[10px] text-surface-500 text-center mt-2" aria-live="polite">Score: {score} XP • {correctCount}/{questionIndex + (selected ? 1 : 0)} correct</p>
     </div>
   );
 }
