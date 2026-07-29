@@ -45,8 +45,8 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={inter.className}>
-        <AuthProvider>{children}</AuthProvider>
+      <body className={`${inter.className} bg-surface-50 dark:bg-surface-950 text-surface-900 dark:text-surface-100`}>
+        <AuthProvider><main className="page-enter">{children}</main></AuthProvider>
       </body>
     </html>
   );
