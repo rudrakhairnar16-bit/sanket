@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { getAuthUser } from "@/lib/auth";
-import { getMockGame, setMockGame } from "@/lib/mock-store";
 
 export async function POST(req: NextRequest) {
   const user = await getAuthUser(req);
@@ -28,14 +27,10 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json({ success: true });
   } catch {
-    setMockGame(user.userId, {
-      islXp: xp,
-      islLevel: level,
-      islStreak: streak ?? 0,
-      islBadges: badges ?? [],
-      islSignsCompleted: completedSigns ?? [],
-    });
-    return NextResponse.json({ success: true });
+    return NextResponse.json(
+      { error: "Service temporarily unavailable. Please try again." },
+      { status: 503 }
+    );
   }
 }
 
@@ -58,13 +53,9 @@ export async function GET(req: NextRequest) {
       islSignsCompleted: found?.islSignsCompleted ?? [],
     });
   } catch {
-    const mock = getMockGame(user.userId);
-    return NextResponse.json({
-      islXp: mock?.islXp ?? 0,
-      islLevel: mock?.islLevel ?? 1,
-      islStreak: mock?.islStreak ?? 0,
-      islBadges: mock?.islBadges ?? [],
-      islSignsCompleted: mock?.islSignsCompleted ?? [],
-    });
+    return NextResponse.json(
+      { error: "Service temporarily unavailable. Please try again." },
+      { status: 503 }
+    );
   }
 }

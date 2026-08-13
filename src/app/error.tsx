@@ -1,24 +1,23 @@
 "use client";
 
-export default function Error({
+export default function GlobalError({
   error,
   reset,
 }: {
-  error: Error;
+  error: Error & { digest?: string };
   reset: () => void;
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-rose-50 dark:from-gray-900 dark:to-gray-950 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8 max-w-md w-full text-center animate-fade-in">
-        <div className="text-6xl mb-4">😞</div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          Something went wrong
-        </h1>
-        <p className="text-gray-500 dark:text-gray-400 mb-6">{error.message || "An unexpected error occurred"}</p>
-        <button
-          onClick={reset}
-          className="px-6 py-3 gradient-primary text-white rounded-xl font-medium hover:opacity-90 transition-all shadow-lg"
-        >
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-indigo-50 p-4">
+      <div className="surface-card p-8 max-w-md w-full text-center">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+          <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h2>
+        <p className="text-sm text-gray-500 mb-6">An unexpected error occurred. Please try again.</p>
+        <button onClick={reset} className="btn-primary">
           Try Again
         </button>
       </div>

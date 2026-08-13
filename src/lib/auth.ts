@@ -1,9 +1,14 @@
 import jwt from "jsonwebtoken";
 import { NextRequest } from "next/server";
 
-function getJWTSecret(): string {
+const DEV_SECRET = "sanket-dev-secret-change-in-production";
+
+export function getJWTSecret(): string {
   const secret = process.env.JWT_SECRET;
   if (!secret) throw new Error("JWT_SECRET not set in environment");
+  if (secret === DEV_SECRET && process.env.NODE_ENV === "development") {
+    console.warn("WARNING: Using default dev JWT_SECRET. Set a strong secret in production.");
+  }
   return secret;
 }
 const JWT_SECRET = getJWTSecret();
@@ -25,7 +30,7 @@ export function verifyToken(token: string): JWTPayload {
 
 export function decodeToken(token: string): JWTPayload | null {
   try {
-    return jwt.decode(token) as JWTPayload | null;
+    return jwt.verify(token, JWT_SECRET) as JWTPayload;
   } catch {
     return null;
   }

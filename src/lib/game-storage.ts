@@ -1,3 +1,5 @@
+import { ALL_SIGNS } from "@/lib/isl-data";
+
 const STORAGE_KEY = "isl-quest-data";
 
 export interface GameState {
@@ -84,8 +86,8 @@ export function addXP(state: GameState, amount: number): GameState {
   const newBadges = [...state.badges];
 
   if (newLevel > oldLevel) {
-    import("./notify").then((m) =>
-      m.notify(`Level ${newLevel} reached!`, { body: `You advanced from Level ${oldLevel} to Level ${newLevel}. Keep learning!` })
+import("./notify").then((m) =>
+        m.notify(`Level ${newLevel} reached!`, { body: `You advanced from Level ${oldLevel} to Level ${newLevel}. Keep learning!` })
     );
   }
 
@@ -99,10 +101,7 @@ export function addXP(state: GameState, amount: number): GameState {
 export function updateStreak(state: GameState): GameState {
   const today = new Date().toISOString().split("T")[0];
   if (state.lastPracticeDate === today) {
-    const streakXP = state.streak >= 2 ? Math.min(state.streak * 2, 50) : 0;
-    if (streakXP <= 0) return state;
-    const result = addXP(state, streakXP);
-    return { ...result, streak: state.streak, lastPracticeDate: state.lastPracticeDate };
+    return state;
   }
 
   const yesterday = new Date(Date.now() - 86400000).toISOString().split("T")[0];
@@ -140,7 +139,7 @@ export function completeSign(state: GameState, signId: string): GameState {
         m.notify("First sign completed!", { body: "You learned your first ISL sign. Keep going!" })
       );
     }
-    if (newCompleted.length >= ALL_SIGNS_COUNT) {
+    if (newCompleted.length >= ALL_SIGNS.length) {
       import("./notify").then((m) =>
         m.notify("All signs collected!", { body: "You completed every sign. Amazing dedication!" })
       );
@@ -148,9 +147,11 @@ export function completeSign(state: GameState, signId: string): GameState {
   }
 
   if (newCompleted.length >= 1 && !newBadges.includes("first-sign")) newBadges.push("first-sign");
-  if (newCompleted.length >= ALL_SIGNS_COUNT && !newBadges.includes("all-signs")) newBadges.push("all-signs");
+  if (newCompleted.length >= ALL_SIGNS.length && !newBadges.includes("all-signs")) newBadges.push("all-signs");
 
-  return { ...state, completedSigns: newCompleted, badges: newBadges };
+  let result = { ...state, completedSigns: newCompleted, badges: newBadges };
+  result = updateStreak(result);
+  return result;
 }
 
 export function recordAnswer(state: GameState, correct: boolean): GameState {
@@ -172,8 +173,6 @@ export function checkWebcamMilestone(state: GameState, count: number): GameState
   if (count >= 5 && !newBadges.includes("webcam-pro")) newBadges.push("webcam-pro");
   return { ...state, badges: newBadges };
 }
-
-const ALL_SIGNS_COUNT = 35;
 
 export function getAccuracy(state: GameState): number {
   if (state.totalAttempted === 0) return 0;

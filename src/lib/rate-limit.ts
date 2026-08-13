@@ -1,9 +1,9 @@
 const attempts = new Map<string, { count: number; resetAt: number }>();
 
 const WINDOW_MS = 60_000;
-const MAX_ATTEMPTS = 5;
+const MAX_ATTEMPTS = 10;
 
-export function checkRateLimit(key: string): boolean {
+export function checkRateLimit(key: string, maxAttempts = MAX_ATTEMPTS): boolean {
   const now = Date.now();
   const entry = attempts.get(key);
 
@@ -12,7 +12,7 @@ export function checkRateLimit(key: string): boolean {
     return true;
   }
 
-  if (entry.count >= MAX_ATTEMPTS) return false;
+  if (entry.count >= maxAttempts) return false;
 
   entry.count++;
   return true;

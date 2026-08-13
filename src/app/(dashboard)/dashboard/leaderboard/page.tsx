@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { TableSkeleton } from "@/components/Skeleton";
 
 interface LeaderboardUser {
   _id: string;
@@ -39,7 +40,7 @@ export default function LeaderboardPage() {
         setUsers(data.users || []);
         setDepartments(data.departments || []);
       })
-      .catch(() => {})
+      .catch((e) => console.error("Leaderboard fetch failed:", e))
       .finally(() => setLoading(false));
   }, []);
 
@@ -50,8 +51,8 @@ export default function LeaderboardPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-12 h-12 rounded-full border-4 border-primary-200 border-t-primary-600 animate-spin" />
+      <div className="max-w-3xl mx-auto px-4 py-8">
+        <TableSkeleton rows={8} />
       </div>
     );
   }

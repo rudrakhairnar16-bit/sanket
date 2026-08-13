@@ -1,3 +1,9 @@
+/**
+ * @deprecated Use the kNN-based classifier (knn-classifier.ts) instead.
+ * This rule-based classifier only recognises 5 signs and is kept for
+ * backward compatibility with SignPractice. New code should import
+ * `classifier` from `@/lib/knn-classifier`.
+ */
 const SIGNS = {
   NAMASTE: "Namaste",
   THANK_YOU: "Thank You",

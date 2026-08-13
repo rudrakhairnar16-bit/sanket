@@ -103,7 +103,7 @@ function save(data: TaskProgress) {
 
 function hasLowActivity(): boolean {
   try {
-    const raw = localStorage.getItem("sanket-game");
+    const raw = localStorage.getItem("isl-quest-data");
     if (raw) {
       const g = JSON.parse(raw);
       if (g.xp > 100 || g.completedSigns?.length > 0) return false;

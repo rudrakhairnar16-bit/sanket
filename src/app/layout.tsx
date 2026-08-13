@@ -4,6 +4,9 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { logger } from "@/lib/logger";
+
+if (typeof window !== "undefined") logger.init();
 
 const inter = Inter({ subsets: ["latin"] });
 

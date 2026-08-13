@@ -351,9 +351,8 @@ export default function PolicyPage() {
             </li>
             <li>
               <strong>Accessible India Campaign (2015):</strong> Contributes to the
-              "Information and Communication Ecosystem" pillar by embedding ISL
-              into daily governance.
-            </li>
+              &ldquo;Information and Communication Ecosystem&rdquo; pillar by embedding ISL
+              into daily governance.            </li>
             <li>
               <strong>National Education Policy 2020:</strong> Promotes ISL as a
               subject and recognizes the need for sign language proficiency in

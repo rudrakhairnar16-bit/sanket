@@ -1,0 +1,41 @@
+version: "3.8"
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: sanket-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sanket-app
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/sanket
+      - JWT_SECRET=${JWT_SECRET:-change-this-in-production}
+      - NODE_ENV=development
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+
+  socket:
+    image: node:20-alpine
+    container_name: sanket-socket
+    ports:
+      - "3001:3001"
+    working_dir: /app
+    command: node server-socket.js
+    volumes:
+      - ./server-socket.js:/app/server-socket.js
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:

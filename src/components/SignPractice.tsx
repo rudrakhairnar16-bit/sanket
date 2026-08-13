@@ -2,13 +2,10 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import {
-  classifySign,
-  classifyTwoHands,
-  getTargetSign,
-  SIGN_REFERENCE,
-  type SignName,
+  classifier,
+  type Landmark,
   type ClassificationResult,
-} from "@/lib/sign-classifier";
+} from "@/lib/knn-classifier";
 
 interface SignPracticeProps {
   moduleTitle: string;
@@ -25,20 +22,15 @@ export default function SignPractice({
     "loading" | "ready" | "practicing" | "success" | "retry"
   >("loading");
   const [currentSign, setCurrentSign] = useState<ClassificationResult>({
-    sign: null,
+    signId: null,
     confidence: 0,
   });
-  const [targetSign, setTargetSign] = useState<SignName>(() =>
-    getTargetSign(moduleTitle)
-  );
   const [handCount, setHandCount] = useState(0);
   const [accuracy, setAccuracy] = useState(0);
   const correctFrames = useRef(0);
   const totalFrames = useRef(0);
   const streamRef = useRef<MediaStream | null>(null);
   const animFrameRef = useRef<number>(0);
-
-  const targetRef = SIGN_REFERENCE[targetSign];
 
   const startCamera = useCallback(async () => {
     try {
@@ -166,17 +158,13 @@ export default function SignPractice({
             drawLandmarks(ctx, hand, i === 0 ? "#6366f1" : "#8b5cf6");
           });
 
-          let classification: ClassificationResult;
-          if (result.landmarks.length >= 2) {
-            classification = classifyTwoHands(result.landmarks);
-          } else {
-            classification = classifySign(result.landmarks[0]);
-          }
+          const landmarks = result.landmarks[0] as Landmark[];
+          const classification = classifier.classify(landmarks);
 
           setCurrentSign(classification);
 
           totalFrames.current += 1;
-          if (classification.sign === targetSign && classification.confidence > 0.6) {
+          if (classification.signId === moduleTitle && classification.confidence > 0.6) {
             correctFrames.current += 1;
           } else if (totalFrames.current > 10) {
             correctFrames.current = Math.max(0, correctFrames.current - 1);
@@ -208,7 +196,7 @@ export default function SignPractice({
       if (landmarker) landmarker.close();
       cancelAnimationFrame(animFrameRef.current);
     };
-  }, [status, targetSign, onComplete]);
+  }, [status, moduleTitle, onComplete]);
 
   function retry() {
     correctFrames.current = 0;
@@ -228,17 +216,11 @@ export default function SignPractice({
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white">
-              Practice Sign: {targetSign}
+              Practice Sign: {moduleTitle}
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Show the sign to your camera
             </p>
-          </div>
-          <div className="text-center">
-            <span className="text-4xl block">{targetRef.icon}</span>
-            <span className="text-xs text-gray-400 dark:text-gray-300 mt-1 block">
-              {targetRef.description}
-            </span>
           </div>
         </div>
 
@@ -287,10 +269,10 @@ export default function SignPractice({
                   ? `${handCount} hand${handCount > 1 ? "s" : ""} detected`
                   : "No hand detected"}
               </span>
-              {currentSign.sign && (
+              {currentSign.signId && (
                 <span className="px-3 py-1.5 bg-black/50 text-white text-xs rounded-xl backdrop-blur flex items-center gap-1">
-                  {currentSign.sign === targetSign ? "✅" : "⏳"}{" "}
-                  {currentSign.sign}
+                  {currentSign.signId === moduleTitle ? "✅" : "⏳"}{" "}
+                  {currentSign.signId}
                 </span>
               )}
             </div>
@@ -312,9 +294,7 @@ export default function SignPractice({
             </div>
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {targetSign === "Namaste"
-                  ? "🙏 Bring both palms together"
-                  : targetRef.hint}
+                Show the sign clearly to your camera
               </p>
               <div className="flex gap-2">
                 <button

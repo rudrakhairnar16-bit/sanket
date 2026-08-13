@@ -5,17 +5,18 @@ import Module from "@/models/Module";
 import Completion from "@/models/Completion";
 import { getAuthUser } from "@/lib/auth";
 import { getTodayIST } from "@/lib/utils";
-import { getMockStreak, setMockStreak } from "@/lib/mock-store";
-
 export async function POST(req: NextRequest) {
   const authUser = await getAuthUser(req);
   if (!authUser) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
+  let body: { moduleId?: string; answer?: string } = {};
+  try { body = await req.json(); } catch {}
+  const { moduleId, answer } = body;
+
   try {
     await connectDB();
-    const { moduleId, answer } = await req.json();
 
     if (!moduleId || !answer) {
       return NextResponse.json(
@@ -24,8 +25,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const module = await Module.findById(moduleId);
-    if (!module || !module.active) {
+    const mod = await Module.findById(moduleId);
+    if (!mod || !mod.active) {
       return NextResponse.json(
         { error: "Module not found or inactive" },
         { status: 404 }
@@ -46,7 +47,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const correct = answer === module.correctAnswer;
+    const correct = answer === mod.correctAnswer;
 
     await Completion.create({
       userId: authUser.userId,
@@ -94,56 +95,10 @@ export async function POST(req: NextRequest) {
       milestone,
     });
   } catch {
-    const { moduleId, answer } = await req
-      .json()
-      .catch(() => ({ moduleId: "", answer: "" }));
-    const today = getTodayIST();
-    const prev = getMockStreak(authUser.userId) || {
-      currentStreak: 0,
-      longestStreak: 0,
-      totalCompleted: 0,
-      lastCompletedDate: null,
-    };
-
-    if (prev.lastCompletedDate === today) {
-      return NextResponse.json(
-        { error: "Already completed today's module" },
-        { status: 409 }
-      );
-    }
-
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayIST = new Date(yesterday.getTime() + 5.5 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0];
-
-    let currentStreak = prev.currentStreak;
-    if (prev.lastCompletedDate === yesterdayIST) currentStreak += 1;
-    else if (prev.lastCompletedDate !== today) currentStreak = 1;
-
-    const longestStreak = Math.max(prev.longestStreak, currentStreak);
-    const totalCompleted = prev.totalCompleted + 1;
-    setMockStreak(authUser.userId, {
-      currentStreak,
-      longestStreak,
-      totalCompleted,
-      lastCompletedDate: today,
-    });
-
-    void moduleId;
-    void answer;
-    const milestone = [7, 14, 21, 30].includes(currentStreak)
-      ? currentStreak
-      : null;
-
-    return NextResponse.json({
-      correct: true,
-      currentStreak,
-      longestStreak,
-      totalCompleted,
-      milestone,
-    });
+    return NextResponse.json(
+      { error: "Service temporarily unavailable. Please try again." },
+      { status: 503 }
+    );
   }
 }
 
@@ -167,12 +122,9 @@ export async function GET(req: NextRequest) {
       completion: completed,
     });
   } catch {
-    const today = getTodayIST();
-    const streak = getMockStreak(authUser.userId);
-    const completedToday = streak?.lastCompletedDate === today;
-    return NextResponse.json({
-      completedToday,
-      completion: completedToday ? { date: today } : null,
-    });
+    return NextResponse.json(
+      { error: "Service temporarily unavailable. Please try again." },
+      { status: 503 }
+    );
   }
 }

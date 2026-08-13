@@ -26,11 +26,16 @@ export function PracticeScreen({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const animFrameRef = useRef<number>(0);
+  const latestLandmarksRef = useRef<Landmark[] | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "running" | "error">("loading");
   const [targetSign, setTargetSign] = useState(WEBCAM_SIGNS[0].name);
   const [recognized, setRecognized] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [practiceCount, setPracticeCount] = useState(0);
+  const practiceCountRef = useRef(0);
+  const [calibrating, setCalibrating] = useState(false);
+  const [calSamples, setCalSamples] = useState<Record<string, number>>({});
+  const [calMsg, setCalMsg] = useState<string | null>(null);
 
   const currentSign = WEBCAM_SIGNS.find((s) => s.name === targetSign) ?? WEBCAM_SIGNS[0];
 
@@ -95,6 +100,7 @@ export function PracticeScreen({
         lastTimestamp = now;
         const result = lm.detectForVideo(video, now);
         if (result.landmarks?.[0]) {
+          latestLandmarksRef.current = result.landmarks[0] as Landmark[];
           const cls = classifier.classify(result.landmarks[0]);
           if (cls.signId && cls.confidence > 0.5) {
             setRecognized(cls.signId);
@@ -103,10 +109,13 @@ export function PracticeScreen({
               onUpdate((prev) => {
                 let state = addXP(prev, 30);
                 state = completeSign(state, currentSign.id);
-                state = checkWebcamMilestone(state, practiceCount + 1);
+                state = checkWebcamMilestone(state, practiceCountRef.current + 1);
                 return state;
               });
-              setPracticeCount((c) => c + 1);
+              setPracticeCount((c) => {
+                practiceCountRef.current = c + 1;
+                return c + 1;
+              });
               setTimeout(() => { setSuccess(null); setRecognized(null); }, 2000);
             }
           }
@@ -126,7 +135,7 @@ export function PracticeScreen({
         <span className="text-[10px] text-surface-500" aria-live="polite">{practiceCount} {t("practiced")}</span>
       </div>
 
-      <div className="relative aspect-video bg-surface-900 rounded-3xl overflow-hidden border border-white/10 mb-4" role="region" aria-label={t("Webcam practice area")}>
+      <div className={`relative aspect-video bg-surface-900 rounded-3xl overflow-hidden border-2 mb-4 ${calibrating ? "border-amber-400" : "border-white/10"}`} role="region" aria-label={t("Webcam practice area")}>
         <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover scale-x-[-1]" />
         <canvas ref={canvasRef} className="absolute inset-0 w-full h-full scale-x-[-1]" />
         {status === "loading" && (
@@ -137,6 +146,11 @@ export function PracticeScreen({
         {status === "error" && (
           <div className="absolute inset-0 flex items-center justify-center bg-surface-950/80">
             <p className="text-sm text-red-400">{t("Camera access denied")}</p>
+          </div>
+        )}
+        {calibrating && (
+          <div className="absolute top-3 left-3 px-3 py-1 bg-amber-500/80 text-white text-[10px] font-medium rounded-full backdrop-blur-sm">
+            ⚙ CALIBRATION MODE
           </div>
         )}
       </div>
@@ -151,7 +165,57 @@ export function PracticeScreen({
             {s.icon} {s.name}
           </button>
         ))}
+        <button
+          onClick={() => { setCalibrating((c) => !c); setCalMsg(null); }}
+          className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all border ${
+            calibrating
+              ? "bg-amber-500 text-white border-amber-400"
+              : "bg-surface-100 dark:bg-surface-800 border-surface-200 dark:border-surface-700 text-surface-700 dark:text-surface-300"
+          }`}
+        >
+          ⚙ {calibrating ? "Exit Calibration" : "Calibrate"}
+        </button>
       </div>
+
+      {calibrating && (
+        <div className="mb-3 p-4 rounded-2xl border-2 border-amber-400/40 bg-amber-50 dark:bg-amber-900/20">
+          <div className="flex flex-wrap items-center gap-3 mb-3">
+            <button
+              onClick={() => {
+                const lm = latestLandmarksRef.current;
+                if (!lm) { setCalMsg("No hand detected — show your hand to the camera first."); return; }
+                const signId = currentSign.id;
+                classifier.addSample(signId, lm, true);
+                setCalSamples((prev) => {
+                  const newCount = (prev[signId] || 0) + 1;
+                  setCalMsg(`Recorded sample #${newCount} for "${currentSign.name}"`);
+                  return { ...prev, [signId]: newCount };
+                });
+              }}
+              className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium rounded-xl transition-colors"
+            >
+              📷 Record Sample
+            </button>
+            <button
+              onClick={() => {
+                classifier.saveTraining();
+                setCalMsg("Training data saved to localStorage!");
+              }}
+              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium rounded-xl transition-colors"
+            >
+              💾 Save Training
+            </button>
+            <span className="text-xs text-surface-500">
+              {Object.keys(calSamples).length > 0
+                ? Object.entries(calSamples)
+                    .map(([id, count]) => `${id}: ${count}`)
+                    .join(" · ")
+                : "No samples yet"}
+            </span>
+          </div>
+          {calMsg && <p className="text-xs text-surface-600 dark:text-surface-400">{calMsg}</p>}
+        </div>
+      )}
 
       <div className="surface-card p-5 text-center">
         <p className="text-xs text-surface-500 mb-1">{t("Show the sign to your camera")}</p>

@@ -11,6 +11,9 @@ interface ClerkProfile {
   experienceLevel: "beginner" | "intermediate" | "advanced";
 }
 
+// Hardcoded clerk list used in mock/demo mode.
+// For production, replace this with a database query (e.g. User model)
+// filtering users whose role === "clerk" and including their language prefs.
 const clerks: ClerkProfile[] = [
   { id: "clerk-1", name: "Aisha Sharma", department: "Municipal Corporation", languages: ["en", "hi"], completedSessions: 45, averageRating: 4.8, experienceLevel: "advanced" },
   { id: "clerk-2", name: "Rahul Verma", department: "Revenue Department", languages: ["en", "hi", "mr"], completedSessions: 28, averageRating: 4.5, experienceLevel: "intermediate" },

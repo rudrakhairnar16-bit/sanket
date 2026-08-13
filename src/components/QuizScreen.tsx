@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { CATEGORIES, ALL_SIGNS, getQuizForCategory } from "@/lib/isl-data";
+import { CATEGORIES, getQuizForCategory } from "@/lib/isl-data";
 import {
   addXP,
   completeSign,
   recordAnswer,
-  updateStreak,
   checkPerfectQuiz,
   type GameState,
 } from "@/lib/game-storage";
@@ -52,6 +51,7 @@ export function QuizScreen({
       return state;
     });
     if (correct) setScore((s) => s + 20);
+    if (correct) setCorrectCount((c) => c + 1);
     setSelected(null);
     lastAnswerRef.current = null;
 
@@ -60,13 +60,10 @@ export function QuizScreen({
         setCategoryIndex((i) => i + 1);
         setQuestionIndex(0);
       } else {
-        const pct = ((correctCount + (correct ? 1 : 0)) / quizData.length) * 100;
+        const total = Math.max(quizData.length, 1);
+        const pct = ((correctCount + (correct ? 1 : 0)) / total) * 100;
         if (pct === 100) onUpdate((prev) => checkPerfectQuiz(prev));
-        onUpdate((prev) => {
-          let state = addXP(prev, 30);
-          state = updateStreak(state);
-          return state;
-        });
+        onUpdate((prev) => addXP(prev, 30));
         setFinished(true);
       }
     } else {
@@ -75,8 +72,8 @@ export function QuizScreen({
   }
 
   if (finished) {
-    const total = ALL_SIGNS.length;
-    const pct = Math.round((correctCount / total) * 100);
+    const total = quizData.length;
+    const pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
     return (
       <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
         <div className="surface-card p-8 text-center">
@@ -168,7 +165,7 @@ export function QuizScreen({
         ))}
       </div>
 
-      <p className="text-[10px] text-surface-500 text-center mt-2" aria-live="polite">Score: {score} XP • {correctCount}/{questionIndex + (selected ? 1 : 0)} correct</p>
+      <p className="text-[10px] text-surface-500 text-center mt-2" aria-live="polite">Score: {score} XP • {correctCount}/{selected ? questionIndex + 1 : questionIndex} correct</p>
     </div>
   );
 }

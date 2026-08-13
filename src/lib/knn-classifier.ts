@@ -62,17 +62,6 @@ function distance(a: Landmark, b: Landmark): number {
   return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
 }
 
-function cosineSimilarity(a: number[], b: number[]): number {
-  let dot = 0, normA = 0, normB = 0;
-  for (let i = 0; i < a.length; i++) {
-    dot += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
-  }
-  const denom = Math.sqrt(normA) * Math.sqrt(normB);
-  return denom === 0 ? 0 : dot / denom;
-}
-
 function euclideanDistance(a: number[], b: number[]): number {
   let sum = 0;
   for (let i = 0; i < a.length; i++) sum += (a[i] - b[i]) ** 2;
@@ -84,12 +73,14 @@ function augmentFeatures(features: number[], noise = 0.02): number[] {
 }
 
 export class KNNClassifier {
+  static readonly TRAINING_KEY = "sanket-knn-training";
+
   private samples: Map<string, number[][]> = new Map();
   private history: { signId: string | null; confidence: number }[] = [];
   private readonly historySize = 15;
   private readonly k = 3;
-  private readonly minConfidence = 0.55;
-  private readonly minSamplesPerSign = 5;
+  private readonly minConfidence = 0.45;
+  private readonly minSamplesPerSign = 2;
 
   private get entries() { return Array.from(this.samples.entries()); }
   private get sampleValues() { return Array.from(this.samples.values()); }
@@ -106,6 +97,7 @@ export class KNNClassifier {
         this.samples.get(signId)!.push(augmentFeatures(base));
       }
     }
+    this.saveTraining();
   }
 
   addMultipleSamples(signId: string, allLandmarks: Landmark[][]) {
@@ -206,6 +198,29 @@ export class KNNClassifier {
     this.history = [];
   }
 
+  saveTraining(): void {
+    try {
+      const data: Record<string, number[][]> = {};
+      for (const [id, refs] of this.entries) {
+        data[id] = refs;
+      }
+      localStorage.setItem(KNNClassifier.TRAINING_KEY, JSON.stringify(data));
+    } catch {}
+  }
+
+  loadTraining(): void {
+    try {
+      const raw = localStorage.getItem(KNNClassifier.TRAINING_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      for (const [id, refs] of Object.entries(data)) {
+        if (Array.isArray(refs) && refs.length > 0) {
+          this.samples.set(id, refs as number[][]);
+        }
+      }
+    } catch {}
+  }
+
   // Serialize for localStorage
   serialize(): string {
     const data: Record<string, number[][]> = {};
@@ -225,4 +240,98 @@ export class KNNClassifier {
   }
 }
 
+/**
+ * Generate synthetic hand landmarks for a given sign.
+ *
+ * These are rough approximations — enough for a basic demo but NOT accurate
+ * enough for reliable real-world use. Users SHOULD calibrate by recording
+ * real samples via the calibration UI in PracticeScreen for production use.
+ *
+ * Each synthetic hand starts from a base configuration and adds controlled
+ * random noise to produce varied training samples.
+ */
+function makeSyntheticLandmarks(
+  config: { x: number; y: number }[],
+  noise = 0.015
+): Landmark[] {
+  return config.map((p) => ({
+    x: p.x + (Math.random() - 0.5) * noise,
+    y: p.y + (Math.random() - 0.5) * noise,
+  }));
+}
+
+// Hand landmark configurations for known signs.
+// Index mapping: 0=wrist, 1=thumb_cmc, 2=thumb_mcp, 3=thumb_ip, 4=thumb_tip,
+// 5=index_mcp, 6=index_pip, 7=index_dip, 8=index_tip,
+// 9=middle_mcp, 10=middle_pip, 11=middle_dip, 12=middle_tip,
+// 13=ring_mcp, 14=ring_pip, 15=ring_dip, 16=ring_tip,
+// 17=pinky_mcp, 18=pinky_pip, 19=pinky_dip, 20=pinky_tip
+const BASELINE_CONFIGS: Record<string, { x: number; y: number }[]> = {
+  // Namaste: palms together, fingers pointing up, thumb forward
+  namaste: [
+    { x: 0.5, y: 0.6 },  // wrist
+    { x: 0.48, y: 0.52 }, { x: 0.46, y: 0.45 }, { x: 0.44, y: 0.38 }, { x: 0.42, y: 0.32 }, // thumb
+    { x: 0.5, y: 0.52 }, { x: 0.5, y: 0.45 }, { x: 0.5, y: 0.38 }, { x: 0.5, y: 0.30 }, // index
+    { x: 0.52, y: 0.52 }, { x: 0.52, y: 0.45 }, { x: 0.52, y: 0.38 }, { x: 0.53, y: 0.30 }, // middle
+    { x: 0.54, y: 0.53 }, { x: 0.55, y: 0.47 }, { x: 0.55, y: 0.41 }, { x: 0.56, y: 0.34 }, // ring
+    { x: 0.56, y: 0.54 }, { x: 0.57, y: 0.49 }, { x: 0.57, y: 0.44 }, { x: 0.58, y: 0.40 }, // pinky
+  ],
+  "thank-you": [
+    { x: 0.5, y: 0.55 },
+    { x: 0.42, y: 0.48 }, { x: 0.38, y: 0.40 }, { x: 0.35, y: 0.33 }, { x: 0.32, y: 0.26 },
+    { x: 0.48, y: 0.46 }, { x: 0.46, y: 0.38 }, { x: 0.44, y: 0.30 }, { x: 0.42, y: 0.22 },
+    { x: 0.5, y: 0.46 }, { x: 0.5, y: 0.38 }, { x: 0.5, y: 0.30 }, { x: 0.5, y: 0.22 },
+    { x: 0.53, y: 0.47 }, { x: 0.54, y: 0.40 }, { x: 0.55, y: 0.33 }, { x: 0.56, y: 0.27 },
+    { x: 0.56, y: 0.48 }, { x: 0.58, y: 0.42 }, { x: 0.59, y: 0.37 }, { x: 0.60, y: 0.32 },
+  ],
+  yes: [
+    { x: 0.5, y: 0.6 },
+    { x: 0.48, y: 0.55 }, { x: 0.47, y: 0.50 }, { x: 0.45, y: 0.46 }, { x: 0.43, y: 0.42 },
+    { x: 0.5, y: 0.52 }, { x: 0.49, y: 0.45 }, { x: 0.48, y: 0.40 }, { x: 0.47, y: 0.35 },
+    { x: 0.51, y: 0.52 }, { x: 0.51, y: 0.46 }, { x: 0.50, y: 0.41 }, { x: 0.50, y: 0.36 },
+    { x: 0.52, y: 0.53 }, { x: 0.52, y: 0.48 }, { x: 0.51, y: 0.44 }, { x: 0.51, y: 0.40 },
+    { x: 0.53, y: 0.54 }, { x: 0.53, y: 0.50 }, { x: 0.52, y: 0.47 }, { x: 0.52, y: 0.44 },
+  ],
+  no: [
+    { x: 0.5, y: 0.55 },
+    { x: 0.46, y: 0.49 }, { x: 0.44, y: 0.43 }, { x: 0.42, y: 0.37 }, { x: 0.40, y: 0.31 },
+    { x: 0.5, y: 0.47 }, { x: 0.49, y: 0.38 }, { x: 0.49, y: 0.30 }, { x: 0.48, y: 0.20 },
+    { x: 0.52, y: 0.48 }, { x: 0.52, y: 0.42 }, { x: 0.51, y: 0.37 }, { x: 0.51, y: 0.34 },
+    { x: 0.53, y: 0.49 }, { x: 0.53, y: 0.44 }, { x: 0.52, y: 0.40 }, { x: 0.52, y: 0.37 },
+    { x: 0.54, y: 0.50 }, { x: 0.54, y: 0.46 }, { x: 0.53, y: 0.43 }, { x: 0.53, y: 0.40 },
+  ],
+  wait: [
+    { x: 0.5, y: 0.55 },
+    { x: 0.40, y: 0.48 }, { x: 0.35, y: 0.42 }, { x: 0.30, y: 0.36 }, { x: 0.26, y: 0.30 },
+    { x: 0.48, y: 0.46 }, { x: 0.47, y: 0.37 }, { x: 0.46, y: 0.28 }, { x: 0.45, y: 0.18 },
+    { x: 0.5, y: 0.46 }, { x: 0.5, y: 0.37 }, { x: 0.5, y: 0.28 }, { x: 0.5, y: 0.18 },
+    { x: 0.53, y: 0.47 }, { x: 0.54, y: 0.39 }, { x: 0.55, y: 0.31 }, { x: 0.56, y: 0.24 },
+    { x: 0.56, y: 0.48 }, { x: 0.58, y: 0.42 }, { x: 0.60, y: 0.37 }, { x: 0.62, y: 0.32 },
+  ],
+};
+
+/**
+ * Pre-seed the classifier with synthetic baseline data so it works out of the
+ * box in the demo. These synthetic samples are rough approximations and will
+ * NOT yield high accuracy in real webcam conditions. Users should calibrate
+ * via the PracticeScreen calibration UI for reliable results.
+ */
+export function loadBaseline(classifier: KNNClassifier): void {
+  const signIds = Object.keys(BASELINE_CONFIGS);
+  for (const signId of signIds) {
+    const config = BASELINE_CONFIGS[signId];
+    for (let i = 0; i < 5; i++) {
+      const landmarks = makeSyntheticLandmarks(config, 0.02);
+      classifier.addSample(signId, landmarks, true);
+    }
+  }
+}
+
 export const classifier = new KNNClassifier();
+
+// Auto-seed on first import so the classifier works without any training.
+loadBaseline(classifier);
+
+// Load any persisted training data from localStorage (overwrites synthetic
+// samples with same signId keys so the user's real data takes priority).
+classifier.loadTraining();

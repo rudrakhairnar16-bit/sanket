@@ -36,8 +36,8 @@ export async function POST(req: NextRequest) {
   try {
     await connectDB();
     const data = await req.json();
-    const module = await Module.create(data);
-    return NextResponse.json({ module }, { status: 201 });
+    const mod = await Module.create(data);
+    return NextResponse.json({ module: mod }, { status: 201 });
   } catch {
     return NextResponse.json(
       { error: "Failed to create module" },

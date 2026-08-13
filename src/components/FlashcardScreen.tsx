@@ -6,7 +6,6 @@ import {
   addXP,
   completeSign,
   recordAnswer,
-  updateStreak,
   type GameState,
 } from "@/lib/game-storage";
 import { t } from "@/lib/hi";
@@ -48,11 +47,7 @@ export function FlashcardScreen({
         setSignIndex(0);
         setFlipped(false);
       } else {
-        onUpdate((prev) => {
-          let state = addXP(prev, 50);
-          state = updateStreak(state);
-          return state;
-        });
+        onUpdate((prev) => addXP(prev, 50));
         onBack();
       }
     }, 400);
@@ -72,8 +67,7 @@ export function FlashcardScreen({
   }
 
   const allDone =
-    signIndex + 1 > signs.length &&
-    categoryIndex + 1 >= CATEGORIES.length;
+    signs.length === 0 || (signIndex + 1 > signs.length && categoryIndex + 1 >= CATEGORIES.length);
 
   if (!currentSign || allDone) {
     return (

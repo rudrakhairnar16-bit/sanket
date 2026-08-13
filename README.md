@@ -19,6 +19,14 @@ Sanket makes ISL training frictionless — **3 minutes a day**, integrated into 
 
 ## Features
 
+### 🙏 Sanket Sahayak — Help a citizen in 30 seconds (`/assist`)
+- **Public, no login** — lives on the counter, not in a classroom
+- **Welcome-first flow**: the app speaks before the citizen has to — text, ISL chips, and TTS in EN/HI/MR
+- **Two-way desk flow**: citizen signs (webcam or one-tap demo) → clerk sees text + hears it → clerk taps a one-tap reply or types → ISL chips + voice back to the citizen
+- **14 desk-ready one-tap replies**: "Namaste", "Please wait", "Please fill this form", "Bill payment is over here", "Your complaint is registered"…
+- **+25 XP + assist counter** per finished session (`sanket-assist-count`) — the counter card on the clerk dashboard shows real assists
+- **Auto demo fallback**: no camera/model? Clickable sign grid — the flow never crashes on stage
+
 ### 👨‍🏫 Learner View
 - **Daily ISL lesson**: Watch a short video → answer one MCQ
 - **Streak tracking**: Build daily streaks with visual progress
@@ -78,7 +86,18 @@ Sanket makes ISL training frictionless — **3 minutes a day**, integrated into 
 | **Video** | Cloudinary (free tier) | Upload, transcode, CDN delivery |
 | **Charts** | Recharts | React-native charting |
 | **PDF** | jsPDF | Client-side certificate generation |
-| **ML** | MediaPipe Hands (tasks-vision) | Browser-based hand landmark detection |
+| **ML** | MediaPipe Hands (tasks-vision) + Euclidean kNN | Browser-based hand landmark detection |
+
+### ⚠️ Honest note on the recognition model
+
+The recognizer is a **demo-grade Euclidean kNN** over 21 MediaPipe hand landmarks (wrist-relative normalization, 15-frame temporal smoothing). It is deliberately simple so the prototype works entirely on-device and offline on any clerk's laptop. **It is not production ML, and we don't claim it is.**
+
+We believe the moat is *not* the recognizer. The differentiators are:
+1. **ISLRTC-certified municipal vocabulary** — content, not the classifier
+2. **Structured escalation to human interpreters** when confidence is low (roadmap)
+3. **Deployment where service happens** — the 30-second Sanket Sahayak desk flow
+
+Recognition quality is table stakes and will improve; adoption at 6 lakh counters is the product.
 | **Deployment** | Vercel + MongoDB Atlas | Free tiers for both |
 
 ---
@@ -87,7 +106,7 @@ Sanket makes ISL training frictionless — **3 minutes a day**, integrated into 
 
 ### Prerequisites
 - Node.js 18+ and npm
-- **Docker** (recommended — for local MongoDB) OR MongoDB Atlas account (free tier)
+- **Docker** (recommended — for local MongoDB + one-command setup) OR MongoDB Atlas account (free tier)
 - Cloudinary account (free tier) — optional, for video uploads
 
 ### 1. Clone & Install
@@ -131,7 +150,38 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-### 5. Seed Demo Data
+### 5. (Optional) Run All Services with Docker Compose
+
+```bash
+docker compose up -d
+```
+
+This starts MongoDB + the Next.js app in one command. The app will be available at `http://localhost:3000`.
+
+---
+
+### 6. Live Interpreter (Socket.IO)
+
+The interpreter feature uses a **separate Socket.IO server** for real-time WebRTC signaling:
+
+```bash
+# Terminal 1: Next.js
+npm run dev
+
+# Terminal 2: Socket.IO server (port 3001)
+npm run socket
+```
+
+**Production:** The Socket.IO server runs as a standalone Node process. Deploy it to Railway / Fly.io alongside your Vercel deployment:
+```bash
+node server-socket.js
+```
+
+The interpreter falls back to **Demo mode** when the socket server is off — the app still works for walkthroughs.
+
+---
+
+### 7. Seed Demo Data
 > **⚠️ This clears all existing data and populates the database with demo records.**
 
 Visit: `POST /api/admin/seed`
@@ -141,7 +191,7 @@ Or use curl:
 curl -X POST http://localhost:3000/api/admin/seed
 ```
 
-### 6. Demo Accounts
+### 8. Demo Accounts
 
 | Username | Password | Role |
 |---|---|---|
@@ -191,12 +241,37 @@ All ISL sign content is curated from the **Indian Sign Language Research and Tra
 
 ---
 
+## Production Seed
+
+After deploying to production, seed the database by running the seed script:
+
+```bash
+# Set your MongoDB Atlas URI (or use .env with MONGODB_URI)
+export MONGODB_URI="mongodb+srv://user:pass@cluster.xxxxx.mongodb.net/sanket?retryWrites=true&w=majority"
+
+# Run the standalone seed script
+npx tsx scripts/seed.ts
+```
+
+This creates:
+- **2 admins**: `admin` / `admin123`, `wateradmin` / `admin123`
+- **12 learners**: `ramesh`, `sita`, `amit`, `priya`, `vikram`, `anita`, `rajesh`, `neha`, `suresh`, `kavita`, `deepak`, `pooja` (all password: `admin123`)
+- **5 modules**: Thank You, Please Wait, Sign Here, Water Bill, Submit
+- **Completion history** for learners with streaks
+
+> The API endpoint `POST /api/admin/seed` does the same but requires running inside Next.js. Use the script for production deployments.
+
+---
+
 ## Live Demo
 
-**Deployed at:** [https://sanket.vercel.app](https://sanket.vercel.app)
+> **⚠️ Deploy status:** The URLs below are NOT live yet. `sanket.vercel.app` belongs to an unrelated project and `sanket-isl.vercel.app` is a 404. **Run from `localhost:3000` for the demo**, and update this section after the fresh Vercel deploy + `POST /api/admin/seed`.
+
+**Used in the demo (local):** `http://localhost:3000`
 
 | Login | URL |
 |-------|-----|
+| Sanket Sahayak (public) | `/assist` |
 | Clerk Dashboard | `/dashboard` |
 | Admin Panel | `/admin` |
 | ISL Quest (Public) | `/learn` |
@@ -223,31 +298,29 @@ Hackathon MVP → Single Municipality Pilot → Statewide Rollout
 ## 90-Second Judge Demo Script
 
 ```
-[OPEN sanket on laptop, already logged out]
+[OPEN http://localhost:3000/assist in Chrome, logged out]
 
-1. **Login as Clerk** (0-15s)
-   → Username: "ramesh", Password: "admin123"
-   → "This is Ramesh from Water Tax department. He starts his day here."
+1. THE MOMENT — 30-second service (0-40s)
+   → "A deaf citizen walks into a sarkari office. Watch what happens."
+   → The app speaks first: "Namaste, I am Sanket Sahayak."
+   → Click the demo sign "Water" → citizen bubble appears on the clerk desk
+   → Clerk taps one-tap reply "Water is over there" → ISL chips + voice
+   → Citizen signs "Namaste" → clerk says "Namaste" back
+   → Click Finish Session → "You helped a citizen today 💙 +25 XP"
+   → "30 seconds. Not 30 days. That's the moment."
 
-2. **Complete Daily Lesson** (15-45s)
-   → Watch the ISL video (click play on placeholder)
-   → "One short video, one question — takes 3 minutes."
-   → Select answer, click Submit
-   → "Correct! His streak updates to 13 days."
+2. THE HABIT (40-60s)
+   → Open /dashboard: "The same clerk, the same desk — Sanket makes it a habit."
+   → Point to Sahayak counter card + ISL Quest card (streaks, XP, badges)
 
-3. **Show Streak & Leaderboard** (45-60s)
-   → Point to streak counter: "13-day streak — gamification drives daily habit."
-   → Click Leaderboard: "Water Tax department leads this week. Healthy inter-department competition."
-
-4. **Switch to Admin** (60-75s)
+3. THE SCORE (60-80s)
    → Sign out, login as "admin"
-   → "The admin dashboard shows compliance across all departments."
-   → Point to chart: "Real-time completion data, exportable as CSV."
+   → "And now the department sees it: assisted citizens, compliance, real data."
+   → Point to the analytics dashboard (charts, CSV export, leaderboard)
 
-5. **Citizen Impact** (75-90s)
-   → Click QR Codes tab: "Each desk has a QR code. Citizens scan and answer: did this clerk try to use sign language?"
-   → "We move from measuring training to measuring real-world impact."
-   → "Sanket — making public services truly accessible, 3 minutes at a time."
+4. CLOSE (80-90s)
+   → "From 30 days of training to 30 seconds of service. Sanket."
+   → Open floor for Q&A (answers in QA-BANK.md)
 ```
 
 ---

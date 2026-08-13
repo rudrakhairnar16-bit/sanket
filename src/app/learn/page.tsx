@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useAuth } from "@/lib/auth-context";
+import { logger } from "@/lib/logger";
 import { CATEGORIES } from "@/lib/isl-data";
 import {
   loadGame,
@@ -21,13 +23,16 @@ import { DictionaryScreen } from "@/components/DictionaryScreen";
 import { LeaderboardScreen } from "@/components/LeaderboardScreen";
 import { BadgesScreen } from "@/components/BadgesScreen";
 import { NotificationBell } from "@/components/NotificationBell";
+import CertificateGenerator from "@/components/CertificateGenerator";
 import { notify } from "@/lib/notify";
 
 type Screen = "home" | "flashcards" | "quiz" | "practice" | "badges" | "dictionary" | "leaderboard";
 
 export default function LearnPage() {
+  const { user } = useAuth();
   const [screen, setScreen] = useState<Screen>("home");
   const [game, setGame] = useState<GameState | null>(null);
+  const [showCertificate, setShowCertificate] = useState(false);
   const [animateIn, setAnimateIn] = useState("animate-fade-in");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -63,7 +68,7 @@ export default function LearnPage() {
           setGame(merged);
         }
       })
-      .catch(() => {});
+      .catch((e) => logger.error("Game sync fetch failed:", e));
   }, []);
 
   function syncToServer(state: GameState) {
@@ -78,7 +83,7 @@ export default function LearnPage() {
         badges: state.badges,
         completedSigns: state.completedSigns,
       }),
-    }).catch(() => {});
+    }).catch((e) => logger.error("Game sync save failed:", e));
   }
 
   function transitionTo(newScreen: Screen) {
@@ -116,6 +121,7 @@ export default function LearnPage() {
           accuracy={accuracy}
           onNavigate={transitionTo}
           animateIn={animateIn}
+          onShowCertificate={() => setShowCertificate(true)}
         />
       )}
       {screen === "flashcards" && (
@@ -151,6 +157,15 @@ export default function LearnPage() {
       {screen === "leaderboard" && (
         <LeaderboardScreen game={game} onBack={() => transitionTo("home")} />
       )}
+
+      {showCertificate && game && (
+        <CertificateGenerator
+          name={user?.name || "Learner"}
+          department={user?.department || ""}
+          streak={game.streak}
+          onClose={() => setShowCertificate(false)}
+        />
+      )}
     </div>
   );
 }
@@ -161,12 +176,14 @@ function HomeScreen({
   accuracy,
   onNavigate,
   animateIn,
+  onShowCertificate,
 }: {
   game: GameState;
   progress: { current: number; next: number; progress: number };
   accuracy: number;
   onNavigate: (screen: Screen) => void;
   animateIn: string;
+  onShowCertificate?: () => void;
 }) {
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
@@ -289,12 +306,44 @@ function HomeScreen({
                 </p>
               )}
             </div>
-            <div className="text-right shrink-0">
+             <div className="text-right shrink-0 flex flex-col items-end gap-1">
               <p className="text-[10px] text-accent-400 font-bold">{Math.min(game.streak * 2, 50)}+{t("XP")}/{t("day")}</p>
+              {game.streak >= 7 && (
+                <button onClick={onShowCertificate}
+                  className="text-[9px] bg-accent-500/10 text-accent-400 hover:bg-accent-500/20 px-2 py-0.5 rounded-lg transition-colors whitespace-nowrap">
+                  🏆 {t("Certificate")}
+                </button>
+              )}
             </div>
           </div>
         );
       })()}
+
+      <div className="rounded-2xl surface-card overflow-hidden mb-5 border border-primary-500/15">
+        <div className="bg-gradient-to-r from-primary-600/15 via-accent-600/10 to-transparent p-4">
+          <p className="text-[9px] uppercase tracking-wider text-primary-400 font-semibold mb-1">
+            Meet Vaishnavi — your first citizen
+          </p>
+          <p className="text-sm font-semibold text-surface-900 dark:text-white leading-snug">
+            Day 1: Vaishnavi walks in to pay her water bill. She signs &ldquo;bill&rdquo; —
+            can you help her?
+          </p>
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            <button
+              onClick={() => onNavigate("flashcards")}
+              className="px-3 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-[11px] font-semibold transition-all"
+            >
+              Learn &ldquo;Bill&rdquo; →
+            </button>
+            <button
+              onClick={() => onNavigate("practice")}
+              className="px-3 py-1.5 rounded-lg bg-accent-600/20 hover:bg-accent-600/30 text-accent-400 text-[11px] font-semibold transition-all"
+            >
+              Practice &ldquo;Wait&rdquo;
+            </button>
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5" role="group" aria-label={t("Learning modes")}>
         <ModeCard
@@ -416,9 +465,28 @@ function HomeScreen({
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-surface-400"><polyline points="9 18 15 12 9 6"/></svg>
       </Link>
 
-        <button
-          onClick={() => onNavigate("badges")}
-          className="w-full surface-card p-3.5 text-center hover:shadow-btn transition-all flex items-center justify-center gap-2"
+      <Link
+        href="/assist"
+        className="flex items-center gap-3 surface-card p-3.5 mb-3 hover:shadow-btn transition-all group border border-emerald-500/20"
+        aria-label="Open Sanket Sahayak assist counter"
+      >
+        <div className="w-8 h-8 rounded-lg gradient-accent flex items-center justify-center shrink-0 shadow-glow-accent animate-pulse">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div className="flex-1">
+          <p className="font-semibold text-surface-900 dark:text-white text-xs group-hover:text-primary-400 transition-colors">
+            Sanket Sahayak
+          </p>
+          <p className="text-[10px] text-surface-500">
+            Help a citizen right now — on-camera, in under 30 seconds
+          </p>
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-surface-400"><polyline points="9 18 15 12 9 6"/></svg>
+      </Link>
+
+      <button
+        onClick={() => onNavigate("badges")}
+        className="w-full surface-card p-3.5 text-center hover:shadow-btn transition-all flex items-center justify-center gap-2"
           aria-label={`${t("View All Badges")} (${game.badges.length}/${BADGES.length})`}
         >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary-400"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>

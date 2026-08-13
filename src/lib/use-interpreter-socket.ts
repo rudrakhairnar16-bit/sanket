@@ -42,9 +42,9 @@ export function useInterpreterSocket(userId: string) {
     });
 
     s.on("interpreter:ended", ({ sessionId, reason }) => {
-      if (session?.sessionId === sessionId) {
-        setSession((prev) => prev ? { ...prev, status: "ended" } : null);
-      }
+      setSession((prev) =>
+        prev && prev.sessionId === sessionId ? { ...prev, status: "ended" } : prev
+      );
     });
 
     s.on("interpreter:signal", ({ type, data, from }) => {

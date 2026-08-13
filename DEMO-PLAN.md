@@ -1,5 +1,12 @@
 # Sanket — Inter-University Round Demo Plan (Friday)
 
+**Pitch in one line:** *"From 30 days of training to 30 seconds of service."*
+Sanket is not a classroom. Sanket is the moment a deaf citizen walks up to a clerk's desk and gets served — today, not after a training course.
+
+**Demo spine: MOMENT → HABIT → SCORE**
+
+---
+
 ## 1. BEFORE FRIDAY (today/tomorrow)
 
 ### Deploy on Vercel (15 min)
@@ -21,33 +28,34 @@ curl -X POST https://your-app.vercel.app/api/admin/seed
 
 ### Record backup video (10 min)
 - Phone recording of screen + webcam
-- Show: Learn page → Train 4 signs → Interpreter → Clerk replies → TTS
+- Show: **Sanket Sahayak** page → citizen signs (or click) → clerk one-tap reply → ISL chips + TTS → "You helped a citizen" (+25 XP)
 - Upload to YouTube (unlisted) — link in slide footer
 
-### Train & export model
-- Open `http://localhost:3000/learn` in Chrome
-- Train Yes / No / Wait / Thank You (5+ samples each)
-- Click **📤 Export Model** → save `sanket-knn-model.json`
-- Copy to demo laptop → open `/interpreter/calibrate` → **📥 Import Model**
+### Pre-warm on the demo laptop (Chrome) — 2 min
+1. Open `http://localhost:3000/assist` once — let the greeting play.
+2. Open `/interpreter/calibrate` and import `sanket-knn-model.json` (or train Yes / No / Wait / Thank You, 5+ samples each).
+3. Leave tabs warm; MediaPipe WASM will load from CDN instantly on stage.
 
 ---
 
-## 2. DEMO FLOW (5 min)
+## 2. LIVE DEMO (5 min) — with human narration
 
-| Time | Action | Screen shows |
-|------|--------|-------------|
-| 0:00 | **Slide 1-2** (Problem) | 18M deaf · <5% clerks |
-| 0:30 | **Slide 3** (Solution) | 3 pillars |
-| 1:00 | **Slide 4** (Architecture) | Tech stack |
-| 1:30 | **Slide 5-7** (Policy/Roadmap) | KPI table, cost, phases |
-| 2:30 | **LIVE DEMO** — switch to browser | |
-| 2:35 | Open `/learn` → Webcam Practice | Show trained signs |
-| 3:00 | Go to `/interpreter` | Two-way chat |
-| 3:30 | Click Demo sign "Water" | Shows meaning + ISL symbol |
-| 4:00 | Type "Your bill is ready" | ISL chips appear |
-| 4:15 | Click **Speak** | TTS in Hindi |
-| 4:30 | Open `/dashboard` | Streak, XP, leaderboard |
-| 4:45 | **Slide 9-10** (Thank You) | Q&A |
+| Time | What you do / say | Screen shows |
+|------|-------------------|-------------|
+| 0:00 | **"A deaf citizen walks into a sarkari office. Present her problem."** | Slide 1-2 |
+| 0:30 | **LIVE: go to `/assist`** — app speaks first: *"Namaste, I am Sanket Sahayak."* | Welcome banner + ISL chips |
+| 0:40 | Click demo sign **"Water"** (or sign on webcam) | Citizen bubble → clerk desk |
+| 0:50 | Click **one-tap reply** "Water is over there" | ISL chips + TTS to citizen |
+| 0:55 | "Bill payment is over here" → citizen signs **Namaste** | Full 30-second service. Say it aloud: **"30 seconds."** |
+| 1:10 | Click **Finish session** | **"You helped a citizen today 💙 +25 XP"** + counter |
+| 1:30 | **"That's the moment. Now build the habit."** Open `/dashboard` | Sahayak counter card + ISL Quest card |
+| 2:00 | **"And the one sign you practiced? Now the whole department."** Open admin `/admin` | Sugamya Score, adoption KPIs |
+| 2:30 | **Slides 3-7** — solution, honest architecture, policy, cost, roadmap | 3 pillars → tech → policy |
+| 4:30 | **"We kept the model honest: kNN scaffold today, ISLRTC content + human interpreter escalation as the differentiator."** | Architecture slide |
+| 4:45 | **Q&A (scripts in `presentation.html` / `QA-BANK.md`)** | |
+
+### The 30-second moment — exact run (practice this!)
+`/assist` → welcome speaks → click sign → clerk taps reply → ISL chips + voice → finish → +25 XP. **Under 60 seconds total. That is the demo.**
 
 ---
 
@@ -55,21 +63,22 @@ curl -X POST https://your-app.vercel.app/api/admin/seed
 
 | If camera fails | Solution |
 |----------------|----------|
-| No webcam permission | Use **Demo signs** on `/interpreter/calibrate` — click buttons |
-| No internet (MediaPipe CDN) | Pre-warm cache by visiting `/learn` once before demo |
+| No webcam permission | Use **Demo signs** on `/assist` — click buttons (designed for this) |
+| No internet (MediaPipe CDN) | Pre-warm cache by visiting `/assist` once before demo |
+| No Atlas DB | App auto-falls back to mock data — demo never crashes |
 | Laptop crash | Open `presentation.html` + recorded video on phone |
-| Atlas DB down | App auto-falls back to mock data — works anyway |
 
 ---
 
 ## 4. PRESENTATION TIPS
 
-- **Start with the problem** — 18M deaf Indians gets attention
-- **Demo first, slides later** — judges remember what works
-- **Explain "why municipal"** — this is NOT generic ASL, it's built for clerks
-- **Mention mock fallback** — "never crashes" is a strong engineering point
-- **Use Chrome** (not Brave) for webcam — Edge also works
-- **Dark mode** — looks better on projector
+- **Never say "12.7M deaf are underserved" first.** Say *"A deaf citizen walked into a sarkari office today. She waited. She left without her answer."* — back it up with the number on the slide.
+- **Demo in the first 90 seconds.** Slides exist to catch you, not to carry you.
+- **Own the ML honestly before judges ask.** Lead with "we chose a demo-grade model on purpose — the moat is the certified content and the human escalation path, not the recognizer."
+- **Explain "why municipal"** — municipal counters are the highest-traffic interface between government and deaf citizens; ASL school vocabulary doesn't cover "water bill" or "certificate".
+- **Mention mock fallback + fail-fast DB** — "the demo cannot crash" is a real engineering point.
+- **Close the loop:** open demo → counter card shows "1 assisted" — proof, not promise.
+- **Use Chrome** (not Brave) for webcam. **Dark mode** looks better on projector.
 
 ---
 
@@ -79,3 +88,50 @@ curl -X POST https://your-app.vercel.app/api/admin/seed
 - `presentation.html` (open in Chrome, F11 for fullscreen)
 - `presentation.pdf` (backup — print from browser Ctrl+P)
 - Phone with recorded demo video (YouTube unlisted)
+
+---
+
+## 6. THE DEADLINE CHECKLIST
+
+- [ ] `/assist` runs the 30-second moment start-to-finish, twice, with a stopwatch
+- [ ] Backup video recorded and uploaded (unlisted link in slide footer)
+- [ ] Vercel deploy + seed (`curl -X POST /api/admin/seed`)
+- [ ] `sanket-knn-model.json` exported and copied to demo laptop
+- [ ] Rehearsed the "Meet Vaishnavi" story opener out loud, 3+ times
+- [ ] Q&A scripts memorized — top 5 in `QA-BANK.md`
+
+---
+
+## 7. REHEARSAL PLAN (do this on a laptop, not a phone)
+
+### Round 1 — "The Moment" (10 min, stopwatch required)
+1. Open `http://localhost:3000/assist` in Chrome.
+2. Start the stopwatch. Say the story opener out loud:
+   *"A deaf citizen walks into a sarkari office. Watch this moment."*
+3. Welcome speaks → click demo sign "Water" → tap reply "Water is over there" → click "Namaste" sign → Finish session.
+4. Stop the stopwatch. **Target: under 60 seconds.**
+5. Replay the video/do it again — cut time until smooth. The finish screen showing **+25 XP and the counter** is the photoshoot moment; pause on it.
+
+### Round 2 — Full run (15 min, projector/laptop + phone recording)
+- Rehearse the exact table in §2 with a real timer per row.
+- Mark down anything you fumbled (click target, load time, language switch) and fix it right now.
+- Record ONE clean run on the phone — this becomes the backup video if the laptop dies.
+
+### Round 3 — Q&A sparring (15 min, in team)
+- One teammate plays judge. Ask all 5 questions from `QA-BANK.md` in rapid fire.
+- Speaker answers with ONLY the first line of each script. If the "judge" pushes, extend.
+- **Rule:** no answer longer than 20 seconds. Record and listen back.
+
+### Round 4 — Judges' edge cases (10 min)
+- "Start the demo from `/dashboard`" → can you get to the moment in 2 clicks?
+- "Shut the internet off" → mock-fallback still works (blacklist wifi, reload).
+- "Show it on THIS laptop" → does the Chrome build open and run without a rebuild? (It should — static export not required, but `npm run build` once locally so `next start` is available).
+- Simulate camera denial → demo grid takes over (this is why we never depend on a camera).
+
+### Stage-day checklist (tick the morning of)
+- [ ] Laptop at 100%, Silver/Proseca off, browser on `/assist`
+- [ ] Tabs pre-warmed: `/assist`, `/dashboard`, `/admin`, `/learn`
+- [ ] Stopwatch app open (phone in front, screen off)
+- [ ] `QA-BANK.md` printed on one card — first lines only
+- [ ] Modem/router off-isolate decision known (fallback demo still works)
+- [ ] Co-presenter knows the 4 handoff moments (§2 table timestamps)

@@ -13,12 +13,12 @@ export async function GET(
   }
 
   await connectDB();
-  const module = await Module.findById(params.id);
-  if (!module) {
+  const mod = await Module.findById(params.id);
+  if (!mod) {
     return NextResponse.json({ error: "Module not found" }, { status: 404 });
   }
 
-  return NextResponse.json({ module });
+  return NextResponse.json({ module: mod });
 }
 
 export async function PUT(
@@ -33,16 +33,16 @@ export async function PUT(
   try {
     await connectDB();
     const data = await req.json();
-    const module = await Module.findByIdAndUpdate(params.id, data, {
+    const mod = await Module.findByIdAndUpdate(params.id, data, {
       new: true,
     });
-    if (!module) {
+    if (!mod) {
       return NextResponse.json(
         { error: "Module not found" },
         { status: 404 }
       );
     }
-    return NextResponse.json({ module });
+    return NextResponse.json({ module: mod });
   } catch {
     return NextResponse.json(
       { error: "Failed to update module" },
@@ -62,8 +62,8 @@ export async function DELETE(
 
   try {
     await connectDB();
-    const module = await Module.findByIdAndDelete(params.id);
-    if (!module) {
+    const mod = await Module.findByIdAndDelete(params.id);
+    if (!mod) {
       return NextResponse.json(
         { error: "Module not found" },
         { status: 404 }

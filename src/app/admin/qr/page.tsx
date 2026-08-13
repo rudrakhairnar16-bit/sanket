@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import NextImage from "next/image";
 import { useAuth } from "@/lib/auth-context";
-
 interface Learner {
   _id: string;
   username: string;
@@ -104,12 +104,14 @@ export default function AdminQRPage() {
             key={learner._id}
             className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700"
           >
-            <div className="w-32 h-32 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden dark:bg-gray-700">
+            <div className="w-32 h-32 mx-auto mb-4 bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden relative dark:bg-gray-700">
               {selected === learner.username ? (
-                <img
+                <NextImage
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(getQRUrl(learner.username))}`}
                   alt={`QR for ${learner.name}`}
-                  className="w-full h-full object-contain"
+                  fill
+                  sizes="128px"
+                  className="object-contain"
                 />
               ) : (
                 <div className="text-center text-gray-400 dark:text-gray-500">

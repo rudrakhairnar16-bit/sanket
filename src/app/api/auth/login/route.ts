@@ -9,7 +9,8 @@ import { checkRateLimit, getRateLimitRemaining } from "@/lib/rate-limit";
 export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown";
-    if (!checkRateLimit(`login:${ip}`)) {
+    const isLocal = ip === "unknown" || ip === "127.0.0.1" || ip === "::1" || ip === "localhost";
+    if (!isLocal && !checkRateLimit(`login:${ip}`)) {
       return NextResponse.json(
         { error: "Too many attempts. Try again in 60 seconds." },
         { status: 429 }
@@ -63,7 +64,7 @@ export async function POST(req: NextRequest) {
 
       res.cookies.set("token", token, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
         path: "/",
         maxAge: 7 * 24 * 60 * 60,
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest) {
       const res = NextResponse.json({ user: mockToPublic(user) });
       res.cookies.set("token", token, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
         path: "/",
         maxAge: 7 * 24 * 60 * 60,

@@ -16,7 +16,7 @@ export const MOCK_MODULES: MockModule[] = [
   {
     _id: "mm-1",
     title: "Sign: Thank You",
-    videoUrl: "/videos/thank-you.mp4",
+    videoUrl: "https://www.youtube.com/embed/neE5Fg4FVtA",
     question: "What does this sign mean?",
     options: ["Please", "Thank You", "Sorry", "Hello"],
     correctAnswer: "Thank You",
@@ -26,7 +26,7 @@ export const MOCK_MODULES: MockModule[] = [
   {
     _id: "mm-2",
     title: "Sign: Please Wait",
-    videoUrl: "/videos/please-wait.mp4",
+    videoUrl: "https://www.youtube.com/embed/neE5Fg4FVtA",
     question: "What does this sign mean?",
     options: ["Come Here", "Go Away", "Please Wait", "Sit Down"],
     correctAnswer: "Please Wait",
@@ -36,7 +36,7 @@ export const MOCK_MODULES: MockModule[] = [
   {
     _id: "mm-3",
     title: "Sign: Sign Here",
-    videoUrl: "/videos/sign-here.mp4",
+    videoUrl: "https://www.youtube.com/embed/5vHmvYA8Z6Q",
     question: "This sign instructs the citizen to:",
     options: ["Pay Here", "Sign Here", "Stand Here", "Wait Here"],
     correctAnswer: "Sign Here",
@@ -46,7 +46,7 @@ export const MOCK_MODULES: MockModule[] = [
   {
     _id: "mm-4",
     title: "Sign: Water Bill",
-    videoUrl: "/videos/water-bill.mp4",
+    videoUrl: "https://www.youtube.com/embed/5vHmvYA8Z6Q",
     question: "Which department does this sign relate to?",
     options: ["Property Tax", "Police", "Water Bill", "Health"],
     correctAnswer: "Water Bill",
@@ -56,7 +56,7 @@ export const MOCK_MODULES: MockModule[] = [
   {
     _id: "mm-5",
     title: "Sign: Submit",
-    videoUrl: "/videos/submit.mp4",
+    videoUrl: "https://www.youtube.com/embed/5vHmvYA8Z6Q",
     question: "What action does this sign indicate?",
     options: ["Cancel", "Submit", "Delete", "Print"],
     correctAnswer: "Submit",
