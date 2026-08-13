@@ -149,3 +149,7 @@ devserver.err
 test-results/
 playwright-report/
 blob-report/
+
+# National-round secret (two-device live relay) — never commit
+secret/
+secret/**/*

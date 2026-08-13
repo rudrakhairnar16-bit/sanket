@@ -59,6 +59,24 @@ Practice these until they come out without thinking. **First line is your answer
 - Cost is per-assist, not per-license: content is ISLRTC-certified; unit economics are a laptop + a weekend, not a training course.
 - Mobile grid is next; the backend already uses one shared data layer.
 
+## Q7. "Where do the human interpreters come from? You can't staff 6 Lakh counters with them."
+
+**Answer (10s):** "We don't staff every counter — every counter *trains* one. The interpreter network grows out of the same train-the-trainer loop: one ISL-trained clerk per office becomes the local relay, matched live over the same WebSocket, and ISLRTC-trained interpreters back up the hard cases."
+
+**If they push:**
+- Escalations are logged, not lost — each one tells the department where machine recognition fails so training effort goes where it's needed (and the Sugamya Score rewards handling them).
+- A relay is a normal clerk already on payroll taking a call — no new workforce, no cost line, mirrors the ASHA-worker model.
+- Hardware reality: it's a video call to a trained human. The infrastructure we ship (WebSocket rooms, matching, rating) is exactly the plumbing a district helpline needs later.
+
+## Q8. "Your score is just completion. How do you prove service actually improved?"
+
+**Answer (10s):** "The score now has a human-safety-net leg: 10% of the Sugamya Score is 'escalations handled' — the times a clerk admitted the machine wasn't enough and a human completed the service. The score rewards honesty, not just completion."
+
+**If they push:**
+- Formula: 45% compliance + 30% citizen satisfaction + 15% participation + **10% human safety net (escalations handled)**.
+- Escalations appear live in the admin dashboard — the department sees machine failure as a number it can train against, instead of a silent dead-end at the counter.
+- The recognizer staying honest-kNN is a feature: it produces escalations, and escalations are the pilot's real learning signal.
+
 ---
 
 ## Timeboxed one-liners (for rapid fire)
@@ -66,5 +84,6 @@ Practice these until they come out without thinking. **First line is your answer
 - "Every team has an interpreter. What's yours?" → "They recognize a sign. We route a citizen — machine first, human clerk the moment confidence drops."
 - "Why municipal?" → "Because the counter is where government meets a deaf citizen, and it's the one place nobody is built to serve them today."
 - "What's your metric?" → "Assisted citizens per counter per month. Not sign-ups."
+- "What happens when the recognizer is wrong?" → "It's a feature: one tap calls a live human clerk, and the escalation is logged into the department score."
 - "What did you build this week?" → "The Sanket Sahayak desk flow — a full two-way service turn in one screen, plus honest-product packaging for judges." (adapt as needed)
 - "Biggest honest risk?" → "Clerk adoption — which is exactly why the pilot is a single office, measured on assists."

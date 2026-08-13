@@ -47,15 +47,33 @@ curl -X POST https://your-app.vercel.app/api/admin/seed
 | 0:40 | Click demo sign **"Water"** (or sign on webcam) | Citizen bubble → clerk desk |
 | 0:50 | Click **one-tap reply** "Water is over there" | ISL chips + TTS to citizen |
 | 0:55 | "Bill payment is over here" → citizen signs **Namaste** | Full 30-second service. Say it aloud: **"30 seconds."** |
-| 1:10 | Click **Finish session** | **"You helped a citizen today 💙 +25 XP"** + counter |
-| 1:30 | **"That's the moment. Now build the habit."** Open `/dashboard` | Sahayak counter card + ISL Quest card |
-| 2:00 | **"And the one sign you practiced? Now the whole department."** Open admin `/admin` | Sugamya Score, adoption KPIs |
-| 2:30 | **Slides 3-7** — solution, honest architecture, policy, cost, roadmap | 3 pillars → tech → policy |
-| 4:30 | **"The differentiator: other teams built a recognizer. We built the routing — when recognition is low-confidence, a live human clerk who signs is one tap away."** | Architecture slide |
+| 1:05 | **THE MOAT — LIVE:** "Recognizers stop here. We route." Sign a **low-confidence sign** (or click one the kNN won't fire on) → tap **📞 Call interpreter** → *searching…* → **"Live interpreter: Sanket Relay"** appears + interpreter message in chat | Escalation card goes violet, relay live |
+| 1:25 | Tap **End relay** → "Escalation handled by a human" + count | Escalation logged |
+| 1:30 | Click **Finish session** | **"You helped a citizen today 💙 +25 XP"** + counter |
+| 1:50 | **"That's the moment. Now build the habit."** Open `/dashboard` | Sahayak counter card + ISL Quest card |
+| 2:20 | **"And the one sign you practiced? Now the whole department."** Open admin `/admin` | Sugamya Score (shows **N escalations handled**) |
+| 2:50 | **Slides 3-7** — solution, honest architecture, policy, cost, roadmap | 3 pillars → tech → policy |
+| 4:30 | **"The differentiator: other teams built a recognizer. We built the routing — when recognition is low-confidence, a live human clerk who signs is one tap away. It's on the screen, it happened, it's logged."** | Architecture slide + escalation card |
 | 4:45 | **Q&A (scripts in `presentation.html` / `QA-BANK.md`)** | |
 
 ### The 30-second moment — exact run (practice this!)
 `/assist` → welcome speaks → click sign → clerk taps reply → ISL chips + voice → finish → +25 XP. **Under 60 seconds total. That is the demo.**
+
+### The escalation moment — exact run (this is the moat, practice it!)
+`/assist` → sign a sign the kNN won't read (or click one and let confidence stay low) → **📞 Call interpreter** → "Searching for a live interpreter…" → ~1.6s later **"Live interpreter: Sanket Relay"** + interpreter message lands in the chat → **End relay** → "Escalation handled by a human" + counter ticks.
+
+---
+
+## 2.5. LIVE HUMAN INTERPRETER — the escalation moment
+
+### Setup — Simulated relay (single laptop, default, zero risk)
+- No socket server needed. Tap **Call interpreter** → a simulated relay joins after ~1.6s.
+- The card shows `Demo mode — a simulated interpreter joins on this machine.`
+- **Use this as the primary demo.** It is 100% reliable on stage and the chat message + logged escalation tell the whole story.
+
+### What the judges see
+- A "can't read this sign" moment that does **not** dead-end — it escalates.
+- The Sugamya Score formula now includes **10% "human safety net"** (escalations handled), so the score visibly rewards the relay, not just machine recognition.
 
 ---
 
@@ -66,6 +84,7 @@ curl -X POST https://your-app.vercel.app/api/admin/seed
 | No webcam permission | Use **Demo signs** on `/assist` — click buttons (designed for this) |
 | No internet (MediaPipe CDN) | Pre-warm cache by visiting `/assist` once before demo |
 | No Atlas DB | App auto-falls back to mock data — demo never crashes |
+| Socket server / second laptop fails | **Simulated relay** — same button, same UI, same chat message |
 | Laptop crash | Open `presentation.html` + recorded video on phone |
 
 ---
@@ -94,6 +113,7 @@ curl -X POST https://your-app.vercel.app/api/admin/seed
 ## 6. THE DEADLINE CHECKLIST
 
 - [ ] `/assist` runs the 30-second moment start-to-finish, twice, with a stopwatch
+- [ ] Escalation moment rehearsed: Call interpreter → relay joins → End relay → logged (simulated relay)
 - [ ] Backup video recorded and uploaded (unlisted link in slide footer)
 - [ ] Vercel deploy + seed (`curl -X POST /api/admin/seed`)
 - [ ] `sanket-knn-model.json` exported and copied to demo laptop
@@ -111,6 +131,7 @@ curl -X POST https://your-app.vercel.app/api/admin/seed
 3. Welcome speaks → click demo sign "Water" → tap reply "Water is over there" → click "Namaste" sign → Finish session.
 4. Stop the stopwatch. **Target: under 60 seconds.**
 5. Replay the video/do it again — cut time until smooth. The finish screen showing **+25 XP and the counter** is the photoshoot moment; pause on it.
+6. **Add the escalation beat to Round 1** — after "Namaste", do Call interpreter → End relay once. Target +15 seconds. Pause on the violet "Live interpreter" card; that frame is the moat.
 
 ### Round 2 — Full run (15 min, projector/laptop + phone recording)
 - Rehearse the exact table in §2 with a real timer per row.

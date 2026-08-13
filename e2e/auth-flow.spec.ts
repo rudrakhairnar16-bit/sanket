@@ -64,6 +64,16 @@ test.describe("ISL Quest (public access)", () => {
     await expect(chatLog.getByText("Namaste", { exact: true })).toBeVisible({ timeout: 10000 });
     await expect(chatLog.getByText("Citizen", { exact: true })).toBeVisible({ timeout: 10000 });
   });
+
+  test("assist escalation calls a live interpreter and records it", async ({ page }) => {
+    await page.goto("/assist");
+    await page.getByRole("button", { name: /call interpreter/i }).click();
+    await expect(page.getByText(/searching for a live interpreter/i)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/live interpreter:/i)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/interpreter connected/i)).toBeVisible({ timeout: 10000 });
+    await page.getByRole("button", { name: /end relay/i }).click();
+    await expect(page.getByText(/escalation handled by a human/i)).toBeVisible({ timeout: 10000 });
+  });
 });
 
 test.describe("Dashboard (authenticated)", () => {
@@ -104,5 +114,6 @@ test.describe("Admin dashboard (authenticated)", () => {
   test("admin dashboard shows Sugamya Score", async ({ page }) => {
     await expect(page.getByText("Sugamya Score")).toBeVisible({ timeout: 10000 });
     await expect(page.getByText(/Grade [A-D]/)).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText(/escalations handled/i)).toBeVisible({ timeout: 10000 });
   });
 });

@@ -4,6 +4,7 @@ import User from "@/models/User";
 import Completion from "@/models/Completion";
 import { getAuthUser } from "@/lib/auth";
 import { getMockLeaderboard } from "@/lib/mock-data";
+import { getEscalationCount } from "@/lib/escalation-store";
 
 export async function GET(req: NextRequest) {
   const user = await getAuthUser(req);
@@ -65,6 +66,7 @@ export async function GET(req: NextRequest) {
       totalCompletions,
       deptCompliance,
       leaderboard,
+      escalationsHandled: getEscalationCount(),
     });
   } catch {
     const mock = getMockLeaderboard();
@@ -99,6 +101,7 @@ export async function GET(req: NextRequest) {
         totalCompleted: u.totalCompleted,
         isChampion: u.isChampion,
       })),
+      escalationsHandled: getEscalationCount(),
     });
   }
 }
