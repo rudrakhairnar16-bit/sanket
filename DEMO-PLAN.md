@@ -51,7 +51,7 @@ curl -X POST https://your-app.vercel.app/api/admin/seed
 | 1:30 | **"That's the moment. Now build the habit."** Open `/dashboard` | Sahayak counter card + ISL Quest card |
 | 2:00 | **"And the one sign you practiced? Now the whole department."** Open admin `/admin` | Sugamya Score, adoption KPIs |
 | 2:30 | **Slides 3-7** — solution, honest architecture, policy, cost, roadmap | 3 pillars → tech → policy |
-| 4:30 | **"We kept the model honest: kNN scaffold today, ISLRTC content + human interpreter escalation as the differentiator."** | Architecture slide |
+| 4:30 | **"The differentiator: other teams built a recognizer. We built the routing — when recognition is low-confidence, a live human clerk who signs is one tap away."** | Architecture slide |
 | 4:45 | **Q&A (scripts in `presentation.html` / `QA-BANK.md`)** | |
 
 ### The 30-second moment — exact run (practice this!)

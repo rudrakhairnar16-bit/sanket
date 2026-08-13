@@ -22,7 +22,16 @@ Practice these until they come out without thinking. **First line is your answer
 - Non-verbal fallback: icons + text + TTS alongside every sign — the citizen is never blocked on a single handshape.
 - Roadmap: regional sign variants as tagged module packs, town-by-town (this is our slide-6 rural plan).
 
-## Q3. "How is this different from existing ISL apps / government services?"
+## Q3. "Everyone's building a sign-language interpreter. What makes yours different?"
+
+**Answer (10s):** "They built a recognizer — camera sees a sign, screen shows text. We built the routing: when recognition is low-confidence, a human clerk who signs is one tap away, live. Recognition is table stakes; the escalation loop is what actually serves the citizen."
+
+**If they push:**
+- Their interpreter ends when the model stops being right. Ours hands over to the only two people who can truly fail-safe: a deaf citizen and a trained clerk, matched live (WebSocket relay, demoed in the app).
+- The recognizer is honest-kNN and it's fine: it's a scaffold for the counter flow (Sanket Sahayak), which is the 30-second unit of value.
+- Add the missing point: "everyone shipped a demo for a phone. We shipped service for a government desk — 6 Lakh of them, where the counter IS the government."
+
+## Q4. "How is this different from existing ISL apps / government services?"
 
 **Answer (10s):** "ISL apps teach ISL. We're the only one we know that is built to *put a deaf citizen and a clerk on opposite sides of one counter* in under 30 seconds — the citizen signs, the clerk gets text and voice, the clerk replies, the citizen gets signs and voice. It's installed where service happens, not where learning happens."
 
@@ -31,7 +40,7 @@ Practice these until they come out without thinking. **First line is your answer
 - Adoption signal: the counter card counts assisted citizens — municipalities can see the service actually happened.
 - One competitor teaches with one handshape per word and no two-way desk flow.
 
-## Q4. "An app doesn't fix the human problem — will clerks actually use it?"
+## Q5. "An app doesn't fix the human problem — will clerks actually use it?"
 
 **Answer (10s):** "The unit of engagement is 30 seconds, not a course. A clerk who thinks a course is too long has no reason to skip a 30-second assist on their own counter."
 
@@ -40,7 +49,7 @@ Practice these until they come out without thinking. **First line is your answer
 - RPwD Act 2016 compliance is a legal motivator for the department; the narrative (Meet Vaishnavi) makes it personal for the clerk.
 - We're honest: adoption is THE risk. That's why the pilot is one taluka talati office, not a district rollout (slide 7).
 
-## Q5. "How do you scale — 6 Lakh counters across India?"
+## Q6. "How do you scale — 6 Lakh counters across India?"
 
 **Answer (10s):** "One taluka office, one talati, in the first 90 days — measure assisted-citizen count, not installs. The village-level office is where the counter *is* the government, and where a deaf citizen's barrier is the most acute."
 
@@ -54,6 +63,7 @@ Practice these until they come out without thinking. **First line is your answer
 
 ## Timeboxed one-liners (for rapid fire)
 
+- "Every team has an interpreter. What's yours?" → "They recognize a sign. We route a citizen — machine first, human clerk the moment confidence drops."
 - "Why municipal?" → "Because the counter is where government meets a deaf citizen, and it's the one place nobody is built to serve them today."
 - "What's your metric?" → "Assisted citizens per counter per month. Not sign-ups."
 - "What did you build this week?" → "The Sanket Sahayak desk flow — a full two-way service turn in one screen, plus honest-product packaging for judges." (adapt as needed)
