@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { classifier, type Landmark } from "@/lib/knn-classifier";
-import { speak, stopSpeaking } from "@/lib/tts";
+import { speak, stopSpeaking, SUPPORTED_LANGS } from "@/lib/tts";
 import {
   MUNICIPAL_SIGNS,
   SIGN_MAP,
@@ -25,30 +25,32 @@ interface ClerkPhrase {
   en: string;
   hi: string;
   mr: string;
+  gu: string;
   tokens: string[];
 }
 
 const CLERK_PHRASES: ClerkPhrase[] = [
-  { id: "namaste", en: "Namaste", hi: "नमस्ते", mr: "नमस्कार", tokens: ["namaste"] },
-  { id: "yes_please", en: "Yes, of course", hi: "हाँ, बिल्कुल", mr: "होय, नक्कीच", tokens: ["yes", "please"] },
-  { id: "please_wait", en: "Please wait", hi: "कृपया रुकिए", mr: "कृपया थांबा", tokens: ["please", "wait"] },
-  { id: "fill_form", en: "Please fill this form", hi: "कृपया यह फ़ॉर्म भरिए", mr: "कृपया हा फॉर्म भरा", tokens: ["please", "form"] },
-  { id: "need_name", en: "I need your name", hi: "आपका नाम चाहिए", mr: "तुमचे नाव हवे", tokens: ["name"] },
-  { id: "need_address", en: "I need your address", hi: "आपका पता चाहिए", mr: "तुमचा पत्ता हवा", tokens: ["address"] },
-  { id: "show_document", en: "Please show your document", hi: "कृपया अपना दस्तावेज़ दिखाइए", mr: "कृपया तुमचा दस्तऐवज दाखवा", tokens: ["please", "document"] },
-  { id: "bill_payment", en: "Bill payment is over here", hi: "बिल का भुगतान यहाँ पर है", mr: "बिलचे देयक इथे आहे", tokens: ["bill", "payment"] },
-  { id: "complaint_registered", en: "Your complaint is registered", hi: "आपकी शिकायत दर्ज हो गई", mr: "तुमची तक्रार नोंद झाली", tokens: ["complaint"] },
-  { id: "understand", en: "Do you understand?", hi: "क्या आप समझ गए?", mr: "तुम्हाला समजलं का?", tokens: ["understand"] },
-  { id: "sorry_wait", en: "Sorry, I didn't understand", hi: "माफ़ कीजिए, समझ नहीं आया", mr: "माफ करा, समजलं नाही", tokens: ["sorry", "dont_understand"] },
-  { id: "water_there", en: "Water is over there", hi: "पानी उधर है", mr: "पाणी तिकडे आहे", tokens: ["water"] },
-  { id: "office_time", en: "Office time is up", hi: "कार्यालय का समय हो गया", mr: "कार्यालयाची वेळ झाली", tokens: ["office", "time"] },
-  { id: "thanks", en: "Thank you!", hi: "धन्यवाद!", mr: "धन्यवाद!", tokens: ["thank_you"] },
+  { id: "namaste", en: "Namaste", hi: "नमस्ते", mr: "नमस्कार", gu: "નમસ્તે", tokens: ["namaste"] },
+  { id: "yes_please", en: "Yes, of course", hi: "हाँ, बिल्कुल", mr: "होय, नक्कीच", gu: "હા, ચોક્કસ", tokens: ["yes", "please"] },
+  { id: "please_wait", en: "Please wait", hi: "कृपया रुकिए", mr: "कृपया थांबा", gu: "કૃપા કરીને રાહ જુઓ", tokens: ["please", "wait"] },
+  { id: "fill_form", en: "Please fill this form", hi: "कृपया यह फ़ॉर्म भरिए", mr: "कृपया हा फॉर्म भरा", gu: "કૃપા કરીને આ ફોર્મ ભરો", tokens: ["please", "form"] },
+  { id: "need_name", en: "I need your name", hi: "आपका नाम चाहिए", mr: "तुमचे नाव हवे", gu: "તમારું નામ જોઈએ", tokens: ["name"] },
+  { id: "need_address", en: "I need your address", hi: "आपका पता चाहिए", mr: "तुमचा पत्ता हवा", gu: "તમારું સરનામું જોઈએ", tokens: ["address"] },
+  { id: "show_document", en: "Please show your document", hi: "कृपया अपना दस्तावेज़ दिखाइए", mr: "कृपया तुमचा दस्तऐवज दाखवा", gu: "કૃપા કરીને તમારો દસ્તાવેજ બતાવો", tokens: ["please", "document"] },
+  { id: "bill_payment", en: "Bill payment is over here", hi: "बिल का भुगतान यहाँ पर है", mr: "बिलचे देयक इथे आहे", gu: "બિલની ચુકવણી અહીં છે", tokens: ["bill", "payment"] },
+  { id: "complaint_registered", en: "Your complaint is registered", hi: "आपकी शिकायत दर्ज हो गई", mr: "तुमची तक्रार नोंद झाली", gu: "તમારી ફરિયાદ નોંધાઈ ગઈ છે", tokens: ["complaint"] },
+  { id: "understand", en: "Do you understand?", hi: "क्या आप समझ गए?", mr: "तुम्हाला समजलं का?", gu: "શું તમને સમજાયું?", tokens: ["understand"] },
+  { id: "sorry_wait", en: "Sorry, I didn't understand", hi: "माफ़ कीजिए, समझ नहीं आया", mr: "माफ करा, समजलं नाही", gu: "માફ કરશો, સમજાયું નહીં", tokens: ["sorry", "dont_understand"] },
+  { id: "water_there", en: "Water is over there", hi: "पानी उधर है", mr: "पाणी तिकडे आहे", gu: "પાણી ત્યાં છે", tokens: ["water"] },
+  { id: "office_time", en: "Office time is up", hi: "कार्यालय का समय हो गया", mr: "कार्यालयाची वेळ झाली", gu: "કાર્યાલયનો સમય પૂરો થયો", tokens: ["office", "time"] },
+  { id: "thanks", en: "Thank you!", hi: "धन्यवाद!", mr: "धन्यवाद!", gu: "ધન્યવાદ!", tokens: ["thank_you"] },
 ];
 
 const GREETING: Record<string, string> = {
   en: "Namaste, I am Sanket Sahayak. How can I help you today?",
   hi: "नमस्ते, मैं संकेत सहायक हूँ। आज मैं आपकी कैसे मदद करूँ?",
   mr: "नमस्कार, मी संकेत सहायक आहे. आज मी तुमची कशी मदत करू?",
+  gu: "નમસ્તે, હું સંકેત સહાયક છું. આજે હું તમારી કેવી રીતે મદદ કરી શકું?",
 };
 
 const COUNTER_KEY = "sanket-assist-count";
@@ -99,7 +101,7 @@ export default function AssistMode() {
     const escalCount = parseInt(localStorage.getItem(ESCALATION_KEY) || "0", 10) || 0;
     setEscalationCount(escalCount);
     const savedLang = localStorage.getItem("sanket-lang");
-    if (savedLang && ["en", "hi", "mr"].includes(savedLang)) {
+    if (savedLang && (SUPPORTED_LANGS as readonly string[]).includes(savedLang)) {
       setLanguage(savedLang);
     }
     const savedSamples = localStorage.getItem("sanket-knn-samples");
@@ -125,7 +127,7 @@ export default function AssistMode() {
 
   const cycleLang = () => {
     setLanguage((prev) => {
-      const next = prev === "en" ? "hi" : prev === "hi" ? "mr" : "en";
+      const next = prev === "en" ? "hi" : prev === "hi" ? "mr" : prev === "mr" ? "gu" : "en";
       localStorage.setItem("sanket-lang", next);
       return next;
     });
@@ -172,6 +174,12 @@ export default function AssistMode() {
       stopSpeaking();
     };
   }, []);
+
+  useEffect(() => {
+    if (camEnabled && streamRef.current && videoRef.current && !videoRef.current.srcObject) {
+      videoRef.current.srcObject = streamRef.current;
+    }
+  }, [camEnabled, camStatus]);
 
   async function loadHandLandmarker() {
     try {
@@ -364,7 +372,9 @@ export default function AssistMode() {
             ? "दुभाषिया जुड़ गए हैं। नागरिक की कैसे मदद करूँ?"
             : language === "mr"
               ? "दुभाषी जोडले गेले. नागरिकाची कशी मदत करू?"
-              : "The interpreter is connected. How can I help the citizen?",
+              : language === "gu"
+                ? "દુભાષિયા જોડાયા છે. નાગરિકની કેવી રીતે મદદ કરું?"
+                : "The interpreter is connected. How can I help the citizen?",
           language
         );
       }, 1600);
@@ -444,14 +454,18 @@ export default function AssistMode() {
               ? "आज आपने एक नागरिक की मदद की 💙"
               : language === "mr"
                 ? "आज तुम्ही एका नागरिकाला मदत केलीत 💙"
-                : "You helped a citizen today 💙"}
+                : language === "gu"
+                  ? "આજે તમે એક નાગરિકને મદદ કરી 💙"
+                  : "You helped a citizen today 💙"}
           </h2>
           <p className="text-gray-400 text-sm mb-6">
             {language === "hi"
               ? "संकेत ने सुनने व बोलने के बीच का अंतर मिटा दिया।"
               : language === "mr"
                 ? "संकेतने ऐकणे आणि बोलणे यातील अंतर मिटवले."
-                : "Sanket turned every sign into service."}
+                : language === "gu"
+                  ? "સંકેતે સાંભળવા અને બોલવા વચ્ચેનું અંતર દૂર કર્યું."
+                  : "Sanket turned every sign into service."}
           </p>
           <div className="grid grid-cols-2 gap-3 mb-8">
             <div className="bg-gray-800/70 rounded-2xl p-4">
@@ -468,7 +482,7 @@ export default function AssistMode() {
               onClick={restartSession}
               className="px-6 py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold transition-all"
             >
-              {language === "hi" ? "एक और नागरिक की मदद करें" : language === "mr" ? "आणखी एका नागरिकाला मदत करा" : "Help another citizen"}
+              {language === "hi" ? "एक और नागरिक की मदद करें" : language === "mr" ? "आणखी एका नागरिकाला मदत करा" : language === "gu" ? "બીજા નાગરિકને મદદ કરો" : "Help another citizen"}
             </button>
             <a
               href="/dashboard"
@@ -491,7 +505,7 @@ export default function AssistMode() {
           <div className="flex items-center gap-2 mb-1.5">
             <span className="text-xl" aria-hidden="true">🙏</span>
             <p className="text-sm font-bold text-primary-400">
-              {language === "hi" ? "स्वागत है 🙏" : language === "mr" ? "स्वागत आहे 🙏" : "Welcome 🙏"}
+              {language === "hi" ? "स्वागत है 🙏" : language === "mr" ? "स्वागत आहे 🙏" : language === "gu" ? "સ્વાગત છે 🙏" : "Welcome 🙏"}
             </p>
             <button
               onClick={() => greet(language)}
@@ -521,7 +535,9 @@ export default function AssistMode() {
             ? "नागरिक — अपना संकेत दिखाइए:"
             : language === "mr"
               ? "नागरिक — तुमचे संकेत दाखवा:"
-              : "Citizen — show your sign:"}
+              : language === "gu"
+                ? "નાગરિક — તમારો સંકેત બતાવો:"
+                : "Citizen — show your sign:"}
         </p>
 
         {/* Camera toggle */}
@@ -539,13 +555,28 @@ export default function AssistMode() {
           </button>
           {!camEnabled && (
             <span className="text-[10px] text-gray-500">
-              {language === "hi" ? "या नीचे संकेत पर क्लिक करें (डेमो)" : language === "mr" ? "किंवा खाली संकेतावर क्लिक करा (डेमो)" : "or click a sign below (demo)"}
+              {language === "hi" ? "या नीचे संकेत पर क्लिक करें (डेमो)" : language === "mr" ? "किंवा खाली संकेतावर क्लिक करा (डेमो)" : language === "gu" ? "અથવા નીચે સંકેત પર ક્લિક કરો (ડેમો)" : "or click a sign below (demo)"}
             </span>
           )}
         </div>
 
         {camEnabled && (
           <div className="relative rounded-2xl overflow-hidden bg-gray-900 border border-gray-700/60 mb-3 min-h-[220px]">
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className={`absolute inset-0 w-full h-full object-cover scale-x-[-1] ${
+                camStatus === "loading" ? "hidden" : ""
+              }`}
+            />
+            <canvas
+              ref={canvasRef}
+              className={`absolute inset-0 w-full h-full scale-x-[-1] ${
+                camStatus === "running" ? "" : "hidden"
+              }`}
+            />
             {camStatus === "loading" && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-950/80">
                 <div className="text-center">
@@ -554,28 +585,32 @@ export default function AssistMode() {
                 </div>
               </div>
             )}
-            {camStatus === "error" && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-950/80">
-                <p className="text-xs text-red-400 px-4 text-center">Camera not available. Use the demo grid below.</p>
+            {camStatus === "ready" && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-950/50">
+                <div className="text-center">
+                  <div className="w-8 h-8 rounded-full border-4 border-primary-400 border-t-transparent animate-spin mx-auto mb-2" />
+                  <p className="text-xs text-gray-400">Preparing sign recognition...</p>
+                </div>
               </div>
             )}
-            {camEnabled && camStatus !== "error" && (
-              <>
-                <video ref={videoRef} autoPlay playsInline muted className={`absolute inset-0 w-full h-full object-cover scale-x-[-1] ${camStatus === "running" ? "" : "hidden"}`} />
-                <canvas ref={canvasRef} className={`absolute inset-0 w-full h-full scale-x-[-1] ${camStatus === "running" ? "" : "hidden"}`} />
-                {camStatus === "running" && (
-                  <div className="absolute top-2.5 left-2.5 right-2.5 flex justify-between pointer-events-none">
-                    <span className="px-2 py-1 bg-black/60 text-[10px] rounded-full backdrop-blur-sm text-gray-200">
-                      {handCount > 0 ? `${handCount} hand${handCount > 1 ? "s" : ""}` : "No hands"}
-                    </span>
-                    {currentSign && confidence > 0 && (
-                      <span className="px-2 py-1 bg-black/60 text-[10px] rounded-full backdrop-blur-sm flex items-center gap-1 text-gray-200">
-                        {SIGN_MAP.get(currentSign)?.icon} {Math.round(confidence * 100)}%
-                      </span>
-                    )}
-                  </div>
+            {camStatus === "error" && (
+              <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-gray-950/90 via-gray-950/40 to-transparent">
+                <p className="text-xs text-red-400 px-4 py-3 text-center">
+                  Recognition unavailable — camera feed is live. Use the demo grid below or calibrate signs.
+                </p>
+              </div>
+            )}
+            {camStatus === "running" && (
+              <div className="absolute top-2.5 left-2.5 right-2.5 flex justify-between pointer-events-none">
+                <span className="px-2 py-1 bg-black/60 text-[10px] rounded-full backdrop-blur-sm text-gray-200">
+                  {handCount > 0 ? `${handCount} hand${handCount > 1 ? "s" : ""}` : "No hands"}
+                </span>
+                {currentSign && confidence > 0 && (
+                  <span className="px-2 py-1 bg-black/60 text-[10px] rounded-full backdrop-blur-sm flex items-center gap-1 text-gray-200">
+                    {SIGN_MAP.get(currentSign)?.icon} {Math.round(confidence * 100)}%
+                  </span>
                 )}
-              </>
+              </div>
             )}
           </div>
         )}
@@ -584,7 +619,7 @@ export default function AssistMode() {
           <div className="mb-3 rounded-xl bg-primary-600/15 border border-primary-500/30 px-4 py-3 text-center animate-scale-in">
             <p className="text-xl font-bold text-primary-400">{signedText}</p>
             <p className="text-[10px] text-gray-400 mt-0.5">
-              {language === "hi" ? "संकेत पहचाना गया" : language === "mr" ? "संकेत ओळखला गेला" : "Sign recognized"}
+              {language === "hi" ? "संकेत पहचाना गया" : language === "mr" ? "संकेत ओळखला गेला" : language === "gu" ? "સંકેત ઓળખાયો" : "Sign recognized"}
             </p>
           </div>
         )}
@@ -592,17 +627,18 @@ export default function AssistMode() {
         {/* Demo sign grid */}
         {!camEnabled && (
           <div className="flex-1 overflow-y-auto pr-1 max-h-[320px]">
-            {MUNICIPAL_SIGNS.reduce((acc, sign) => {
-              const key = sign.category;
-              const last = acc[acc.length - 1];
-              if (!last || last.category !== key) acc.push({ category: key, signs: [sign] });
-              else last.signs.push(sign);
-              return acc;
-            }, [] as { category: string; signs: typeof MUNICIPAL_SIGNS }[]).map((group) => (
-              <div key={group.category} className="mb-3">
-                <p className="text-[9px] uppercase tracking-wider text-gray-600 mb-1.5 font-semibold">{group.category}</p>
+            {Array.from(
+              MUNICIPAL_SIGNS.reduce((map, sign) => {
+                const arr = map.get(sign.category);
+                if (arr) arr.push(sign);
+                else map.set(sign.category, [sign]);
+                return map;
+              }, new Map<string, typeof MUNICIPAL_SIGNS>())
+            ).map(([category, signs]) => (
+              <div key={category} className="mb-3">
+                <p className="text-[9px] uppercase tracking-wider text-gray-600 mb-1.5 font-semibold">{category}</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {group.signs.map((sign) => (
+                  {signs.map((sign) => (
                     <button
                       key={sign.id}
                       onClick={() => handleDemoSign(sign.id)}
@@ -631,7 +667,7 @@ export default function AssistMode() {
               <div>
                 <p className="text-sm font-bold text-surface-900 dark:text-white">Clerk desk</p>
                 <p className="text-[10px] text-surface-500">
-                  {language === "hi" ? "नागरिक के संकेत यहाँ दिखेंगे" : language === "mr" ? "नागरिकांचे संकेत इथे दिसतील" : "Citizen signs appear here"}
+                  {language === "hi" ? "नागरिक के संकेत यहाँ दिखेंगे" : language === "mr" ? "नागरिकांचे संकेत इथे दिसतील" : language === "gu" ? "નાગરિકના સંકેત અહીં દેખાશે" : "Citizen signs appear here"}
                 </p>
               </div>
             </div>
@@ -641,13 +677,13 @@ export default function AssistMode() {
                 className="px-2.5 py-1.5 bg-surface-100 dark:bg-gray-800 hover:bg-primary-500/10 rounded-lg text-[10px] font-medium transition-all"
                 aria-label={`Current language: ${language.toUpperCase()}. Click to change.`}
               >
-                {language === "en" ? "EN" : language === "hi" ? "HI" : "MR"}
+                {language === "en" ? "EN" : language === "hi" ? "HI" : language === "mr" ? "MR" : "GU"}
               </button>
               <button
                 onClick={finishSession}
                 className="px-3 py-1.5 rounded-lg bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 text-[11px] font-semibold transition-all"
               >
-                {language === "hi" ? "सत्र समाप्त करें ✓" : language === "mr" ? "सत्र संपवा ✓" : "Finish session ✓"}
+                {language === "hi" ? "सत्र समाप्त करें ✓" : language === "mr" ? "सत्र संपवा ✓" : language === "gu" ? "સત્ર સમાપ્ત કરો ✓" : "Finish session ✓"}
               </button>
             </div>
           </div>
@@ -661,7 +697,9 @@ export default function AssistMode() {
                     ? "नागरिक के संकेत का इंतज़ार करें…"
                     : language === "mr"
                       ? "नागरिकाच्या संकेताची वाट पाहा…"
-                      : "Waiting for the citizen's sign…"}
+                      : language === "gu"
+                        ? "નાગરિકના સંકેતની રાહ જુઓ…"
+                        : "Waiting for the citizen's sign…"}
                 </p>
               </div>
             ) : (
@@ -778,7 +816,7 @@ export default function AssistMode() {
 
           {/* Quick reply phrases */}
           <p className="text-[10px] font-semibold uppercase tracking-wider text-surface-400 mb-2">
-            {language === "hi" ? "एक टैप रिप्लाई" : language === "mr" ? "एक टॅप उत्तर" : "One-tap replies"}
+            {language === "hi" ? "एक टैप रिप्लाई" : language === "mr" ? "एक टॅप उत्तर" : language === "gu" ? "એક ટેપ જવાબ" : "One-tap replies"}
           </p>
           <div className="flex flex-wrap gap-1.5 mb-3">
             {CLERK_PHRASES.map((phrase) => (
@@ -798,9 +836,9 @@ export default function AssistMode() {
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={language === "hi" ? "अपना उत्तर टाइप करें…" : language === "mr" ? "तुमचे उत्तर टाइप करा…" : "Type your reply…"}
+              placeholder={language === "hi" ? "अपना उत्तर टाइप करें…" : language === "mr" ? "तुमचे उत्तर टाइप करा…" : language === "gu" ? "તમારો જવાબ ટાઈપ કરો…" : "Type your reply…"}
               className="flex-1 bg-surface-50 dark:bg-gray-800/70 border border-gray-200 dark:border-gray-700/60 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40"
-              aria-label={language === "hi" ? "अपना उत्तर टाइप करें" : language === "mr" ? "तुमचे उत्तर टाइप करा" : "Type your reply"}
+              aria-label={language === "hi" ? "अपना उत्तर टाइप करें" : language === "mr" ? "तुमचे उत्तर टाइप करा" : language === "gu" ? "તમારો જવાબ ટાઈપ કરો" : "Type your reply"}
             />
             <button
               onClick={handleFreeTextReply}

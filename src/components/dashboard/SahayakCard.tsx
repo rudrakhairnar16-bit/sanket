@@ -1,9 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 const COUNTER_KEY = "sanket-assist-count";
+
+function CountUp({ value, className }: { value: number; className?: string }) {
+  const [display, setDisplay] = useState(0);
+  const started = useRef(false);
+
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;    let current = 0;
+    const step = Math.max(1, Math.round(value / 30));
+    const timer = setInterval(() => {
+      current = Math.min(value, current + step);
+      setDisplay(current);
+      if (current >= value) clearInterval(timer);
+    }, 24);
+    return () => clearInterval(timer);
+  }, [value]);
+
+  return <span className={className}>{display}</span>;
+}
 
 export function SahayakCard() {
   const [assistCount, setAssistCount] = useState(0);
@@ -14,10 +33,10 @@ export function SahayakCard() {
   }, []);
 
   return (
-    <div className="glass border-emerald-500/15 p-5 animate-slide-down">
-      <div className="flex items-center justify-between mb-3">
+    <div className="rounded-card bg-white dark:bg-surface-900/80 border border-success-500/15 p-5 shadow-card animate-slide-down">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg gradient-accent flex items-center justify-center shadow-glow-accent">
+          <div className="w-10 h-10 rounded-xl gradient-success flex items-center justify-center shadow-glow-success">
             <svg
               width="18"
               height="18"
@@ -35,7 +54,7 @@ export function SahayakCard() {
             </svg>
           </div>
           <div>
-            <h3 className="font-bold text-surface-900 dark:text-white text-sm">
+            <h3 className="font-display font-bold text-surface-900 dark:text-white text-sm">
               Sanket Sahayak
             </h3>
             <p className="text-[10px] text-surface-500">
@@ -43,23 +62,24 @@ export function SahayakCard() {
             </p>
           </div>
         </div>
-        <Link href="/assist" className="btn-accent text-xs">
+        <Link href="/assist" className="btn-success text-xs">
           Open Counter
         </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <div className="bg-surface-100 dark:bg-surface-800/50 rounded-xl p-2.5 text-center">
-          <p className="text-lg font-bold text-surface-900 dark:text-white">
-            {assistCount}
-          </p>
-          <p className="text-[10px] text-surface-500">Citizens assisted</p>
+        <div className="rounded-xl p-3 text-center bg-gradient-to-br from-success-500/10 to-transparent border border-success-500/20">
+          <CountUp
+            value={assistCount}
+            className="text-lg font-bold font-display text-success-600 dark:text-success-400 animate-number-pop"
+          />
+          <p className="text-[10px] text-surface-500 mt-0.5">Citizens assisted</p>
         </div>
-        <div className="bg-surface-100 dark:bg-surface-800/50 rounded-xl p-2.5 text-center">
-          <p className="text-lg font-bold text-emerald-500">
+        <div className="rounded-xl p-3 text-center bg-gradient-to-br from-primary-500/10 to-transparent border border-primary-500/20">
+          <p className="text-lg font-bold font-display text-primary-600 dark:text-primary-400">
             ~30 sec
           </p>
-          <p className="text-[10px] text-surface-500">Avg. service time</p>
+          <p className="text-[10px] text-surface-500 mt-0.5">Avg. service time</p>
         </div>
       </div>
     </div>

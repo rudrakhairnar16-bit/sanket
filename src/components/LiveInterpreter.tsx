@@ -37,6 +37,13 @@ export default function LiveInterpreter() {
   const lastSignRef = useRef<string | null>(null);
   const stableFramesRef = useRef(0);
   const recognizerRef = useRef<SpeechRecognizer | null>(null);
+  const engineRef = useRef<{ landmarker: any } | null>(null);
+  const loopActiveRef = useRef(false);
+  const lastTimestampRef = useRef(0);
+  const calibratedRef = useRef(calibrated);
+  useEffect(() => { calibratedRef.current = calibrated; }, [calibrated]);
+  const langRef = useRef(lang);
+  useEffect(() => { langRef.current = lang; }, [lang]);
 
   const HANDSHAKE_SIGN = "namaste";
   const STABLE_THRESHOLD = 8;
@@ -79,14 +86,17 @@ export default function LiveInterpreter() {
   }, []);
 
   useEffect(() => {
+    if (demoMode) return;
     startCamera();
     return () => {
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((t) => t.stop());
       }
+      loopActiveRef.current = false;
+      if (engineRef.current?.landmarker) engineRef.current.landmarker.close();
       cancelAnimationFrame(animFrameRef.current);
     };
-  }, [startCamera]);
+  }, [demoMode, startCamera]);
 
   useEffect(() => {
     if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
@@ -147,130 +157,126 @@ export default function LiveInterpreter() {
   }
 
   useEffect(() => {
-    if (status !== "ready") return;
-
-    let landmarker: any = null;
-    let lastTimestamp = 0;
+    if (status !== "ready" || loopActiveRef.current) return;
+    loopActiveRef.current = true;
 
     async function init() {
-      landmarker = await loadHandLandmarker();
-      if (!landmarker) { setStatus("error"); return; }
+      const lm = await loadHandLandmarker();
+      if (!lm) { setStatus("error"); return; }
+      engineRef.current = { landmarker: lm };
       setStatus("running");
-      processFrame(landmarker);
-    }
+      const landmarker = lm;
 
-    function drawLandmarks(ctx: CanvasRenderingContext2D, landmarks: Landmark[], color: string) {
-      const w = ctx.canvas.width;
-      const h = ctx.canvas.height;
-      const connections = [
-        [0, 1], [1, 2], [2, 3], [3, 4],
-        [0, 5], [5, 6], [6, 7], [7, 8],
-        [5, 9], [9, 10], [10, 11], [11, 12],
-        [9, 13], [13, 14], [14, 15], [15, 16],
-        [13, 17], [17, 18], [18, 19], [19, 20],
-        [0, 17],
-      ];
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      for (const [i, j] of connections) {
-        ctx.beginPath();
-        ctx.moveTo(landmarks[i].x * w, landmarks[i].y * h);
-        ctx.lineTo(landmarks[j].x * w, landmarks[j].y * h);
-        ctx.stroke();
-      }
-      ctx.fillStyle = color;
-      for (const lm of landmarks) {
-        ctx.beginPath();
-        ctx.arc(lm.x * w, lm.y * h, 4, 0, 2 * Math.PI);
-        ctx.fill();
-      }
-    }
-
-    function processFrame(lm: any) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      if (!video || !canvas || video.readyState < 2) {
-        animFrameRef.current = requestAnimationFrame(() => processFrame(lm));
-        return;
-      }
-
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0);
-
-      const now = performance.now();
-      if (now - lastTimestamp > 100) {
-        lastTimestamp = now;
-        const result = lm.detectForVideo(video, now);
-
-        if (result.landmarks && result.landmarks.length > 0) {
-          setHandCount(result.landmarks.length);
-
-          result.landmarks.forEach((hand: Landmark[], i: number) => {
-            drawLandmarks(ctx, hand, i === 0 ? "#6366f1" : "#8b5cf6");
-          });
-
-          if (calibrated && classifier.getSampleCount() > 0) {
-            // Use all detected hands; pick the one with best confidence
-            let bestResult = { signId: null as string | null, confidence: 0 };
-            for (const hand of result.landmarks) {
-              const r = classifier.classify(hand);
-              if (r.confidence > bestResult.confidence) {
-                bestResult = r;
-              }
-            }
-            if (bestResult.signId && bestResult.confidence > 0.5) {
-              setCurrentSign(bestResult.signId);
-              setConfidence(bestResult.confidence);
-
-              if (bestResult.signId === lastSignRef.current) {
-                stableFramesRef.current++;
-              } else {
-                stableFramesRef.current = 0;
-                lastSignRef.current = bestResult.signId;
-              }
-
-              if (stableFramesRef.current >= STABLE_THRESHOLD) {
-                const entry = SIGN_MAP.get(bestResult.signId);
-                if (entry) {
-                  const displayName = getLocalizedName(entry, lang);
-                  setTranscript(displayName);
-                  addMessage("citizen", displayName);
-                  speak(displayName, lang);
-                  stableFramesRef.current = 0;
-                }
-              }
-            } else {
-              setCurrentSign(null);
-              setConfidence(0);
-            }
-          } else {
-            // Demo mode: show "Calibrate" overlay
-            if (result.landmarks.length >= 2) {
-              setTranscript("Two hands detected — calibrate to recognize signs");
-            } else {
-              setTranscript("Show a sign to camera");
-            }
-          }
-        } else {
-          setHandCount(0);
-          setCurrentSign(null);
-          setConfidence(0);
+      function drawLandmarks(ctx: CanvasRenderingContext2D, landmarks: Landmark[], color: string) {
+        const w = ctx.canvas.width;
+        const h = ctx.canvas.height;
+        const connections = [
+          [0, 1], [1, 2], [2, 3], [3, 4],
+          [0, 5], [5, 6], [6, 7], [7, 8],
+          [5, 9], [9, 10], [10, 11], [11, 12],
+          [9, 13], [13, 14], [14, 15], [15, 16],
+          [13, 17], [17, 18], [18, 19], [19, 20],
+          [0, 17],
+        ];
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        for (const [i, j] of connections) {
+          ctx.beginPath();
+          ctx.moveTo(landmarks[i].x * w, landmarks[i].y * h);
+          ctx.lineTo(landmarks[j].x * w, landmarks[j].y * h);
+          ctx.stroke();
+        }
+        ctx.fillStyle = color;
+        for (const lm of landmarks) {
+          ctx.beginPath();
+          ctx.arc(lm.x * w, lm.y * h, 4, 0, 2 * Math.PI);
+          ctx.fill();
         }
       }
 
-      animFrameRef.current = requestAnimationFrame(() => processFrame(lm));
+      function processFrame() {
+        if (!loopActiveRef.current) return;
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        if (!video || !canvas || video.readyState < 2) {
+          animFrameRef.current = requestAnimationFrame(processFrame);
+          return;
+        }
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0);
+
+        const now = performance.now();
+        if (now - lastTimestampRef.current > 100) {
+          lastTimestampRef.current = now;
+          const result = landmarker.detectForVideo(video, now);
+
+          if (result.landmarks && result.landmarks.length > 0) {
+            setHandCount(result.landmarks.length);
+
+            result.landmarks.forEach((hand: Landmark[], i: number) => {
+              drawLandmarks(ctx, hand, i === 0 ? "#6366f1" : "#8b5cf6");
+            });
+
+            if (calibratedRef.current && classifier.getSampleCount() > 0) {
+              let bestResult = { signId: null as string | null, confidence: 0 };
+              for (const hand of result.landmarks) {
+                const r = classifier.classify(hand);
+                if (r.confidence > bestResult.confidence) {
+                  bestResult = r;
+                }
+              }
+              if (bestResult.signId && bestResult.confidence > 0.5) {
+                setCurrentSign(bestResult.signId);
+                setConfidence(bestResult.confidence);
+
+                if (bestResult.signId === lastSignRef.current) {
+                  stableFramesRef.current++;
+                } else {
+                  stableFramesRef.current = 0;
+                  lastSignRef.current = bestResult.signId;
+                }
+
+                if (stableFramesRef.current >= STABLE_THRESHOLD) {
+                  const entry = SIGN_MAP.get(bestResult.signId);
+                  if (entry) {
+                    const displayName = getLocalizedName(entry, langRef.current);
+                    setTranscript(displayName);
+                    addMessage("citizen", displayName);
+                    speak(displayName, langRef.current);
+                    stableFramesRef.current = 0;
+                  }
+                }
+              } else {
+                setCurrentSign(null);
+                setConfidence(0);
+              }
+            } else {
+              if (result.landmarks.length >= 2) {
+                setTranscript("Two hands detected — calibrate to recognize signs");
+              } else {
+                setTranscript("Show a sign to camera");
+              }
+            }
+          } else {
+            setHandCount(0);
+            setCurrentSign(null);
+            setConfidence(0);
+          }
+        }
+
+      animFrameRef.current = requestAnimationFrame(processFrame);
+    }
+
+      processFrame();
     }
 
     init();
-    return () => {
-      if (landmarker) landmarker.close();
-      cancelAnimationFrame(animFrameRef.current);
-    };
-  }, [status, calibrated, lang, addMessage]);
+  }, [status, addMessage]);
 
   const handleSend = () => {
     const text = inputText.trim();

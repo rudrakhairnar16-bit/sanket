@@ -89,6 +89,7 @@ export default function LearnPage() {
   function transitionTo(newScreen: Screen) {
     setAnimateIn("animate-fade-in");
     setScreen(newScreen);
+    window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   }
 
   function updateGame(updater: (prev: GameState) => GameState) {

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -8,7 +8,8 @@ import { logger } from "@/lib/logger";
 
 if (typeof window !== "undefined") logger.init();
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
   title: "Sanket - ISL for Sarkari Clerks",
@@ -50,7 +51,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} bg-surface-50 dark:bg-surface-950 text-surface-900 dark:text-surface-100`}>
+      <body className={`${inter.variable} ${outfit.variable} font-sans bg-surface-50 dark:bg-surface-950 text-surface-900 dark:text-surface-100`}>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary-500 focus:text-white focus:rounded-btn focus:text-sm focus:font-medium">
           Skip to main content
         </a>

@@ -31,9 +31,9 @@ export function TasksCard() {
 
   return (
     <div className="surface-card p-5 animate-slide-down">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg gradient-primary flex items-center justify-center shadow-glow-primary">
+          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shadow-glow-primary">
             <svg
               width="18"
               height="18"
@@ -49,7 +49,7 @@ export function TasksCard() {
             </svg>
           </div>
           <div>
-            <h3 className="font-bold text-surface-900 dark:text-white text-sm">
+            <h3 className="font-display font-bold text-surface-900 dark:text-white text-sm">
               Your Tasks
             </h3>
             <p className="text-[10px] text-surface-500">
@@ -60,44 +60,50 @@ export function TasksCard() {
           </div>
         </div>
         <span
-          className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg ${
+          className={`text-[10px] font-semibold px-2.5 py-1 rounded-full border ${
             state.mandatory
-              ? "bg-red-500/15 text-red-400"
-              : "bg-emerald-500/15 text-emerald-400"
+              ? "bg-danger-500/10 text-danger-600 dark:text-danger-400 border-danger-500/20"
+              : "bg-success-500/10 text-success-600 dark:text-success-400 border-success-500/20"
           }`}
         >
           {state.mandatory ? "Mandatory" : "Recommended"}
         </span>
       </div>
 
-      <div className="bg-surface-100 dark:bg-surface-800 rounded-full h-1.5 overflow-hidden mb-3">
-        <div
-          className="h-full gradient-primary rounded-full transition-all"
-          style={{ width: `${pct}%` }}
-        />
+      <div className="flex items-center gap-2 mb-4">
+        <div className="flex-1 bg-surface-100 dark:bg-surface-800 rounded-full h-2 overflow-hidden">
+          <div
+            className="h-full gradient-primary rounded-full transition-all duration-700 shadow-[0_0_8px_rgba(99,102,241,0.4)]"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+        <span className="text-xs font-bold text-surface-500 tabular-nums">
+          {pct}%
+        </span>
       </div>
 
-      <div className="space-y-1.5">
+      <div className="space-y-2">
         {state.tasks.map((task) => (
           <div
             key={task.id}
-            className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+            className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 ${
               task.done
-                ? "border-emerald-500/20 bg-emerald-500/5"
-                : "border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50"
+                ? "border-success-500/20 bg-success-500/5"
+                : "border-l-4 border-l-primary-400/70 border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-800/50 hover:shadow-card hover:-translate-y-0.5"
             }`}
           >
             <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+              className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 transition-all ${
                 task.done
-                  ? "bg-emerald-500 text-white"
+                  ? "bg-success-500 text-white shadow-glow-success"
                   : "bg-surface-200 dark:bg-surface-700"
               }`}
             >
               {task.done ? (
                 <svg
-                  width="16"
-                  height="16"
+                  className="animate-pop-in"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -109,8 +115,8 @@ export function TasksCard() {
                 </svg>
               ) : (
                 <svg
-                  width="16"
-                  height="16"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -140,7 +146,7 @@ export function TasksCard() {
             {!task.done && (
               <button
                 onClick={() => handleComplete(task.id)}
-                className="btn-primary text-[10px] px-2.5 py-1"
+                className="btn-primary text-[10px] px-3 py-1.5 shrink-0"
               >
                 {justDone === task.id ? "Done!" : "Mark done"}
               </button>
@@ -148,7 +154,7 @@ export function TasksCard() {
             {task.done && task.link && (
               <Link
                 href={task.link}
-                className="text-[10px] text-primary-400 hover:underline shrink-0"
+                className="text-[10px] font-medium text-primary-500 dark:text-primary-400 hover:text-primary-600 hover:underline shrink-0"
               >
                 Open
               </Link>
@@ -158,11 +164,11 @@ export function TasksCard() {
       </div>
 
       {state.mandatory && state.completedCount === state.total && (
-        <div className="mt-3 glass border-emerald-500/20 p-4 text-center">
-          <div className="w-9 h-9 mx-auto mb-1.5 rounded-full bg-emerald-500/20 flex items-center justify-center">
+        <div className="mt-4 rounded-card border border-success-500/25 bg-gradient-to-br from-success-500/10 to-transparent p-4 text-center animate-pop-in">
+          <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-success-500/20 flex items-center justify-center animate-glow-pulse">
             <svg
-              width="16"
-              height="16"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="#34d399"
@@ -173,7 +179,7 @@ export function TasksCard() {
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
-          <p className="text-emerald-400 font-semibold text-xs">
+          <p className="text-success-600 dark:text-success-400 font-semibold text-xs">
             Onboarding complete! You&apos;re all set.
           </p>
         </div>

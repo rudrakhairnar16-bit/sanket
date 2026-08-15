@@ -15,6 +15,14 @@ interface User {
   username: string;
   department: string;
   role: "learner" | "admin" | "superadmin";
+  designation?: string;
+  employeeId?: string;
+  phone?: string;
+  email?: string;
+  officeLocation?: string;
+  city?: string;
+  bio?: string;
+  profilePhoto?: string;
   currentStreak?: number;
   longestStreak?: number;
   totalCompleted?: number;

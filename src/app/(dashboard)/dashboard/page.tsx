@@ -67,13 +67,17 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-5 animate-fade-in pb-8">
+    <div className="space-y-6 animate-fade-in pb-10">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-surface-900 dark:text-white">
-            {completedToday ? "Great work today!" : "Today's Lesson"}
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-surface-900 dark:text-white">
+            {completedToday ? (
+              <span className="text-gradient-primary">Great work today!</span>
+            ) : (
+              "Today's Lesson"
+            )}
           </h1>
-          <p className="text-surface-500 text-sm mt-0.5">
+          <p className="text-surface-500 text-sm mt-1">
             {getTodayIST()} &bull; {user?.department}
           </p>
         </div>
@@ -85,52 +89,42 @@ export default function DashboardPage() {
       </div>
 
       {streak && streak.totalCompleted === 0 && !completedToday && (
-        <div className="glass p-5 border-primary-500/10 animate-slide-down">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-btn gradient-primary flex items-center justify-center shrink-0 shadow-glow-primary">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <path d="M7 11v1m5-1v1m-7 5a5 5 0 0010 0m-5-9a5 5 0 100-10 5 5 0 000 10z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-white">
-                Welcome to Sanket!
-              </h2>
-              <p className="text-surface-400 text-sm mt-0.5">
-                Complete your first lesson below to start your ISL learning
-                journey.
-              </p>
-              <div className="flex gap-2 mt-3">
-                <span className="badge badge-primary">Watch Sign</span>
-                <span className="badge badge-primary">Take Quiz</span>
-                <span className="badge badge-primary">Practice</span>
+        <div className="stagger-1 rounded-card bg-gradient-to-br from-primary-500/70 via-primary-400/40 to-accent-500/60 p-[1.5px] animate-slide-down">
+          <div className="relative overflow-hidden rounded-card bg-surface-900 dark:bg-surface-950 p-5">
+            <div className="absolute -right-10 -top-10 w-40 h-40 gradient-primary opacity-20 blur-3xl rounded-full" />
+            <div className="absolute -left-10 -bottom-10 w-40 h-40 gradient-accent opacity-10 blur-3xl rounded-full" />
+            <div className="relative flex items-start gap-4">
+              <div className="w-10 h-10 rounded-btn gradient-primary flex items-center justify-center shrink-0 shadow-glow-primary">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                >
+                  <path d="M7 11v1m5-1v1m-7 5a5 5 0 0010 0m-5-9a5 5 0 100-10 5 5 0 000 10z" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-white">
+                  Welcome to Sanket!
+                </h2>
+                <p className="text-surface-400 text-sm mt-0.5">
+                  Complete your first lesson below to start your ISL learning
+                  journey.
+                </p>
+                <div className="flex gap-2 mt-3">
+                  <span className="badge badge-primary">Watch Sign</span>
+                  <span className="badge badge-primary">Take Quiz</span>
+                  <span className="badge badge-primary">Practice</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       )}
-
-      {streak && (
-        <StreakBar
-          currentStreak={streak.currentStreak}
-          longestStreak={streak.longestStreak}
-          totalCompleted={streak.totalCompleted}
-        />
-      )}
-
-      <IslQuestCard />
-
-      <SahayakCard />
-
-      <TasksCard />
 
       {showPractice ? (
         <SignPractice
@@ -149,7 +143,7 @@ export default function DashboardPage() {
           }}
         />
       ) : completedToday && result ? (
-        <div className="animate-scale-in">
+        <div className="stagger-1 animate-scale-in">
           <ResultCard
             correct={result.correct}
             milestone={result.milestone}
@@ -177,8 +171,8 @@ export default function DashboardPage() {
           />
         </div>
       ) : completedToday && !result ? (
-        <div className="text-center py-16">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-primary flex items-center justify-center shadow-glow-primary">
+        <div className="stagger-1 text-center py-16 rounded-card bg-white dark:bg-surface-900/80 border border-surface-200 dark:border-surface-700/50 shadow-card">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full gradient-primary flex items-center justify-center shadow-glow-primary animate-glow-pulse">
             <svg
               width="28"
               height="28"
@@ -192,7 +186,7 @@ export default function DashboardPage() {
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-surface-900 dark:text-white mb-1">
+          <h2 className="font-display text-xl font-bold text-surface-900 dark:text-white mb-1">
             Already Completed
           </h2>
           <p className="text-surface-500 text-sm">
@@ -201,9 +195,13 @@ export default function DashboardPage() {
           </p>
         </div>
       ) : module ? (
-        <DailyLesson module={module} onComplete={onSubmit} />
+        <div className="stagger-1 rounded-card bg-gradient-to-br from-primary-500/60 via-primary-300/40 to-accent-500/50 p-[1.5px] shadow-card">
+          <div className="rounded-card bg-white dark:bg-surface-900 overflow-hidden">
+            <DailyLesson module={module} onComplete={onSubmit} />
+          </div>
+        </div>
       ) : (
-        <div className="text-center py-16">
+        <div className="stagger-1 text-center py-16 rounded-card bg-white dark:bg-surface-900/80 border border-surface-200 dark:border-surface-700/50 shadow-card">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-surface-100 dark:bg-surface-800 flex items-center justify-center">
             <svg
               width="28"
@@ -220,7 +218,7 @@ export default function DashboardPage() {
               <line x1="15" y1="18" x2="15" y2="21" />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-surface-900 dark:text-white mb-1">
+          <h2 className="font-display text-xl font-bold text-surface-900 dark:text-white mb-1">
             No Lessons Available
           </h2>
           <p className="text-surface-500 text-sm">
@@ -228,6 +226,33 @@ export default function DashboardPage() {
           </p>
         </div>
       )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        <div className="lg:col-span-2 space-y-6">
+          {streak && (
+            <div className="stagger-2">
+              <StreakBar
+                currentStreak={streak.currentStreak}
+                longestStreak={streak.longestStreak}
+                totalCompleted={streak.totalCompleted}
+              />
+            </div>
+          )}
+
+          <div className="stagger-3">
+            <TasksCard />
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div className="stagger-2">
+            <IslQuestCard />
+          </div>
+          <div className="stagger-3">
+            <SahayakCard />
+          </div>
+        </div>
+      </div>
 
       {milestoneCert && (
         <CertificateGenerator

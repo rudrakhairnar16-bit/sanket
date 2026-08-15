@@ -72,23 +72,45 @@ export default function LoginPage() {
         <div className="w-full max-w-md animate-fade-in">
           <div className="glass p-8">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl gradient-primary mb-4 shadow-glow-primary">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl gradient-brand mb-4 shadow-glow-primary animate-glow-pulse">
                 <span className="text-2xl font-bold text-white">सं</span>
               </div>
               <h1 className="text-3xl font-bold text-white">Sanket</h1>
               <p className="text-surface-400 mt-1 text-sm">
                 ISL for Government Clerks
               </p>
+              <div className="flex flex-wrap items-center justify-center gap-2 mt-4 lg:hidden">
+                {[
+                  { icon: "🃏", label: "Flashcards" },
+                  { icon: "🧠", label: "Quizzes" },
+                  { icon: "📸", label: "Webcam" },
+                  { icon: "🌙", label: "Dark Mode" },
+                ].map((f) => (
+                  <span
+                    key={f.label}
+                    className="inline-flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-3 py-1 text-xs text-surface-300"
+                  >
+                    <span>{f.icon}</span>
+                    {f.label}
+                  </span>
+                ))}
+              </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex gap-1 bg-white/5 p-1 rounded-btn mb-4 border border-white/5" role="tablist" aria-label="Authentication mode">
+              <div className="relative flex gap-1 bg-white/5 p-1 rounded-btn mb-4 border border-white/5" role="tablist" aria-label="Authentication mode">
+                <div
+                  className={`absolute top-1 bottom-1 rounded-[9px] bg-primary-500 shadow-btn transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                    isLogin ? "left-1" : "left-[calc(50%+0px)]"
+                  }`}
+                  style={{ width: "calc(50% - 4px)" }}
+                />
                 <button
                   type="button"
                   onClick={() => setIsLogin(true)}
-                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
+                  className={`relative flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors duration-200 z-10 ${
                     isLogin
-                      ? "bg-primary-500 text-white shadow-sm"
+                      ? "text-white"
                       : "text-surface-400 hover:text-surface-200"
                   }`}
                   role="tab"
@@ -100,9 +122,9 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setIsLogin(false)}
-                  className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
+                  className={`relative flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors duration-200 z-10 ${
                     !isLogin
-                      ? "bg-primary-500 text-white shadow-sm"
+                      ? "text-white"
                       : "text-surface-400 hover:text-surface-200"
                   }`}
                   role="tab"
@@ -202,6 +224,31 @@ export default function LoginPage() {
             <p className="text-center text-xs text-surface-500 mt-6">
               Sanket v1.0 — Team KPGU · KPGU University · Inter-University Round
             </p>
+          </div>
+
+<div className="glass mt-4 p-5">
+            <div className="flex items-start gap-3">
+              <div className="w-9 h-9 rounded-xl gradient-accent flex items-center justify-center shrink-0 shadow-glow-accent">
+                <TargetIcon />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-white mb-1">
+                  The Problem
+                </h3>
+                <p className="text-xs leading-relaxed text-surface-400">
+                  18 million hearing-impaired Indians are excluded from basic
+                  services every day — because almost no public-facing staff
+                  know Indian Sign Language. Sanket closes that gap.
+                </p>
+                <Link
+                  href="/problem-statement"
+                  className="inline-flex items-center gap-1 mt-2 text-xs font-medium text-accent-400 hover:text-accent-300 hover:underline"
+                >
+                  Read the full problem statement
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7-7 7M21 12H3" /></svg>
+                </Link>
+              </div>
+            </div>
           </div>
 
           <div className="mt-4 space-y-3">

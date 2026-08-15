@@ -31,6 +31,9 @@ export default function SignPractice({
   const totalFrames = useRef(0);
   const streamRef = useRef<MediaStream | null>(null);
   const animFrameRef = useRef<number>(0);
+  const engineRef = useRef<{ landmarker: any } | null>(null);
+  const loopActiveRef = useRef(false);
+  const lastTimestampRef = useRef(0);
 
   const startCamera = useCallback(async () => {
     try {
@@ -115,88 +118,94 @@ export default function SignPractice({
   }
 
   useEffect(() => {
-    if (status !== "ready") return;
-
-    let landmarker: any = null;
-    let lastTimestamp = 0;
+    if (status !== "ready" || loopActiveRef.current) return;
+    loopActiveRef.current = true;
 
     async function init() {
-      landmarker = await loadHandLandmarker();
-      if (!landmarker) {
+      const lm = await loadHandLandmarker();
+      if (!lm) {
+        loopActiveRef.current = false;
         setStatus("retry");
         return;
       }
+      const landmarker = lm;
+      engineRef.current = { landmarker };
       setStatus("practicing");
-      processFrame(landmarker);
-    }
 
-    function processFrame(lm: any) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      if (!video || !canvas || video.readyState < 2) {
-        animFrameRef.current = requestAnimationFrame(() => processFrame(lm));
-        return;
-      }
-
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-
-      ctx.drawImage(video, 0, 0);
-
-      const now = performance.now();
-      if (now - lastTimestamp > 100) {
-        lastTimestamp = now;
-        const result = lm.detectForVideo(video, now);
-
-        if (result.landmarks && result.landmarks.length > 0) {
-          setHandCount(result.landmarks.length);
-
-          result.landmarks.forEach((hand: any, i: number) => {
-            drawLandmarks(ctx, hand, i === 0 ? "#6366f1" : "#8b5cf6");
-          });
-
-          const landmarks = result.landmarks[0] as Landmark[];
-          const classification = classifier.classify(landmarks);
-
-          setCurrentSign(classification);
-
-          totalFrames.current += 1;
-          if (classification.signId === moduleTitle && classification.confidence > 0.6) {
-            correctFrames.current += 1;
-          } else if (totalFrames.current > 10) {
-            correctFrames.current = Math.max(0, correctFrames.current - 1);
-          }
-
-          const acc =
-            totalFrames.current > 0
-              ? Math.round((correctFrames.current / totalFrames.current) * 100)
-              : 0;
-          setAccuracy(acc);
-
-          if (acc > 60 && totalFrames.current > 20) {
-            setStatus("success");
-            onComplete(true);
-            cancelAnimationFrame(animFrameRef.current);
-            return;
-          }
-        } else {
-          setHandCount(0);
+      function processFrame() {
+        if (!loopActiveRef.current) return;
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        if (!video || !canvas || video.readyState < 2) {
+          animFrameRef.current = requestAnimationFrame(processFrame);
+          return;
         }
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        ctx.drawImage(video, 0, 0);
+
+        const now = performance.now();
+        if (now - lastTimestampRef.current > 100) {
+          lastTimestampRef.current = now;
+          const result = landmarker.detectForVideo(video, now);
+
+          if (result.landmarks && result.landmarks.length > 0) {
+            setHandCount(result.landmarks.length);
+
+            result.landmarks.forEach((hand: any, i: number) => {
+              drawLandmarks(ctx, hand, i === 0 ? "#6366f1" : "#8b5cf6");
+            });
+
+            const landmarks = result.landmarks[0] as Landmark[];
+            const classification = classifier.classify(landmarks);
+
+            setCurrentSign(classification);
+
+            totalFrames.current += 1;
+            if (classification.signId === moduleTitle && classification.confidence > 0.6) {
+              correctFrames.current += 1;
+            } else if (totalFrames.current > 10) {
+              correctFrames.current = Math.max(0, correctFrames.current - 1);
+            }
+
+            const acc =
+              totalFrames.current > 0
+                ? Math.round((correctFrames.current / totalFrames.current) * 100)
+                : 0;
+            setAccuracy(acc);
+
+            if (acc > 60 && totalFrames.current > 20) {
+              setStatus("success");
+              onComplete(true);
+              loopActiveRef.current = false;
+              return;
+            }
+          } else {
+            setHandCount(0);
+          }
+        }
+
+        animFrameRef.current = requestAnimationFrame(processFrame);
       }
 
-      animFrameRef.current = requestAnimationFrame(() => processFrame(lm));
+      processFrame();
     }
 
     init();
+  }, [status, moduleTitle, onComplete]);
 
+  useEffect(() => {
     return () => {
-      if (landmarker) landmarker.close();
+      loopActiveRef.current = false;
+      if (engineRef.current?.landmarker) engineRef.current.landmarker.close();
       cancelAnimationFrame(animFrameRef.current);
     };
-  }, [status, moduleTitle, onComplete]);
+  }, []);
 
   function retry() {
     correctFrames.current = 0;

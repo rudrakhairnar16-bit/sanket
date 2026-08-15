@@ -1,20 +1,76 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import type { StreakData, ModuleData } from "@/lib/hooks/use-dashboard";
+
+function CountUp({ value, className }: { value: number; className?: string }) {
+  const [display, setDisplay] = useState(0);
+  const started = useRef(false);
+
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    let current = 0;
+    const step = Math.max(1, Math.round(value / 30));
+    const timer = setInterval(() => {
+      current = Math.min(value, current + step);
+      setDisplay(current);
+      if (current >= value) clearInterval(timer);
+    }, 24);
+    return () => clearInterval(timer);
+  }, [value]);
+
+  return <span className={className}>{display}</span>;
+}
+
+function FlameIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z" />
+    </svg>
+  );
+}
+function TrophyIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 21h8M12 17v4M7 4h10v3a5 5 0 01-10 0V4z" />
+      <path d="M7 5H4v2a4 4 0 003.8 4M17 5h3v2a4 4 0 01-3.8 4" />
+    </svg>
+  );
+}
+function BookIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+    </svg>
+  );
+}
 
 function StatCard({
   label,
   value,
+  icon,
+  accent,
 }: {
   label: string;
   value: number;
+  icon: React.ReactNode;
+  accent: "primary" | "accent" | "success";
 }) {
+  const styles = {
+    primary: "from-primary-500/10 to-primary-500/5 text-primary-600 dark:text-primary-400",
+    accent: "from-accent-500/10 to-accent-500/5 text-accent-600 dark:text-accent-400",
+    success: "from-success-500/10 to-success-500/5 text-success-600 dark:text-success-400",
+  }[accent];
+
   return (
-    <div className="bg-surface-50 dark:bg-surface-800/50 rounded-xl p-3.5 text-center">
-      <p className="text-xl font-bold text-surface-900 dark:text-white">
-        {value}
-      </p>
-      <p className="text-[10px] text-surface-500">{label}</p>
+    <div className="relative rounded-xl p-3.5 text-center bg-gradient-to-br border border-surface-200/60 dark:border-surface-700/40 overflow-hidden">
+      <div className={`w-8 h-8 mx-auto mb-1.5 rounded-lg flex items-center justify-center ${styles}`}>
+        {icon}
+      </div>
+      <CountUp value={value} className="text-xl font-bold font-display text-surface-900 dark:text-white animate-number-pop" />
+      <p className="text-[10px] text-surface-500 mt-0.5">{label}</p>
     </div>
   );
 }
@@ -39,28 +95,28 @@ export function ResultCard({
   return (
     <div className="space-y-5">
       <div
-        className={`p-6 text-center ${
+        className={`p-6 sm:p-8 text-center rounded-card border ${
           correct
-            ? "glass border-emerald-500/20"
-            : "glass border-red-500/20"
+            ? "bg-gradient-to-br from-success-500/10 via-transparent to-primary-500/5 border-success-500/25"
+            : "bg-gradient-to-br from-danger-500/10 via-transparent to-danger-500/5 border-danger-500/25"
         }`}
         aria-live="polite"
       >
         <div
-          className={`w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center ${
+          className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${
             correct
-              ? "gradient-primary shadow-glow-primary"
-              : "bg-red-500/20"
+              ? "gradient-success shadow-glow-success animate-pop-in"
+              : "bg-danger-500/20 ring-4 ring-danger-500/10 animate-pop-in"
           }`}
         >
           {correct ? (
             <svg
-              width="28"
-              height="28"
+              width="32"
+              height="32"
               viewBox="0 0 24 24"
               fill="none"
               stroke="white"
-              strokeWidth="2"
+              strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -68,8 +124,8 @@ export function ResultCard({
             </svg>
           ) : (
             <svg
-              width="28"
-              height="28"
+              width="32"
+              height="32"
               viewBox="0 0 24 24"
               fill="none"
               stroke="#f87171"
@@ -82,7 +138,7 @@ export function ResultCard({
             </svg>
           )}
         </div>
-        <h2 className="text-xl font-bold text-surface-900 dark:text-white mb-1">
+        <h2 className="font-display text-2xl font-bold text-surface-900 dark:text-white mb-1.5">
           {correct ? "Correct!" : "Not quite right"}
         </h2>
         <p className="text-surface-500 text-sm">
@@ -99,11 +155,11 @@ export function ResultCard({
 
       {correct && !practiceDone && (
         <div className="animate-slide-up">
-          <div className="glass border-primary-500/10 p-5 text-center">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full gradient-primary flex items-center justify-center shadow-glow-primary">
+          <div className="rounded-card border border-primary-500/15 bg-white dark:bg-surface-900/80 p-5 text-center shadow-card">
+            <div className="w-14 h-14 mx-auto mb-3 rounded-full gradient-primary flex items-center justify-center shadow-glow-primary animate-glow-pulse">
               <svg
-                width="22"
-                height="22"
+                width="24"
+                height="24"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="white"
@@ -115,7 +171,7 @@ export function ResultCard({
                 <circle cx="12" cy="13" r="4" />
               </svg>
             </div>
-            <h3 className="text-base font-bold text-surface-900 dark:text-white mb-0.5">
+            <h3 className="font-display text-base font-bold text-surface-900 dark:text-white mb-0.5">
               Practice with your camera
             </h3>
             <p className="text-surface-500 text-xs mb-3">
@@ -129,11 +185,11 @@ export function ResultCard({
       )}
 
       {practiceDone && (
-        <div className="glass border-emerald-500/20 p-4 text-center animate-scale-in">
-          <div className="w-9 h-9 mx-auto mb-1.5 rounded-full bg-emerald-500/20 flex items-center justify-center">
+        <div className="rounded-card border border-success-500/25 bg-success-500/5 p-4 text-center animate-pop-in">
+          <div className="w-10 h-10 mx-auto mb-2 rounded-full bg-success-500/20 flex items-center justify-center">
             <svg
-              width="16"
-              height="16"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="#34d399"
@@ -144,19 +200,19 @@ export function ResultCard({
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
-          <p className="text-emerald-400 font-medium text-xs">
+          <p className="text-success-500 font-medium text-xs">
             Sign practice completed!
           </p>
         </div>
       )}
 
       {milestone && (
-        <div className="animate-scale-in">
-          <div className="glass border-accent/20 p-6 text-center">
-            <div className="w-16 h-16 mx-auto mb-3 rounded-full gradient-accent flex items-center justify-center shadow-glow-accent">
+        <div className="animate-pop-in">
+          <div className="rounded-card border border-accent-500/25 bg-gradient-to-br from-accent-500/10 via-white to-accent-500/5 dark:from-accent-500/15 dark:via-surface-900 dark:to-surface-900 p-6 text-center shadow-card">
+            <div className="w-20 h-20 mx-auto mb-3 rounded-full gradient-accent flex items-center justify-center shadow-glow-accent animate-glow-pulse">
               <svg
-                width="28"
-                height="28"
+                width="32"
+                height="32"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="white"
@@ -167,10 +223,10 @@ export function ResultCard({
                 <path d="M5 22h14l-7-20-7 20z" />
               </svg>
             </div>
-            <h3 className="text-lg font-bold text-accent-300 mb-0.5">
+            <h3 className="font-display text-xl font-bold text-accent-600 dark:text-accent-400 mb-0.5">
               {milestone}-Day Milestone!
             </h3>
-            <p className="text-accent-500 text-sm mb-3">
+            <p className="text-accent-600/70 dark:text-accent-500 text-sm mb-3">
               You&#39;ve completed {milestone} days of learning ISL. Consistency
               is key!
             </p>
@@ -181,14 +237,29 @@ export function ResultCard({
         </div>
       )}
 
-      <div className="surface-card p-5" aria-live="polite">
-        <h3 className="font-semibold text-surface-900 dark:text-white text-sm mb-3">
+      <div className="rounded-card bg-white dark:bg-surface-900/80 border border-surface-200 dark:border-surface-700/50 p-5 shadow-card" aria-live="polite">
+        <h3 className="font-display font-semibold text-surface-900 dark:text-white text-sm mb-3">
           Your Stats
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          <StatCard label="Current Streak" value={streak.currentStreak} />
-          <StatCard label="Longest Streak" value={streak.longestStreak} />
-          <StatCard label="Total Lessons" value={streak.totalCompleted} />
+          <StatCard
+            label="Current Streak"
+            value={streak.currentStreak}
+            accent="accent"
+            icon={<FlameIcon />}
+          />
+          <StatCard
+            label="Longest Streak"
+            value={streak.longestStreak}
+            accent="primary"
+            icon={<TrophyIcon />}
+          />
+          <StatCard
+            label="Total Lessons"
+            value={streak.totalCompleted}
+            accent="success"
+            icon={<BookIcon />}
+          />
         </div>
       </div>
     </div>

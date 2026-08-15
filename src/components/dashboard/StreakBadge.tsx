@@ -1,6 +1,14 @@
 "use client";
 
 export function StreakBadge({ streak }: { streak: number }) {
+  const tier = (() => {
+    if (streak >= 30) return { color: "gradient-accent", glow: "shadow-glow-accent", label: "Champion" };
+    if (streak >= 14) return { color: "from-orange-500 to-red-500", glow: "shadow-glow-danger", label: "On Fire" };
+    if (streak >= 7) return { color: "gradient-accent", glow: "shadow-glow-accent", label: "Consistent" };
+    if (streak >= 3) return { color: "from-accent-400 to-accent-600", glow: "shadow-glow-accent", label: "Building" };
+    return { color: "from-sky-400 to-blue-500", glow: "shadow-[0_0_16px_rgba(56,189,248,0.35)]", label: "Warming Up" };
+  })();
+
   const icon = (() => {
     if (streak >= 30) return <path d="M5 22h14l-7-20-7 20z" />;
     if (streak >= 14)
@@ -18,11 +26,18 @@ export function StreakBadge({ streak }: { streak: number }) {
   })();
 
   return (
-    <div className="flex items-center gap-2.5 glass border-accent/20 rounded-xl px-4 py-2">
-      <div className="w-8 h-8 rounded-lg gradient-accent flex items-center justify-center">
+    <div
+      className={`flex items-center gap-2.5 rounded-xl px-4 py-2 border border-accent-500/20 bg-white/60 dark:bg-white/5 backdrop-blur ${
+        streak > 0 ? "animate-glow-pulse" : ""
+      }`}
+      title={`${tier.label}`}
+    >
+      <div
+        className={`w-9 h-9 rounded-lg bg-gradient-to-br flex items-center justify-center ${tier.color} ${tier.glow}`}
+      >
         <svg
-          width="16"
-          height="16"
+          width="18"
+          height="18"
           viewBox="0 0 24 24"
           fill="none"
           stroke="white"
@@ -34,8 +49,10 @@ export function StreakBadge({ streak }: { streak: number }) {
         </svg>
       </div>
       <div>
-        <p className="text-lg font-bold text-accent-300">{streak}</p>
-        <p className="text-[10px] text-accent-500">day streak</p>
+        <p className="text-lg font-bold font-display text-accent-600 dark:text-accent-400 leading-none">
+          {streak}
+        </p>
+        <p className="text-[10px] text-surface-500 mt-0.5">day streak</p>
       </div>
     </div>
   );

@@ -9,6 +9,14 @@ export interface MockUser {
   department: string;
   role: "learner" | "admin" | "superadmin";
   isChampion: boolean;
+  designation?: string;
+  employeeId?: string;
+  phone?: string;
+  email?: string;
+  officeLocation?: string;
+  city?: string;
+  bio?: string;
+  profilePhoto?: string;
 }
 
 const DEMO_USERS: MockUser[] = [
@@ -66,17 +74,26 @@ export function mockToPublic(user: MockUser) {
     department: user.department,
     role: user.role,
     isChampion: user.isChampion,
+    designation: user.designation || "",
+    employeeId: user.employeeId || "",
+    phone: user.phone || "",
+    email: user.email || "",
+    officeLocation: user.officeLocation || "",
+    city: user.city || "",
+    bio: user.bio || "",
+    profilePhoto: user.profilePhoto || "",
   };
 }
 
 export function updateMockProfile(
   id: string,
-  data: { name?: string; department?: string }
+  data: Record<string, string>
 ): void {
   const user = DEMO_USERS.find((u) => u.id === id);
   if (!user) return;
-  if (data.name) user.name = data.name;
-  if (data.department) user.department = data.department;
+  for (const [key, value] of Object.entries(data)) {
+    if (value !== undefined) (user as any)[key] = value;
+  }
 }
 
 export function toggleMockChampion(

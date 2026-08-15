@@ -6,6 +6,14 @@ export interface IUser extends Document {
   name: string;
   department: string;
   role: "learner" | "admin" | "superadmin";
+  designation: string;
+  employeeId: string;
+  phone: string;
+  email: string;
+  officeLocation: string;
+  city: string;
+  bio: string;
+  profilePhoto: string;
   currentStreak: number;
   longestStreak: number;
   totalCompleted: number;
@@ -30,6 +38,14 @@ const UserSchema = new Schema<IUser>(
       enum: ["learner", "admin", "superadmin"],
       default: "learner",
     },
+    designation: { type: String, default: "" },
+    employeeId: { type: String, default: "" },
+    phone: { type: String, default: "" },
+    email: { type: String, default: "" },
+    officeLocation: { type: String, default: "" },
+    city: { type: String, default: "" },
+    bio: { type: String, default: "" },
+    profilePhoto: { type: String, default: "" },
     currentStreak: { type: Number, default: 0 },
     longestStreak: { type: Number, default: 0 },
     totalCompleted: { type: Number, default: 0 },

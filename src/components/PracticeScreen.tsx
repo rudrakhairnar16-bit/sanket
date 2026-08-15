@@ -39,6 +39,16 @@ export function PracticeScreen({
 
   const currentSign = WEBCAM_SIGNS.find((s) => s.name === targetSign) ?? WEBCAM_SIGNS[0];
 
+  const currentSignRef = useRef(currentSign);
+  useEffect(() => { currentSignRef.current = currentSign; }, [currentSign]);
+  const successRef = useRef(success);
+  useEffect(() => { successRef.current = success; }, [success]);
+  const onUpdateRef = useRef(onUpdate);
+  useEffect(() => { onUpdateRef.current = onUpdate; }, [onUpdate]);
+  const engineRef = useRef<{ landmarker: any } | null>(null);
+  const loopActiveRef = useRef(false);
+  const lastTimestampRef = useRef(0);
+
   useEffect(() => {
     setLang(loadLang());
   }, []);
@@ -58,75 +68,93 @@ export function PracticeScreen({
     startCamera();
     return () => {
       if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
-      cancelAnimationFrame(animFrameRef.current);
     };
   }, [startCamera]);
 
   useEffect(() => {
-    if (status !== "ready") return;
-    let landmarker: any = null;
-    let lastTimestamp = 0;
+    if (status !== "ready" || loopActiveRef.current) return;
+    loopActiveRef.current = true;
 
     async function init() {
-      const { HandLandmarker, FilesetResolver } = await import("@mediapipe/tasks-vision");
-      const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm");
-      landmarker = await HandLandmarker.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task",
-          delegate: "GPU",
-        },
-        runningMode: "VIDEO",
-        numHands: 2,
-      });
-      setStatus("running");
-      processFrame(landmarker);
-    }
-
-    function processFrame(lm: any) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      if (!video || !canvas || video.readyState < 2) {
-        animFrameRef.current = requestAnimationFrame(() => processFrame(lm));
+      let landmarker: any = null;
+      try {
+        const { HandLandmarker, FilesetResolver } = await import("@mediapipe/tasks-vision");
+        const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm");
+        landmarker = await HandLandmarker.createFromOptions(vision, {
+          baseOptions: {
+            modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task",
+            delegate: "GPU",
+          },
+          runningMode: "VIDEO",
+          numHands: 2,
+        });
+      } catch {
+        loopActiveRef.current = false;
+        setStatus("error");
         return;
       }
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0);
+      if (!landmarker) return;
+      engineRef.current = { landmarker };
+      lastTimestampRef.current = 0;
+      setStatus("running");
 
-      const now = performance.now();
-      if (now - lastTimestamp > 100) {
-        lastTimestamp = now;
-        const result = lm.detectForVideo(video, now);
-        if (result.landmarks?.[0]) {
-          latestLandmarksRef.current = result.landmarks[0] as Landmark[];
-          const cls = classifier.classify(result.landmarks[0]);
-          if (cls.signId && cls.confidence > 0.5) {
-            setRecognized(cls.signId);
-            if (cls.signId === currentSign.id && cls.confidence > 0.65 && !success) {
-              setSuccess(t("Sign Recognized!"));
-              onUpdate((prev) => {
-                let state = addXP(prev, 30);
-                state = completeSign(state, currentSign.id);
-                state = checkWebcamMilestone(state, practiceCountRef.current + 1);
-                return state;
-              });
-              setPracticeCount((c) => {
-                practiceCountRef.current = c + 1;
-                return c + 1;
-              });
-              setTimeout(() => { setSuccess(null); setRecognized(null); }, 2000);
+      function processFrame() {
+        if (!loopActiveRef.current) return;
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        if (!video || !canvas || video.readyState < 2) {
+          animFrameRef.current = requestAnimationFrame(processFrame);
+          return;
+        }
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0);
+
+        const now = performance.now();
+        if (now - lastTimestampRef.current > 100) {
+          lastTimestampRef.current = now;
+          const result = landmarker.detectForVideo(video, now);
+          const sign = currentSignRef.current;
+          if (result.landmarks?.[0]) {
+            latestLandmarksRef.current = result.landmarks[0] as Landmark[];
+            const cls = classifier.classify(result.landmarks[0]);
+            if (cls.signId && cls.confidence > 0.5) {
+              setRecognized(cls.signId);
+              if (cls.signId === sign.id && cls.confidence > 0.65 && !successRef.current) {
+                setSuccess(t("Sign Recognized!"));
+                onUpdateRef.current((prev) => {
+                  let state = addXP(prev, 30);
+                  state = completeSign(state, sign.id);
+                  state = checkWebcamMilestone(state, practiceCountRef.current + 1);
+                  return state;
+                });
+                setPracticeCount((c) => {
+                  practiceCountRef.current = c + 1;
+                  return c + 1;
+                });
+                setTimeout(() => { setSuccess(null); setRecognized(null); }, 2000);
+              }
             }
           }
         }
+        animFrameRef.current = requestAnimationFrame(processFrame);
       }
-      animFrameRef.current = requestAnimationFrame(() => processFrame(lm));
+
+      processFrame();
     }
 
     init();
-    return () => { if (landmarker) landmarker.close(); cancelAnimationFrame(animFrameRef.current); };
-  }, [status, currentSign, success, onUpdate]);
+  }, [status]);
+
+  useEffect(() => {
+    return () => {
+      loopActiveRef.current = false;
+      if (engineRef.current?.landmarker) engineRef.current.landmarker.close();
+      cancelAnimationFrame(animFrameRef.current);
+    };
+  }, []);
 
   return (
     <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">

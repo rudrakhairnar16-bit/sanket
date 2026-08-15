@@ -83,7 +83,7 @@ export async function POST() {
     const modules = await Module.create([
       {
         title: "Sign: Thank You",
-        videoUrl: "https://www.youtube.com/embed/neE5Fg4FVtA",
+        videoUrl: "https://www.youtube-nocookie.com/embed/wK8amEJAK1Y",
         question: "What does this sign mean?",
         options: ["Please", "Thank You", "Sorry", "Hello"],
         correctAnswer: "Thank You",
@@ -92,7 +92,7 @@ export async function POST() {
       },
       {
         title: "Sign: Please Wait",
-        videoUrl: "https://www.youtube.com/embed/neE5Fg4FVtA",
+        videoUrl: "https://www.youtube-nocookie.com/embed/M24VjuHEfgo",
         question: "What does this sign mean?",
         options: ["Come Here", "Go Away", "Please Wait", "Sit Down"],
         correctAnswer: "Please Wait",
@@ -101,7 +101,7 @@ export async function POST() {
       },
       {
         title: "Sign: Sign Here",
-        videoUrl: "https://www.youtube.com/embed/5vHmvYA8Z6Q",
+        videoUrl: "https://www.youtube-nocookie.com/embed/1HI4TKdLMOw",
         question: "This sign instructs the citizen to:",
         options: ["Pay Here", "Sign Here", "Stand Here", "Wait Here"],
         correctAnswer: "Sign Here",
@@ -110,7 +110,7 @@ export async function POST() {
       },
       {
         title: "Sign: Water Bill",
-        videoUrl: "https://www.youtube.com/embed/5vHmvYA8Z6Q",
+        videoUrl: "https://www.youtube-nocookie.com/embed/TPdAyuJYQtE",
         question: "Which department does this sign relate to?",
         options: ["Property Tax", "Police", "Water Bill", "Health"],
         correctAnswer: "Water Bill",
@@ -119,7 +119,7 @@ export async function POST() {
       },
       {
         title: "Sign: Submit",
-        videoUrl: "https://www.youtube.com/embed/5vHmvYA8Z6Q",
+        videoUrl: "https://www.youtube-nocookie.com/embed/d9MAodEjHsc",
         question: "What action does this sign indicate?",
         options: ["Cancel", "Submit", "Delete", "Print"],
         correctAnswer: "Submit",

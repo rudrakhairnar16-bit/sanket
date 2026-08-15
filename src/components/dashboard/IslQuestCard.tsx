@@ -4,6 +4,45 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { loadGame, getLevelProgress } from "@/lib/game-storage";
 
+const BADGE_META: Record<string, { emoji: string; label: string }> = {
+  "level-5": { emoji: "⭐", label: "Level 5" },
+  "level-10": { emoji: "🌟", label: "Level 10" },
+  "level-20": { emoji: "💫", label: "Level 20" },
+  "streak-3": { emoji: "🔥", label: "3-Day Streak" },
+  "streak-7": { emoji: "⚡", label: "7-Day Streak" },
+  "streak-30": { emoji: "🏆", label: "30-Day Streak" },
+  "first-sign": { emoji: "🤟", label: "First Sign" },
+  "all-signs": { emoji: "🎓", label: "All Signs" },
+  "perfect-quiz": { emoji: "🎯", label: "Perfect Quiz" },
+  "webcam-pro": { emoji: "📸", label: "Webcam Pro" },
+};
+
+function StatBox({
+  label,
+  value,
+  icon,
+  grad,
+  glow,
+}: {
+  label: string;
+  value: number;
+  icon: React.ReactNode;
+  grad: string;
+  glow: string;
+}) {
+  return (
+    <div className="rounded-xl p-2.5 text-center bg-gradient-to-br border border-surface-200/50 dark:border-surface-700/40 transition-all duration-200 hover:-translate-y-0.5">
+      <div className={`w-8 h-8 mx-auto mb-1 rounded-lg ${grad} flex items-center justify-center ${glow}`}>
+        {icon}
+      </div>
+      <p className="text-lg font-bold font-display text-surface-900 dark:text-white leading-none">
+        {value}
+      </p>
+      <p className="text-[10px] text-surface-500 mt-0.5">{label}</p>
+    </div>
+  );
+}
+
 export function IslQuestCard() {
   const [gameData, setGameData] = useState<
     ReturnType<typeof loadGame> | null
@@ -85,15 +124,26 @@ export function IslQuestCard() {
     : 0;
   const displayBadges = showData
     ? "islBadges" in showData
-      ? showData.islBadges.length
-      : showData.badges.length
-    : 0;
+      ? showData.islBadges
+      : showData.badges
+    : [];
+
+  const iconProps = {
+    width: 16,
+    height: 16,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "white",
+    strokeWidth: 2,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+  };
 
   return (
-    <div className="glass border-accent/15 p-5 animate-slide-down">
-      <div className="flex items-center justify-between mb-3">
+    <div className="rounded-card bg-white dark:bg-surface-900/80 border border-accent-500/15 p-5 shadow-card animate-slide-down">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg gradient-accent flex items-center justify-center shadow-glow-accent">
+          <div className="w-10 h-10 rounded-xl gradient-accent flex items-center justify-center shadow-glow-accent">
             <svg
               width="18"
               height="18"
@@ -112,7 +162,7 @@ export function IslQuestCard() {
             </svg>
           </div>
           <div>
-            <h3 className="font-bold text-surface-900 dark:text-white text-sm">
+            <h3 className="font-display font-bold text-surface-900 dark:text-white text-sm">
               ISL Quest
             </h3>
             <p className="text-[10px] text-surface-500">
@@ -125,45 +175,72 @@ export function IslQuestCard() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
-        <div className="bg-surface-100 dark:bg-surface-800/50 rounded-xl p-2.5 text-center">
-          <p className="text-lg font-bold text-surface-900 dark:text-white">
-            {displayLevel}
-          </p>
-          <p className="text-[10px] text-surface-500">Level</p>
-        </div>
-        <div className="bg-surface-100 dark:bg-surface-800/50 rounded-xl p-2.5 text-center">
-          <p className="text-lg font-bold text-surface-900 dark:text-white">
-            {displayXp}
-          </p>
-          <p className="text-[10px] text-surface-500">XP</p>
-        </div>
-        <div className="bg-surface-100 dark:bg-surface-800/50 rounded-xl p-2.5 text-center">
-          <p className="text-lg font-bold text-surface-900 dark:text-white">
-            {displayStreak}
-          </p>
-          <p className="text-[10px] text-surface-500">Streak</p>
-        </div>
-        <div className="bg-surface-100 dark:bg-surface-800/50 rounded-xl p-2.5 text-center">
-          <p className="text-lg font-bold text-surface-900 dark:text-white">
-            {displayBadges}
-          </p>
-          <p className="text-[10px] text-surface-500">Badges</p>
-        </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+        <StatBox
+          label="Level"
+          value={displayLevel}
+          grad="gradient-primary"
+          glow="shadow-glow-primary"
+          icon={<svg {...iconProps}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01z" /></svg>}
+        />
+        <StatBox
+          label="XP"
+          value={displayXp}
+          grad="gradient-accent"
+          glow="shadow-glow-accent"
+          icon={<svg {...iconProps}><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>}
+        />
+        <StatBox
+          label="Streak"
+          value={displayStreak}
+          grad="from-orange-500 to-red-500"
+          glow="shadow-glow-danger"
+          icon={<svg {...iconProps}><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z" /></svg>}
+        />
+        <StatBox
+          label="Badges"
+          value={displayBadges.length}
+          grad="from-violet-500 to-purple-600"
+          glow="shadow-glow-primary"
+          icon={<svg {...iconProps}><path d="M6 9a6 6 0 1112 0 6 6 0 01-12 0zM6 9v9a1 1 0 001 1h10a1 1 0 001-1V9" /></svg>}
+        />
       </div>
 
+      {displayBadges.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {displayBadges.slice(0, 6).map((badge) => {
+            const meta = BADGE_META[badge];
+            if (!meta) return null;
+            return (
+              <span
+                key={badge}
+                title={meta.label}
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-accent-500/10 border border-accent-500/20 text-[10px] font-medium text-accent-600 dark:text-accent-400"
+              >
+                <span>{meta.emoji}</span>
+                <span className="hidden sm:inline">{meta.label}</span>
+              </span>
+            );
+          })}
+        </div>
+      )}
+
       {progress && (
-        <div className="mb-3">
-          <div className="bg-surface-100 dark:bg-surface-800 rounded-full h-1.5 overflow-hidden">
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] text-surface-500">
+              {progress.current} / {progress.next} XP to level {gameData ? gameData.level + 1 : "?"}
+            </span>
+            <span className="text-[10px] font-bold text-accent-600 dark:text-accent-400 tabular-nums">
+              {progress.progress}%
+            </span>
+          </div>
+          <div className="bg-surface-100 dark:bg-surface-800 rounded-full h-2 overflow-hidden">
             <div
-              className="h-full gradient-accent rounded-full transition-all"
+              className="h-full gradient-accent rounded-full transition-all duration-700 shadow-[0_0_8px_rgba(245,158,11,0.4)]"
               style={{ width: `${progress.progress}%` }}
             />
           </div>
-          <p className="text-[10px] text-surface-500 mt-1">
-            {progress.current} / {progress.next} XP to level{" "}
-            {gameData ? gameData.level + 1 : "?"}
-          </p>
         </div>
       )}
 
@@ -171,10 +248,16 @@ export function IslQuestCard() {
         <button
           onClick={syncProgress}
           disabled={syncing}
-          className="btn-ghost text-xs"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-btn border border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 transition-all disabled:opacity-60"
         >
           {syncing ? (
-            "Saving..."
+            <span className="flex items-center gap-1.5">
+              <svg className="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Saving...
+            </span>
           ) : (
             <span className="flex items-center gap-1.5">
               <svg
