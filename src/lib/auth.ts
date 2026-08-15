@@ -11,7 +11,6 @@ export function getJWTSecret(): string {
   }
   return secret;
 }
-const JWT_SECRET = getJWTSecret();
 
 export interface JWTPayload {
   userId: string;
@@ -21,16 +20,16 @@ export interface JWTPayload {
 }
 
 export function signToken(payload: JWTPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign(payload, getJWTSecret(), { expiresIn: "7d" });
 }
 
 export function verifyToken(token: string): JWTPayload {
-  return jwt.verify(token, JWT_SECRET) as JWTPayload;
+  return jwt.verify(token, getJWTSecret()) as JWTPayload;
 }
 
 export function decodeToken(token: string): JWTPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as JWTPayload;
+    return jwt.verify(token, getJWTSecret()) as JWTPayload;
   } catch {
     return null;
   }
