@@ -90,7 +90,7 @@ Go to **http://localhost:3000** in your browser.
 
 | Name | Username | Password | Role |
 |---|---|---|---|
-| Super Admin | `admin` | `admin123` | Full access to everything |
+| Super Admin | `admin` | `Admin123` | Full access to everything |
 | Ramesh | `ramesh` | `admin123` | Learner (12-day streak) |
 | Sita | `sita` | `admin123` | Learner (8-day streak) |
 | Amit | `amit` | `admin123` | Learner (5-day streak) |
@@ -103,7 +103,7 @@ Go to **http://localhost:3000** in your browser.
 2. Login as `ramesh` / `admin123`
 3. Select an answer → Click **Submit**
 4. Click **Leaderboard** in nav
-5. Logout (top-right) → Login as `admin` / `admin123`
+5. Logout (top-right) → Login as `admin` / `Admin123`
 6. Explore the **Dashboard** and **Modules** tabs
 
 ---

@@ -11,6 +11,7 @@ export async function POST() {
     await connectDB();
 
     const hashedPassword = await bcrypt.hash("admin123", 10);
+    const adminHashedPassword = await bcrypt.hash("Admin123", 10);
 
     await User.deleteMany({});
     await Module.deleteMany({});
@@ -18,7 +19,7 @@ export async function POST() {
 
     await User.create({
       username: "admin",
-      password: hashedPassword,
+      password: adminHashedPassword,
       name: "Super Admin",
       department: "Municipal",
       role: "superadmin",

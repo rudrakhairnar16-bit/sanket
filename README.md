@@ -195,7 +195,7 @@ curl -X POST http://localhost:3000/api/admin/seed
 
 | Username | Password | Role |
 |---|---|---|
-| `admin` | `admin123` | Super Admin |
+| `admin` | `Admin123` | Super Admin |
 | `wateradmin` | `admin123` | Department Admin (Water Tax) |
 | `ramesh` | `admin123` | Learner (12-day streak) |
 | `sita` | `admin123` | Learner (8-day streak) |
@@ -254,7 +254,7 @@ npx tsx scripts/seed.ts
 ```
 
 This creates:
-- **2 admins**: `admin` / `admin123`, `wateradmin` / `admin123`
+- **2 admins**: `admin` / `Admin123`, `wateradmin` / `admin123`
 - **12 learners**: `ramesh`, `sita`, `amit`, `priya`, `vikram`, `anita`, `rajesh`, `neha`, `suresh`, `kavita`, `deepak`, `pooja` (all password: `admin123`)
 - **5 modules**: Thank You, Please Wait, Sign Here, Water Bill, Submit
 - **Completion history** for learners with streaks

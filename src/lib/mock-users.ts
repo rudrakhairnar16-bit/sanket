@@ -23,7 +23,7 @@ const DEMO_USERS: MockUser[] = [
   {
     id: "admin-1",
     username: "admin",
-    password: bcrypt.hashSync("admin123", 10),
+    password: bcrypt.hashSync("Admin123", 10),
     name: "Admin",
     department: "Administration",
     role: "admin",

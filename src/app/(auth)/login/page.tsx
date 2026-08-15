@@ -260,7 +260,7 @@ export default function LoginPage() {
               Play ISL Quest — No Login Needed
             </Link>
             <p className="text-surface-600 text-xs text-center">
-              Demo accounts: <span className="text-surface-400">admin / admin123</span> or <span className="text-surface-400">ramesh / admin123</span>
+              Demo accounts: <span className="text-surface-400">admin / Admin123</span> or <span className="text-surface-400">ramesh / admin123</span>
             </p>
           </div>
         </div>
