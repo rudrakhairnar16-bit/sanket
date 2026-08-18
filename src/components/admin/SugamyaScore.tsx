@@ -4,21 +4,21 @@ interface SugamyaScoreProps {
   compliance: number;
   satisfactionRate: number;
   totalCompletions: number;
-  escalationsHandled?: number;
+  totalUsers: number;
 }
 
 export function SugamyaScore({
   compliance,
   satisfactionRate,
   totalCompletions,
-  escalationsHandled = 0,
+  totalUsers,
 }: SugamyaScoreProps) {
   const participation =
     Math.min(totalCompletions / 50, 1) * 10; // 50 completions → full participation weight
-  const safetyNet =
-    Math.min(escalationsHandled / 10, 1) * 10; // 10 escalations handled → full safety-net weight
+  const usage =
+    Math.min(totalUsers / 500, 1) * 10; // 500 active users → full usage weight
   const raw =
-    compliance * 0.45 + satisfactionRate * 0.3 + participation * 0.15 + safetyNet * 0.1;
+    compliance * 0.45 + satisfactionRate * 0.3 + participation * 0.15 + usage * 0.1;
   const score = Math.round(raw);
 
   const grade =
@@ -59,11 +59,10 @@ export function SugamyaScore({
       </div>
       <p className="text-[9px] text-surface-400 mt-2">
         Compliance {Math.round(compliance)}% · Citizen satisfaction{" "}
-        {Math.round(satisfactionRate)}% · {escalationsHandled} escalations handled
+        {Math.round(satisfactionRate)}% · {totalUsers} users reached
       </p>
       <p className="text-[8px] text-surface-400 mt-0.5">
-        Score = 45% compliance + 30% satisfaction + 15% participation + 10% human
-        safety net
+        Score = 45% compliance + 30% satisfaction + 15% participation + 10% usage
       </p>
     </div>
   );

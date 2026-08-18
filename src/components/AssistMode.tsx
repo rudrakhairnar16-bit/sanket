@@ -11,10 +11,9 @@ import {
   type ISLToken,
 } from "@/data/municipal-signs";
 import { loadGame, saveGame, addXP } from "@/lib/game-storage";
-import { useInterpreterSocket } from "@/lib/use-interpreter-socket";
 
 interface ChatMessage {
-  role: "citizen" | "clerk" | "system" | "interpreter";
+  role: "citizen" | "clerk" | "system";
   text: string;
   time: Date;
   islTokens?: ISLToken[];
@@ -54,13 +53,7 @@ const GREETING: Record<string, string> = {
 };
 
 const COUNTER_KEY = "sanket-assist-count";
-const ESCALATION_KEY = "sanket-escalation-count";
 const ASSIST_XP = 25;
-
-type EscalationState = {
-  status: "idle" | "searching" | "connected" | "ended";
-  interpreterName?: string;
-};
 
 export default function AssistMode() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -83,23 +76,11 @@ export default function AssistMode() {
   const [sessionDone, setSessionDone] = useState(false);
   const [assistCount, setAssistCount] = useState(0);
   const [xpAwarded, setXpAwarded] = useState(false);
-  const [escalation, setEscalation] = useState<EscalationState>({ status: "idle" });
-  const [escalationCount, setEscalationCount] = useState(0);
   const STABLE_THRESHOLD = 8;
-
-  const {
-    connected: socketConnected,
-    session: relaySession,
-    incomingSignals,
-    findInterpreter,
-    endSession,
-  } = useInterpreterSocket("assist-desk");
 
   useEffect(() => {
     const count = parseInt(localStorage.getItem(COUNTER_KEY) || "0", 10) || 0;
     setAssistCount(count);
-    const escalCount = parseInt(localStorage.getItem(ESCALATION_KEY) || "0", 10) || 0;
-    setEscalationCount(escalCount);
     const savedLang = localStorage.getItem("sanket-lang");
     if (savedLang && (SUPPORTED_LANGS as readonly string[]).includes(savedLang)) {
       setLanguage(savedLang);
@@ -133,7 +114,7 @@ export default function AssistMode() {
     });
   };
 
-  const addMessage = useCallback((role: "citizen" | "clerk" | "system" | "interpreter", text: string, islTokens?: ISLToken[]) => {
+  const addMessage = useCallback((role: "citizen" | "clerk" | "system", text: string, islTokens?: ISLToken[]) => {
     setMessages((prev) => [...prev, { role, text, time: new Date(), islTokens }]);
     if (role === "system") {
       speak(text, language);
@@ -354,69 +335,6 @@ export default function AssistMode() {
     }
   };
 
-  // ---- Escalation to a live human interpreter ----
-  const handleEscalate = useCallback(() => {
-    if (escalation.status === "searching" || escalation.status === "connected") return;
-    setEscalation({ status: "searching" });
-    addMessage("system", "Low-confidence sign — calling a live human interpreter…");
-
-    if (socketConnected) {
-      findInterpreter(language);
-    } else {
-      // Simulate a human interpreter joining (demo on a single machine)
-      window.setTimeout(() => {
-        setEscalation({ status: "connected", interpreterName: "Sanket Relay" });
-        addMessage("interpreter", "Interpreter connected. Relay live — how can I help the citizen?");
-        speak(
-          language === "hi"
-            ? "दुभाषिया जुड़ गए हैं। नागरिक की कैसे मदद करूँ?"
-            : language === "mr"
-              ? "दुभाषी जोडले गेले. नागरिकाची कशी मदत करू?"
-              : language === "gu"
-                ? "દુભાષિયા જોડાયા છે. નાગરિકની કેવી રીતે મદદ કરું?"
-                : "The interpreter is connected. How can I help the citizen?",
-          language
-        );
-      }, 1600);
-    }
-  }, [escalation.status, socketConnected, findInterpreter, language, addMessage]);
-
-  useEffect(() => {
-    if (relaySession?.status === "active" && escalation.status === "searching") {
-      setEscalation({ status: "connected", interpreterName: "Live interpreter" });
-      addMessage("interpreter", "A trained interpreter joined the relay.");
-    }
-  }, [relaySession, escalation.status, addMessage]);
-
-  useEffect(() => {
-    for (const sig of incomingSignals) {
-      if (sig?.data?.text) {
-        addMessage("interpreter", sig.data.text);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [incomingSignals]);
-
-  const handleEndEscalation = useCallback(() => {
-    if (escalation.status !== "connected") return;
-    if (relaySession?.sessionId) endSession(relaySession.sessionId);
-    setEscalation({ status: "ended", interpreterName: escalation.interpreterName });
-    addMessage("system", "Relay ended. Escalation is recorded in the department dashboard.");
-
-    const newCount = escalationCount + 1;
-    localStorage.setItem(ESCALATION_KEY, String(newCount));
-    setEscalationCount(newCount);
-
-    fetch("/api/escalations", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        clerkName: escalation.interpreterName || "Live interpreter",
-        language,
-      }),
-    }).catch(() => {});
-  }, [escalation, relaySession, endSession, escalationCount, language, addMessage]);
-
   const finishSession = () => {
     const count = assistCount + 1;
     localStorage.setItem(COUNTER_KEY, String(count));
@@ -437,7 +355,6 @@ export default function AssistMode() {
     setSignedText("");
     setCamEnabled(false);
     setCamStatus("idle");
-    setEscalation({ status: "idle" });
     speak(GREETING[language], language);
   };
 
@@ -714,9 +631,7 @@ export default function AssistMode() {
                         ? "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700/60"
                         : msg.role === "clerk"
                           ? "bg-gradient-to-br from-primary-500/25 to-accent-500/10 border border-primary-500/30"
-                          : msg.role === "interpreter"
-                            ? "bg-violet-500/10 border border-violet-500/30"
-                            : "bg-amber-500/10 border border-amber-500/25"
+                          : "bg-amber-500/10 border border-amber-500/25"
                     }`}
                   >
                     <p className="text-[9px] uppercase tracking-wider opacity-60 mb-0.5">
@@ -724,9 +639,7 @@ export default function AssistMode() {
                         ? "Citizen"
                         : msg.role === "clerk"
                           ? "Clerk"
-                          : msg.role === "interpreter"
-                            ? "Live Interpreter"
-                            : "System"}
+                          : "System"}
                     </p>
                     <p className="text-gray-900 dark:text-gray-100">{msg.text}</p>
                     {msg.islTokens && msg.islTokens.length > 0 && (
@@ -745,72 +658,6 @@ export default function AssistMode() {
                   </div>
                 </div>
               ))
-            )}
-          </div>
-
-          {/* Escalation to live interpreter */}
-          <div className={`mb-3 rounded-xl border p-3 transition-all ${
-              escalation.status === "connected"
-                ? "border-violet-500/40 bg-violet-500/10"
-                : escalation.status === "searching"
-                  ? "border-amber-500/40 bg-amber-500/5"
-                  : "border-gray-700/60 bg-gray-800/40"
-            }`}>
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <span className="text-base" aria-hidden="true">
-                  {escalation.status === "connected" ? "🖐️" : escalation.status === "searching" ? "⏳" : "📞"}
-                </span>
-                <div>
-                  <p className="text-[11px] font-semibold text-gray-200">
-                    {escalation.status === "connected"
-                      ? `Live interpreter: ${escalation.interpreterName}`
-                      : escalation.status === "searching"
-                        ? "Searching for a live interpreter…"
-                        : escalation.status === "ended"
-                          ? "Escalation handled by a human"
-                          : "Can't read this sign?"}
-                  </p>
-                  <p className="text-[9px] text-gray-500">
-                    {escalation.status === "connected"
-                      ? "Relay active — interpreter can see this conversation"
-                      : escalation.status === "searching"
-                        ? "A trained human interpreter is joining"
-                        : escalation.status === "ended"
-                          ? `${escalationCount} escalation(s) recorded this session`
-                          : "Escalate to a trained government clerk, live"}
-                  </p>
-                </div>
-              </div>
-              {escalation.status === "connected" && (
-                <button
-                  onClick={handleEndEscalation}
-                  className="px-2.5 py-1.5 rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/25 text-[10px] font-semibold transition-all shrink-0"
-                >
-                  End relay
-                </button>
-              )}
-              {escalation.status === "idle" && (
-                <button
-                  onClick={handleEscalate}
-                  className="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-[10px] font-semibold transition-all shadow-glow shrink-0"
-                >
-                  Call interpreter 📞
-                </button>
-              )}
-              {escalation.status === "ended" && (
-                <button
-                  onClick={() => setEscalation({ status: "idle" })}
-                  className="px-2.5 py-1.5 rounded-lg bg-gray-700/60 hover:bg-gray-700 text-gray-300 text-[10px] font-semibold transition-all shrink-0"
-                >
-                  New escalation
-                </button>
-              )}
-            </div>
-            {!socketConnected && escalation.status === "idle" && (
-              <p className="text-[8px] text-gray-600 mt-1.5">
-                Demo mode — a simulated interpreter joins on this machine.
-              </p>
             )}
           </div>
 

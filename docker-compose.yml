@@ -26,16 +26,5 @@ services:
       - mongodb
     restart: unless-stopped
 
-  socket:
-    image: node:20-alpine
-    container_name: sanket-socket
-    ports:
-      - "3001:3001"
-    working_dir: /app
-    command: node server-socket.js
-    volumes:
-      - ./server-socket.js:/app/server-socket.js
-    restart: unless-stopped
-
 volumes:
   mongodb_data:

@@ -18,7 +18,6 @@ interface DashboardData {
   overallCompliance: number;
   totalUsers: number;
   totalCompletions: number;
-  escalationsHandled?: number;
   deptCompliance: DeptCompliance[];
   leaderboard: {
     _id: string;
@@ -238,7 +237,7 @@ export default function AdminDashboardPage() {
           compliance={data?.overallCompliance ?? 0}
           satisfactionRate={feedback?.satisfactionRate ?? 0}
           totalCompletions={data?.totalCompletions ?? 0}
-          escalationsHandled={data?.escalationsHandled ?? 0}
+          totalUsers={data?.totalUsers ?? 0}
         />
         <StatCard
           label="Overall Compliance"

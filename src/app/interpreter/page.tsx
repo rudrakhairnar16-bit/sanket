@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import InterpreterHub from "@/components/InterpreterHub";
+import LiveInterpreter from "@/components/LiveInterpreter";
 import { useAuth } from "@/lib/auth-context";
 import { autoCompleteTasks } from "@/lib/tasks";
 import { loadGame } from "@/lib/game-storage";
@@ -17,5 +17,5 @@ export default function InterpreterPage() {
     });
   }, [user]);
 
-  return <InterpreterHub />;
+  return <LiveInterpreter />;
 }
