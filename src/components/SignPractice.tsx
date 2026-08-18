@@ -63,25 +63,34 @@ export default function SignPractice({
   }, [startCamera]);
 
   async function loadHandLandmarker() {
+    const { HandLandmarker, FilesetResolver } = await import(
+      "@mediapipe/tasks-vision"
+    );
+    const vision = await FilesetResolver.forVisionTasks(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+    );
+    const opts = {
+      baseOptions: {
+        modelAssetPath:
+          "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task",
+      },
+      runningMode: "VIDEO" as const,
+      numHands: 2,
+    };
     try {
-      const { HandLandmarker, FilesetResolver } = await import(
-        "@mediapipe/tasks-vision"
-      );
-      const vision = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
-      );
-      const landmarker = await HandLandmarker.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath:
-            "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task",
-          delegate: "GPU",
-        },
-        runningMode: "VIDEO",
-        numHands: 2,
+      return await HandLandmarker.createFromOptions(vision, {
+        ...opts,
+        baseOptions: { ...opts.baseOptions, delegate: "GPU" },
       });
-      return landmarker;
     } catch {
-      return null;
+      try {
+        return await HandLandmarker.createFromOptions(vision, {
+          ...opts,
+          baseOptions: { ...opts.baseOptions, delegate: "CPU" },
+        });
+      } catch {
+        return null;
+      }
     }
   }
 
@@ -136,67 +145,70 @@ export default function SignPractice({
 
       function processFrame() {
         if (!loopActiveRef.current) return;
+        animFrameRef.current = requestAnimationFrame(processFrame);
+
         const video = videoRef.current;
         const canvas = canvasRef.current;
         if (!video || !canvas || video.readyState < 2) {
-          animFrameRef.current = requestAnimationFrame(processFrame);
           return;
         }
 
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+        try {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
 
-        ctx.drawImage(video, 0, 0);
+          ctx.drawImage(video, 0, 0);
 
-        const now = performance.now();
-        if (now - lastTimestampRef.current > 100) {
-          lastTimestampRef.current = now;
-          const result = landmarker.detectForVideo(video, now);
+          const now = performance.now();
+          if (now - lastTimestampRef.current > 100) {
+            lastTimestampRef.current = now;
+            const result = landmarker.detectForVideo(video, now);
 
-          if (result.landmarks && result.landmarks.length > 0) {
-            setHandCount(result.landmarks.length);
+            if (result.landmarks && result.landmarks.length > 0) {
+              setHandCount(result.landmarks.length);
 
-            result.landmarks.forEach((hand: any, i: number) => {
-              drawLandmarks(ctx, hand, i === 0 ? "#6366f1" : "#8b5cf6");
-            });
+              result.landmarks.forEach((hand: any, i: number) => {
+                drawLandmarks(ctx, hand, i === 0 ? "#6366f1" : "#8b5cf6");
+              });
 
-            const landmarks = result.landmarks[0] as Landmark[];
-            const classification = classifier.classify(landmarks);
+              const landmarks = result.landmarks[0] as Landmark[];
+              const classification = classifier.classify(landmarks);
 
-            setCurrentSign(classification);
+              setCurrentSign(classification);
 
-            totalFrames.current += 1;
-            if (
-              classification.signId &&
-              classification.signId === targetSignId &&
-              classification.confidence > 0.6
-            ) {
-              correctFrames.current += 1;
-            } else if (totalFrames.current > 10) {
-              correctFrames.current = Math.max(0, correctFrames.current - 1);
+              totalFrames.current += 1;
+              if (
+                classification.signId &&
+                classification.signId === targetSignId &&
+                classification.confidence > 0.6
+              ) {
+                correctFrames.current += 1;
+              } else if (totalFrames.current > 10) {
+                correctFrames.current = Math.max(0, correctFrames.current - 1);
+              }
+
+              const acc =
+                totalFrames.current > 0
+                  ? Math.round((correctFrames.current / totalFrames.current) * 100)
+                  : 0;
+              setAccuracy(acc);
+
+              if (acc > 60 && totalFrames.current > 20) {
+                setStatus("success");
+                onComplete(true);
+                loopActiveRef.current = false;
+                return;
+              }
+            } else {
+              setHandCount(0);
             }
-
-            const acc =
-              totalFrames.current > 0
-                ? Math.round((correctFrames.current / totalFrames.current) * 100)
-                : 0;
-            setAccuracy(acc);
-
-            if (acc > 60 && totalFrames.current > 20) {
-              setStatus("success");
-              onComplete(true);
-              loopActiveRef.current = false;
-              return;
-            }
-          } else {
-            setHandCount(0);
           }
+        } catch {
+          // keep loop alive even if a frame fails
         }
-
-        animFrameRef.current = requestAnimationFrame(processFrame);
       }
 
       processFrame();

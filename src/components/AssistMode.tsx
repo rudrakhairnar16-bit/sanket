@@ -163,23 +163,32 @@ export default function AssistMode() {
   }, [camEnabled, camStatus]);
 
   async function loadHandLandmarker() {
+    const { HandLandmarker, FilesetResolver } = await import("@mediapipe/tasks-vision");
+    const vision = await FilesetResolver.forVisionTasks(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+    );
+    const opts = {
+      baseOptions: {
+        modelAssetPath:
+          "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task",
+      },
+      runningMode: "VIDEO" as const,
+      numHands: 2,
+    };
     try {
-      const { HandLandmarker, FilesetResolver } = await import("@mediapipe/tasks-vision");
-      const vision = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
-      );
-      const landmarker = await HandLandmarker.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath:
-            "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task",
-          delegate: "GPU",
-        },
-        runningMode: "VIDEO",
-        numHands: 2,
+      return await HandLandmarker.createFromOptions(vision, {
+        ...opts,
+        baseOptions: { ...opts.baseOptions, delegate: "GPU" },
       });
-      return landmarker;
     } catch {
-      return null;
+      try {
+        return await HandLandmarker.createFromOptions(vision, {
+          ...opts,
+          baseOptions: { ...opts.baseOptions, delegate: "CPU" },
+        });
+      } catch {
+        return null;
+      }
     }
   }
 
@@ -232,60 +241,67 @@ export default function AssistMode() {
       }
 
       const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+      if (!ctx) {
+        animFrameRef.current = requestAnimationFrame(processFrame);
+        return;
+      }
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0);
+      try {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0);
 
-      const now = performance.now();
-      if (now - lastTimestamp > 100) {
-        lastTimestamp = now;
-        const result = landmarker.detectForVideo(video, now);
+        const now = performance.now();
+        if (now - lastTimestamp > 100) {
+          lastTimestamp = now;
+          const result = landmarker.detectForVideo(video, now);
 
-        if (result.landmarks && result.landmarks.length > 0) {
-          setHandCount(result.landmarks.length);
-          result.landmarks.forEach((hand: Landmark[], i: number) => {
-            drawLandmarks(ctx, hand, i === 0 ? "#6366f1" : "#8b5cf6");
-          });
+          if (result.landmarks && result.landmarks.length > 0) {
+            setHandCount(result.landmarks.length);
+            result.landmarks.forEach((hand: Landmark[], i: number) => {
+              drawLandmarks(ctx, hand, i === 0 ? "#6366f1" : "#8b5cf6");
+            });
 
-          if (classifier.getSampleCount() > 0) {
-            let bestResult = { signId: null as string | null, confidence: 0 };
-            for (const hand of result.landmarks) {
-              const r = classifier.classify(hand);
-              if (r.confidence > bestResult.confidence) bestResult = r;
-            }
-            if (bestResult.signId && bestResult.confidence > 0.5) {
-              setCurrentSign(bestResult.signId);
-              setConfidence(bestResult.confidence);
-              if (bestResult.signId === lastSignRef.current) {
-                stableFramesRef.current++;
-              } else {
-                stableFramesRef.current = 0;
-                lastSignRef.current = bestResult.signId;
+            if (classifier.getSampleCount() > 0) {
+              let bestResult = { signId: null as string | null, confidence: 0 };
+              for (const hand of result.landmarks) {
+                const r = classifier.classify(hand);
+                if (r.confidence > bestResult.confidence) bestResult = r;
               }
-              if (stableFramesRef.current >= STABLE_THRESHOLD) {
-                const entry = SIGN_MAP.get(bestResult.signId);
-                if (entry) {
-                  const displayName = getLocalizedName(entry, language);
-                  setSignedText(displayName);
-                  addMessage("citizen", displayName);
-                  speak(displayName, language);
+              if (bestResult.signId && bestResult.confidence > 0.5) {
+                setCurrentSign(bestResult.signId);
+                setConfidence(bestResult.confidence);
+                if (bestResult.signId === lastSignRef.current) {
+                  stableFramesRef.current++;
+                } else {
                   stableFramesRef.current = 0;
+                  lastSignRef.current = bestResult.signId;
                 }
+                if (stableFramesRef.current >= STABLE_THRESHOLD) {
+                  const entry = SIGN_MAP.get(bestResult.signId);
+                  if (entry) {
+                    const displayName = getLocalizedName(entry, language);
+                    setSignedText(displayName);
+                    addMessage("citizen", displayName);
+                    speak(displayName, language);
+                    stableFramesRef.current = 0;
+                  }
+                }
+              } else {
+                setCurrentSign(null);
+                setConfidence(0);
               }
             } else {
-              setCurrentSign(null);
-              setConfidence(0);
+              setSignedText("No sign samples loaded — switch to Demo mode");
             }
           } else {
-            setSignedText("No sign samples loaded — switch to Demo mode");
+            setHandCount(0);
+            setCurrentSign(null);
+            setConfidence(0);
           }
-        } else {
-          setHandCount(0);
-          setCurrentSign(null);
-          setConfidence(0);
         }
+      } catch {
+        // keep loop alive even if a frame fails
       }
 
       animFrameRef.current = requestAnimationFrame(processFrame);

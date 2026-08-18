@@ -106,22 +106,32 @@ export default function TwoWayInterpreterPage() {
   }, [trainMode, trainSignId]);
 
   async function loadHandLandmarker() {
+    const { HandLandmarker, FilesetResolver } = await import("@mediapipe/tasks-vision");
+    const vision = await FilesetResolver.forVisionTasks(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+    );
+    const opts = {
+      baseOptions: {
+        modelAssetPath:
+          "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task",
+      },
+      runningMode: "VIDEO" as const,
+      numHands: 2,
+    };
     try {
-      const { HandLandmarker, FilesetResolver } = await import("@mediapipe/tasks-vision");
-      const vision = await FilesetResolver.forVisionTasks(
-        "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
-      );
       return await HandLandmarker.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath:
-            "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task",
-          delegate: "GPU",
-        },
-        runningMode: "VIDEO",
-        numHands: 2,
+        ...opts,
+        baseOptions: { ...opts.baseOptions, delegate: "GPU" },
       });
     } catch {
-      return null;
+      try {
+        return await HandLandmarker.createFromOptions(vision, {
+          ...opts,
+          baseOptions: { ...opts.baseOptions, delegate: "CPU" },
+        });
+      } catch {
+        return null;
+      }
     }
   }
 
@@ -178,72 +188,79 @@ export default function TwoWayInterpreterPage() {
         return;
       }
       const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+      if (!ctx) {
+        animFrameRef.current = requestAnimationFrame(() => processFrame(lm));
+        return;
+      }
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0);
+      try {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0);
 
-      const now = performance.now();
-      if (now - lastTimestamp > 100) {
-        lastTimestamp = now;
-        const result = lm.detectForVideo(video, now);
+        const now = performance.now();
+        if (now - lastTimestamp > 100) {
+          lastTimestamp = now;
+          const result = lm.detectForVideo(video, now);
 
-        if (result.landmarks && result.landmarks.length > 0) {
-          setHandCount(result.landmarks.length);
-          result.landmarks.forEach((hand: Landmark[], i: number) => {
-            drawLandmarks(ctx, hand, i === 0 ? "#6366f1" : "#f472b6");
-          });
+          if (result.landmarks && result.landmarks.length > 0) {
+            setHandCount(result.landmarks.length);
+            result.landmarks.forEach((hand: Landmark[], i: number) => {
+              drawLandmarks(ctx, hand, i === 0 ? "#6366f1" : "#f472b6");
+            });
 
-          if (trainModeRef.current && trainSignIdRef.current) {
-            for (const hand of result.landmarks) {
-              trainBufferRef.current.push(hand);
-            }
-            if (!trainActiveRef.current && trainBufferRef.current.length > 0) {
-              trainActiveRef.current = true;
-              const captureId = trainSignIdRef.current;
-              setTimeout(() => {
-                if (trainBufferRef.current.length > 15) {
-                  classifier.addMultipleSamples(captureId, trainBufferRef.current);
-                  localStorage.setItem("sanket-knn-samples", classifier.serialize());
-                  setHasSamples(classifier.getSignCount() > 0);
-                  setTrainCount((c) => c + 1);
-                }
-                trainBufferRef.current = [];
-                trainActiveRef.current = false;
-              }, 1500);
-            }
-          } else if (hasSamples && classifier.getSampleCount() > 0) {
-            let best = { signId: null as string | null, confidence: 0 };
-            for (const hand of result.landmarks) {
-              const r = classifier.classify(hand);
-              if (r.confidence > best.confidence) best = r;
-            }
-            if (best.signId && best.confidence > 0.5) {
-              setCurrentSign(best.signId);
-              if (best.signId === lastSignRef.current) {
-                stableFramesRef.current++;
-              } else {
-                stableFramesRef.current = 0;
-                lastSignRef.current = best.signId;
+            if (trainModeRef.current && trainSignIdRef.current) {
+              for (const hand of result.landmarks) {
+                trainBufferRef.current.push(hand);
               }
-              if (stableFramesRef.current >= STABLE_THRESHOLD) {
-                const entry = SIGN_MAP.get(best.signId);
-                if (entry) {
-                  const meaning = getLocalizedName(entry, lang);
-                  setDeafDisplay(meaning);
-                  speak(meaning, lang);
+              if (!trainActiveRef.current && trainBufferRef.current.length > 0) {
+                trainActiveRef.current = true;
+                const captureId = trainSignIdRef.current;
+                setTimeout(() => {
+                  if (trainBufferRef.current.length > 15) {
+                    classifier.addMultipleSamples(captureId, trainBufferRef.current);
+                    localStorage.setItem("sanket-knn-samples", classifier.serialize());
+                    setHasSamples(classifier.getSignCount() > 0);
+                    setTrainCount((c) => c + 1);
+                  }
+                  trainBufferRef.current = [];
+                  trainActiveRef.current = false;
+                }, 1500);
+              }
+            } else if (hasSamples && classifier.getSampleCount() > 0) {
+              let best = { signId: null as string | null, confidence: 0 };
+              for (const hand of result.landmarks) {
+                const r = classifier.classify(hand);
+                if (r.confidence > best.confidence) best = r;
+              }
+              if (best.signId && best.confidence > 0.5) {
+                setCurrentSign(best.signId);
+                if (best.signId === lastSignRef.current) {
+                  stableFramesRef.current++;
+                } else {
                   stableFramesRef.current = 0;
+                  lastSignRef.current = best.signId;
                 }
+                if (stableFramesRef.current >= STABLE_THRESHOLD) {
+                  const entry = SIGN_MAP.get(best.signId);
+                  if (entry) {
+                    const meaning = getLocalizedName(entry, lang);
+                    setDeafDisplay(meaning);
+                    speak(meaning, lang);
+                    stableFramesRef.current = 0;
+                  }
+                }
+              } else {
+                setCurrentSign(null);
               }
-            } else {
-              setCurrentSign(null);
             }
+          } else {
+            setHandCount(0);
+            setCurrentSign(null);
           }
-        } else {
-          setHandCount(0);
-          setCurrentSign(null);
         }
+      } catch {
+        // keep loop alive even if a frame fails
       }
       animFrameRef.current = requestAnimationFrame(() => processFrame(lm));
     }
