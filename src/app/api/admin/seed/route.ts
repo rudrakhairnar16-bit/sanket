@@ -11,6 +11,7 @@ export async function POST(req: NextRequest) {
   const authUser = await getAuthUser(req);
   let superadminExists = true;
   try {
+    await connectDB();
     superadminExists = (await User.countDocuments({ role: "superadmin" })) > 0;
   } catch {
     superadminExists = true;
