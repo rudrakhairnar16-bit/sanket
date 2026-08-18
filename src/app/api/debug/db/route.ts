@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
+import User from "@/models/User";
 
 function maskUri(uri: string) {
   try {
@@ -22,6 +23,9 @@ export async function GET() {
     try {
       await connectDB();
       result.connected = true;
+      result.userCount = await User.countDocuments();
+      result.superadminCount = await User.countDocuments({ role: "superadmin" });
+      result.users = await User.find({}).select("username role department name").lean();
     } catch (err) {
       result.connected = false;
       result.error = err instanceof Error ? err.message : String(err);
