@@ -270,6 +270,87 @@ function makeSyntheticLandmarks(
 // 9=middle_mcp, 10=middle_pip, 11=middle_dip, 12=middle_tip,
 // 13=ring_mcp, 14=ring_pip, 15=ring_dip, 16=ring_tip,
 // 17=pinky_mcp, 18=pinky_pip, 19=pinky_dip, 20=pinky_tip
+
+/**
+ * Build a 21-point hand config from a compact finger-extension spec.
+ * ext 0 = finger folded toward palm, 1 = fully extended. The generator
+ * produces rough but distinct shapes so every municipal sign has a baseline.
+ */
+type HandSpec = {
+  t: number; // thumb extension
+  i: number;
+  m: number;
+  r: number;
+  p: number;
+  spread?: number;  // lateral finger spread
+  wristY?: number;  // vertical hand position
+};
+
+function makeHandConfig(spec: HandSpec): { x: number; y: number }[] {
+  const spread = spec.spread ?? 1;
+  const wristY = spec.wristY ?? 0.6;
+  const pts: { x: number; y: number }[] = [];
+  pts.push({ x: 0.5, y: wristY }); // wrist
+
+  // Thumb (indices 1-4)
+  const tx = 0.46 - 0.02 * spec.t;
+  pts.push({ x: 0.47, y: wristY - 0.04 });             // cmc
+  pts.push({ x: 0.44, y: wristY - 0.09 });             // mcp
+  pts.push({ x: 0.42, y: wristY - 0.13 });             // ip
+  pts.push({ x: tx, y: wristY - 0.16 - spec.t * 0.08 }); // tip
+
+  // Fingers (index, middle, ring, pinky)
+  const fingers = [
+    { ext: spec.i, dx: -0.045 },
+    { ext: spec.m, dx: 0 },
+    { ext: spec.r, dx: 0.045 },
+    { ext: spec.p, dx: 0.09 },
+  ];
+  for (const f of fingers) {
+    const baseX = 0.5 + f.dx * spread;
+    const e = f.ext;
+    pts.push({ x: baseX, y: wristY - 0.06 });             // mcp
+    pts.push({ x: baseX + 0.006 * spread, y: wristY - 0.12 }); // pip
+    pts.push({ x: baseX + 0.01 * spread, y: wristY - 0.16 }); // dip
+    const tipY = wristY - 0.18 - e * 0.22;
+    const tipX = baseX + 0.012 * spread + (1 - e) * 0.02;
+    pts.push({ x: tipX, y: tipY }); // tip
+  }
+  return pts;
+}
+
+const GENERATED_CONFIGS: Record<string, { x: number; y: number }[]> = {
+  sorry: makeHandConfig({ t: 0.1, i: 0.1, m: 0.1, r: 0.1, p: 0.1, wristY: 0.62 }),
+  please: makeHandConfig({ t: 0.3, i: 1, m: 1, r: 1, p: 1, spread: 1.1, wristY: 0.55 }),
+  help: makeHandConfig({ t: 0.05, i: 0.05, m: 0.05, r: 0.05, p: 0.05, spread: 0.9, wristY: 0.58 }),
+  understand: makeHandConfig({ t: 0.2, i: 1, m: 0.1, r: 0.1, p: 0.1, wristY: 0.63 }),
+  dont_understand: makeHandConfig({ t: 0.4, i: 1, m: 1, r: 1, p: 1, spread: 1.4, wristY: 0.5 }),
+  water: makeHandConfig({ t: 0.3, i: 1, m: 1, r: 1, p: 0.1, wristY: 0.6 }),
+  tax: makeHandConfig({ t: 1, i: 0.1, m: 0.1, r: 0.1, p: 0.1, wristY: 0.6 }),
+  bill: makeHandConfig({ t: 0.3, i: 1, m: 1, r: 1, p: 1, spread: 1.2, wristY: 0.6 }),
+  payment: makeHandConfig({ t: 0.6, i: 0.5, m: 0.5, r: 0.5, p: 0.5, spread: 0.6, wristY: 0.6 }),
+  certificate: makeHandConfig({ t: 0.3, i: 1, m: 1, r: 1, p: 1, spread: 1.5, wristY: 0.55 }),
+  form: makeHandConfig({ t: 0.8, i: 0.9, m: 0.2, r: 0.2, p: 0.2, wristY: 0.6 }),
+  document: makeHandConfig({ t: 0.4, i: 1, m: 1, r: 1, p: 1, spread: 1.3, wristY: 0.62 }),
+  name: makeHandConfig({ t: 0.3, i: 1, m: 1, r: 0.1, p: 0.1, wristY: 0.6 }),
+  address: makeHandConfig({ t: 1, i: 1, m: 0.1, r: 0.1, p: 0.1, wristY: 0.62 }),
+  phone: makeHandConfig({ t: 1, i: 0.1, m: 0.1, r: 0.1, p: 1, wristY: 0.6 }),
+  number: makeHandConfig({ t: 0.2, i: 1, m: 0.1, r: 0.1, p: 0.1, wristY: 0.57 }),
+  date: makeHandConfig({ t: 0.7, i: 0.8, m: 0.1, r: 0.1, p: 0.1, wristY: 0.58 }),
+  time: makeHandConfig({ t: 0.2, i: 1, m: 0.1, r: 0.1, p: 0.1, wristY: 0.64 }),
+  office: makeHandConfig({ t: 0.7, i: 0.7, m: 0.1, r: 0.1, p: 0.1, wristY: 0.6 }),
+  complaint: makeHandConfig({ t: 0.3, i: 1, m: 1, r: 1, p: 1, wristY: 0.63 }),
+  hospital: makeHandConfig({ t: 0.5, i: 1, m: 0.1, r: 0.1, p: 0.1, wristY: 0.65 }),
+  police: makeHandConfig({ t: 0.3, i: 1, m: 1, r: 1, p: 1, spread: 1, wristY: 0.5 }),
+  school: makeHandConfig({ t: 0.3, i: 1, m: 1, r: 1, p: 1, spread: 1.35, wristY: 0.55 }),
+  bank: makeHandConfig({ t: 0.8, i: 1, m: 1, r: 1, p: 1, wristY: 0.57 }),
+  emergency: makeHandConfig({ t: 0.1, i: 0.1, m: 0.1, r: 0.1, p: 0.1, wristY: 0.5 }),
+  toilet: makeHandConfig({ t: 1, i: 0.1, m: 0.1, r: 0.1, p: 0.1, wristY: 0.58 }),
+  drink: makeHandConfig({ t: 0.7, i: 0.6, m: 0.2, r: 0.2, p: 0.2, wristY: 0.6 }),
+  eat: makeHandConfig({ t: 0.9, i: 0.8, m: 0.2, r: 0.2, p: 0.2, wristY: 0.62 }),
+  sick: makeHandConfig({ t: 0.3, i: 1, m: 1, r: 1, p: 1, wristY: 0.52 }),
+};
+
 const BASELINE_CONFIGS: Record<string, { x: number; y: number }[]> = {
   // Namaste: palms together, fingers pointing up, thumb forward
   namaste: [
@@ -312,6 +393,7 @@ const BASELINE_CONFIGS: Record<string, { x: number; y: number }[]> = {
     { x: 0.53, y: 0.47 }, { x: 0.54, y: 0.39 }, { x: 0.55, y: 0.31 }, { x: 0.56, y: 0.24 },
     { x: 0.56, y: 0.48 }, { x: 0.58, y: 0.42 }, { x: 0.60, y: 0.37 }, { x: 0.62, y: 0.32 },
   ],
+  ...GENERATED_CONFIGS,
 };
 
 /**

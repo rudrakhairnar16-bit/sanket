@@ -53,10 +53,10 @@ export default function LiveInterpreter() {
     const saved = localStorage.getItem("sanket-knn-samples");
     if (saved && saved.length > 20) {
       classifier.deserialize(saved);
-      const hasData = classifier.getSignCount() > 0;
-      setCalibrated(hasData);
-      if (hasData) setDemoMode(false);
     }
+    const hasData = classifier.getSignCount() > 0;
+    setCalibrated(hasData);
+    if (hasData) setDemoMode(false);
   }, []);
 
   useEffect(() => {

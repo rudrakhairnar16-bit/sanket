@@ -56,8 +56,8 @@ export default function TwoWayInterpreterPage() {
     const saved = localStorage.getItem("sanket-knn-samples");
     if (saved && saved.length > 20) {
       classifier.deserialize(saved);
-      setHasSamples(classifier.getSignCount() > 0);
     }
+    setHasSamples(classifier.getSignCount() > 0);
   }, []);
 
   const startCamera = useCallback(async () => {
