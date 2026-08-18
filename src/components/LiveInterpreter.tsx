@@ -590,6 +590,25 @@ export default function LiveInterpreter() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
               </button>
               <div className="flex-1 relative">
+                {inputText.trim() && (
+                  <div className="mb-2 flex flex-wrap gap-1.5 items-center px-3 py-2 bg-gray-800/80 border border-primary-500/20 rounded-xl" aria-live="polite">
+                    <span className="text-[10px] text-primary-400 font-medium mr-1">ISL:</span>
+                    {textToISL(inputText, lang).length > 0 ? (
+                      textToISL(inputText, lang).map((tok, idx) => (
+                        <span
+                          key={idx}
+                          className="flex items-center gap-1 px-2 py-1 bg-gray-900/70 rounded-lg text-xs"
+                          title={tok.label}
+                        >
+                          <span className="text-base leading-none">{tok.symbol}</span>
+                          <span className="text-[10px] text-gray-300">{tok.label}</span>
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-[10px] text-gray-500">No matching signs</span>
+                    )}
+                  </div>
+                )}
                 <input
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}

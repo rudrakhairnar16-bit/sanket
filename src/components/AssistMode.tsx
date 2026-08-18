@@ -694,22 +694,43 @@ export default function AssistMode() {
           </div>
 
           {/* Free text reply */}
-          <div className="flex gap-2">
-            <input
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={language === "hi" ? "अपना उत्तर टाइप करें…" : language === "mr" ? "तुमचे उत्तर टाइप करा…" : language === "gu" ? "તમારો જવાબ ટાઈપ કરો…" : "Type your reply…"}
-              className="flex-1 bg-surface-50 dark:bg-gray-800/70 border border-gray-200 dark:border-gray-700/60 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40"
-              aria-label={language === "hi" ? "अपना उत्तर टाइप करें" : language === "mr" ? "तुमचे उत्तर टाइप करा" : language === "gu" ? "તમારો જવાબ ટાઈપ કરો" : "Type your reply"}
-            />
-            <button
-              onClick={handleFreeTextReply}
-              className="px-4 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold transition-all shadow-glow-primary"
-              aria-label="Send reply"
-            >
-              Send
-            </button>
+          <div>
+            {inputText.trim() && (
+              <div className="mb-2 flex flex-wrap gap-1.5 items-center px-3 py-2 bg-surface-50 dark:bg-gray-800/80 border border-primary-500/20 rounded-xl" aria-live="polite">
+                <span className="text-[10px] text-primary-500 dark:text-primary-400 font-medium mr-1">ISL:</span>
+                {textToISL(inputText, language).length > 0 ? (
+                  textToISL(inputText, language).map((tok, idx) => (
+                    <span
+                      key={idx}
+                      className="flex items-center gap-1 px-2 py-1 bg-gray-900/70 rounded-lg text-xs"
+                      title={tok.label}
+                    >
+                      <span className="text-base leading-none">{tok.symbol}</span>
+                      <span className="text-[10px] text-gray-300">{tok.label}</span>
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-[10px] text-gray-500">No matching signs</span>
+                )}
+              </div>
+            )}
+            <div className="flex gap-2">
+              <input
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={language === "hi" ? "अपना उत्तर टाइप करें…" : language === "mr" ? "तुमचे उत्तर टाइप करा…" : language === "gu" ? "તમારો જવાબ ટાઈપ કરો…" : "Type your reply…"}
+                className="flex-1 bg-surface-50 dark:bg-gray-800/70 border border-gray-200 dark:border-gray-700/60 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40"
+                aria-label={language === "hi" ? "अपना उत्तर टाइप करें" : language === "mr" ? "तुमचे उत्तर टाइप करा" : language === "gu" ? "તમારો જવાબ ટાઈપ કરો" : "Type your reply"}
+              />
+              <button
+                onClick={handleFreeTextReply}
+                className="px-4 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold transition-all shadow-glow-primary"
+                aria-label="Send reply"
+              >
+                Send
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -79,31 +79,40 @@ export function resolveSignIdFromModuleTitle(title: string): string {
 }
 
 const KEYWORD_MAP: { keywords: string[]; signId: string }[] = [
-  { keywords: ["namaste", "namaskar", "hello", "hi ", "greet"], signId: "namaste" },
-  { keywords: ["thank", "dhanyavaad", "धन्यवाद", "thanks"], signId: "thank_you" },
-  { keywords: ["sorry", "maaf", "माफ"], signId: "sorry" },
-  { keywords: ["please", "kripaya", "कृपया"], signId: "please" },
-  { keywords: ["yes", "haan", "हाँ", "होय"], signId: "yes" },
-  { keywords: ["no", "nahi", "नहीं", "नाही"], signId: "no" },
-  { keywords: ["wait", "ruko", "थांबा", "stop"], signId: "wait" },
-  { keywords: ["help", "madad", "मदद", "मदत"], signId: "help" },
-  { keywords: ["understand", "samaj", "समझ"], signId: "understand" },
-  { keywords: ["dont understand", "नहीं आया", "नाही", "samjla nahi"], signId: "dont_understand" },
-  { keywords: ["water", "pani", "पानी", "पाणी", "drink"], signId: "water" },
-  { keywords: ["tax", "कर", "kar"], signId: "tax" },
-  { keywords: ["bill", "बिल", "बिल"], signId: "bill" },
-  { keywords: ["payment", "bhugtan", "भुगतान", "देयक", "pay"], signId: "payment" },
-  { keywords: ["certificate", "प्रमाणपत्र", "प्रमाण"], signId: "certificate" },
-  { keywords: ["form", "फॉर्म", "फ़ॉर्म", "form"], signId: "form" },
-  { keywords: ["document", "dastavez", "दस्तावेज", "दस्तऐवज", "paper", "docs"], signId: "document" },
+  { keywords: ["namaste", "namaskar", "hello", "hi", "greet", "नमस्ते", "नमस्कार", "प्रणाम", "हेलो"], signId: "namaste" },
+  { keywords: ["thank you", "thanks", "dhanyavaad", "shukriya", "धन्यवाद", "शुक्रिया", "थैंक्यू"], signId: "thank_you" },
+  { keywords: ["sorry", "maaf", "khed", "माफ", "क्षमा", "माफ़ी"], signId: "sorry" },
+  { keywords: ["please", "kripaya", "कृपया", "कृपा"], signId: "please" },
+  { keywords: ["yes", "haan", "hoye", "हाँ", "होय", "ठीक"], signId: "yes" },
+  { keywords: ["no", "nahi", "na", "नहीं", "नाही"], signId: "no" },
+  { keywords: ["wait", "ruko", "rukna", "pratiksha", "stop", "रुको", "रुकिए", "थांबा", "इंतजार"], signId: "wait" },
+  { keywords: ["help", "madad", "sahayata", "मदद", "मदत", "सहायता", "मदद करें"], signId: "help" },
+  { keywords: ["understand", "samajh", "samaj", "समझ", "समज", "समझ गया"], signId: "understand" },
+  { keywords: ["dont understand", "not understand", "nahi samajha", "समझ नहीं", "नहीं समझा", "समजलं नाही"], signId: "dont_understand" },
+  { keywords: ["water", "pani", "jal", "पानी", "पाणी", "जल"], signId: "water" },
+  { keywords: ["tax", "kar", "टैक्स", "कर"], signId: "tax" },
+  { keywords: ["bill", "बिल", "बिल", "बिल भरें"], signId: "bill" },
+  { keywords: ["payment", "pay", "bhugtan", "jama", "भुगतान", "देयक", "जमा"], signId: "payment" },
+  { keywords: ["certificate", "pramanpatra", "प्रमाणपत्र", "प्रमाण", "सर्टिफिकेट"], signId: "certificate" },
+  { keywords: ["form", "फॉर्म", "फ़ॉर्म", "फार्म"], signId: "form" },
+  { keywords: ["document", "dastavez", "kagaz", "paper", "docs", "दस्तावेज", "दस्तऐवज", "कागज", "काग़ज़"], signId: "document" },
   { keywords: ["name", "naam", "नाम", "नाव"], signId: "name" },
-  { keywords: ["address", "pata", "पता", "पत्ता"], signId: "address" },
-  { keywords: ["phone", "fon", "फोन", "call", "बोल"], signId: "phone" },
-  { keywords: ["number", "numbar", "नंबर", "क्रमांक", "mobile"], signId: "number" },
-  { keywords: ["date", "tarikh", "तारीख", "तारीख"], signId: "date" },
-  { keywords: ["time", "samay", "समय", "वेळ"], signId: "time" },
-  { keywords: ["office", "karyalay", "कार्यालय", "department"], signId: "office" },
-  { keywords: ["complaint", "shikayat", "शिकायत", "तक्रार", "problem", "issue"], signId: "complaint" },
+  { keywords: ["address", "pata", "sarnama", "पता", "पत्ता", "सरनामा"], signId: "address" },
+  { keywords: ["phone", "fon", "telephone", "call", "फोन", "फ़ोन", "टेलीफोन", "कॉल", "बोल"], signId: "phone" },
+  { keywords: ["number", "numbar", "mobile", "नंबर", "नम्बर", "क्रमांक"], signId: "number" },
+  { keywords: ["date", "tarikh", "dinank", "तारीख", "तारीख़", "दिनांक"], signId: "date" },
+  { keywords: ["time", "samay", "vel", "समय", "वेळ"], signId: "time" },
+  { keywords: ["office", "karyalay", "department", "daftar", "कार्यालय", "दफ्तर", "ऑफिस"], signId: "office" },
+  { keywords: ["complaint", "shikayat", "takrar", "problem", "issue", "fariyad", "शिकायत", "तक्रार", "समस्या", "फरियाद"], signId: "complaint" },
+  { keywords: ["hospital", "aspatal", "rughnalay", "अस्पताल", "रुग्णालय", "हॉस्पिटल"], signId: "hospital" },
+  { keywords: ["police", "pulis", "thana", "पुलिस", "पोलिस", "थाना"], signId: "police" },
+  { keywords: ["school", "skool", "shala", "vidyalay", "स्कूल", "शाळा", "विद्यालय"], signId: "school" },
+  { keywords: ["bank", "baink", "बैंक", "बँक"], signId: "bank" },
+  { keywords: ["emergency", "aapatkal", "aani bani", "आपातकाल", "आणीबाणी", "इमरजेंसी"], signId: "emergency" },
+  { keywords: ["toilet", "shochalay", "bathroom", "शौचालय", "स्वच्छतागृह", "टॉयलेट"], signId: "toilet" },
+  { keywords: ["drink", "peena", "pina", "पीना", "पिणे", "पिये"], signId: "drink" },
+  { keywords: ["eat", "khana", "khane", "खाना", "खाणे", "खाएं"], signId: "eat" },
+  { keywords: ["sick", "bimar", "beemar", "ajari", "बीमार", "आजारी", "बीमारी"], signId: "sick" },
 ];
 
 export interface ISLToken {
@@ -113,10 +122,28 @@ export interface ISLToken {
 }
 
 export function textToISL(text: string, lang: string = "en"): ISLToken[] {
-  const lower = " " + text.toLowerCase() + " ";
+  const cleaned = text.toLowerCase().replace(/[.,!?;:()"']/g, " ").replace(/\s+/g, " ").trim();
+  const words = cleaned ? cleaned.split(" ") : [];
   const tokens: ISLToken[] = [];
+  const seen = new Set<string>();
+
   for (const entry of KEYWORD_MAP) {
-    if (entry.keywords.some((k) => lower.includes(k))) {
+    let matched = false;
+    for (const k of entry.keywords) {
+      if (!k) continue;
+      const kw = k.toLowerCase();
+      if (kw.includes(" ")) {
+        if (cleaned.includes(kw)) {
+          matched = true;
+          break;
+        }
+      } else if (words.includes(kw)) {
+        matched = true;
+        break;
+      }
+    }
+    if (matched && !seen.has(entry.signId)) {
+      seen.add(entry.signId);
       const sign = SIGN_MAP.get(entry.signId);
       if (sign) {
         tokens.push({
