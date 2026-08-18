@@ -9,7 +9,14 @@ import { getTodayIST } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
   const authUser = await getAuthUser(req);
-  if (!authUser || authUser.role !== "superadmin") {
+  let superadminExists = true;
+  try {
+    superadminExists = (await User.countDocuments({ role: "superadmin" })) > 0;
+  } catch {
+    superadminExists = true;
+  }
+  const isBootstrap = !superadminExists;
+  if (!isBootstrap && (!authUser || authUser.role !== "superadmin")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
