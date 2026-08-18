@@ -40,6 +40,7 @@ export default function LiveInterpreter() {
   const engineRef = useRef<{ landmarker: any } | null>(null);
   const loopActiveRef = useRef(false);
   const lastTimestampRef = useRef(0);
+  const lastFrameAtRef = useRef(0);
   const calibratedRef = useRef(calibrated);
   useEffect(() => { calibratedRef.current = calibrated; }, [calibrated]);
   const langRef = useRef(lang);
@@ -151,13 +152,13 @@ export default function LiveInterpreter() {
     try {
       return await HandLandmarker.createFromOptions(vision, {
         ...opts,
-        baseOptions: { ...opts.baseOptions, delegate: "GPU" },
+        baseOptions: { ...opts.baseOptions, delegate: "CPU" },
       });
     } catch {
       try {
         return await HandLandmarker.createFromOptions(vision, {
           ...opts,
-          baseOptions: { ...opts.baseOptions, delegate: "CPU" },
+          baseOptions: { ...opts.baseOptions, delegate: "GPU" },
         });
       } catch {
         return null;
@@ -220,6 +221,7 @@ export default function LiveInterpreter() {
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
           ctx.drawImage(video, 0, 0);
+          lastFrameAtRef.current = performance.now();
 
           const now = performance.now();
           if (now - lastTimestampRef.current > 100) {
@@ -285,6 +287,19 @@ export default function LiveInterpreter() {
       }
 
       processFrame();
+
+      const watchdog = setInterval(() => {
+        if (!loopActiveRef.current) return;
+        const stalled = performance.now() - lastFrameAtRef.current > 2500;
+        const videoOk = videoRef.current && videoRef.current.readyState >= 2;
+        if (stalled && videoOk) {
+          clearInterval(watchdog);
+          loopActiveRef.current = false;
+          cancelAnimationFrame(animFrameRef.current);
+          try { landmarker.close(); } catch {}
+          setStatus("ready");
+        }
+      }, 1500);
     }
 
     init();

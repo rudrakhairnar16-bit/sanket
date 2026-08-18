@@ -121,13 +121,13 @@ export default function TwoWayInterpreterPage() {
     try {
       return await HandLandmarker.createFromOptions(vision, {
         ...opts,
-        baseOptions: { ...opts.baseOptions, delegate: "GPU" },
+        baseOptions: { ...opts.baseOptions, delegate: "CPU" },
       });
     } catch {
       try {
         return await HandLandmarker.createFromOptions(vision, {
           ...opts,
-          baseOptions: { ...opts.baseOptions, delegate: "CPU" },
+          baseOptions: { ...opts.baseOptions, delegate: "GPU" },
         });
       } catch {
         return null;

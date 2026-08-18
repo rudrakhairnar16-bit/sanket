@@ -79,7 +79,7 @@ export function resolveSignIdFromModuleTitle(title: string): string {
 }
 
 const KEYWORD_MAP: { keywords: string[]; signId: string }[] = [
-  { keywords: ["namaste", "namaskar", "hello", "hi", "greet", "नमस्ते", "नमस्कार", "प्रणाम", "हेलो"], signId: "namaste" },
+  { keywords: ["namaste", "namaskar", "hello", "hi", "greet", "welcome", "swagat", "नमस्ते", "नमस्कार", "प्रणाम", "हेलो", "स्वागत"], signId: "namaste" },
   { keywords: ["thank you", "thanks", "dhanyavaad", "shukriya", "धन्यवाद", "शुक्रिया", "थैंक्यू"], signId: "thank_you" },
   { keywords: ["sorry", "maaf", "khed", "माफ", "क्षमा", "माफ़ी"], signId: "sorry" },
   { keywords: ["please", "kripaya", "कृपया", "कृपा"], signId: "please" },
@@ -103,7 +103,7 @@ const KEYWORD_MAP: { keywords: string[]; signId: string }[] = [
   { keywords: ["date", "tarikh", "dinank", "तारीख", "तारीख़", "दिनांक"], signId: "date" },
   { keywords: ["time", "samay", "vel", "समय", "वेळ"], signId: "time" },
   { keywords: ["office", "karyalay", "department", "daftar", "कार्यालय", "दफ्तर", "ऑफिस"], signId: "office" },
-  { keywords: ["complaint", "shikayat", "takrar", "problem", "issue", "fariyad", "शिकायत", "तक्रार", "समस्या", "फरियाद"], signId: "complaint" },
+  { keywords: ["complaint", "complaints", "shikayat", "takrar", "problem", "problems", "issue", "issues", "fariyad", "शिकायत", "तक्रार", "समस्या", "फरियाद"], signId: "complaint" },
   { keywords: ["hospital", "aspatal", "rughnalay", "अस्पताल", "रुग्णालय", "हॉस्पिटल"], signId: "hospital" },
   { keywords: ["police", "pulis", "thana", "पुलिस", "पोलिस", "थाना"], signId: "police" },
   { keywords: ["school", "skool", "shala", "vidyalay", "स्कूल", "शाळा", "विद्यालय"], signId: "school" },
