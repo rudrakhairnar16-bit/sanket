@@ -44,27 +44,36 @@ export async function POST(req: NextRequest) {
           { status: 401 }
         );
       }
-    } catch (error) {
-      console.error("login db path error:", error);
-      let mockUser = null;
-      try {
-        mockUser = await mockFindByUsername(username);
-        if (!mockUser || !(await bcrypt.compare(password, mockUser.password))) {
-          return NextResponse.json(
-            { error: "Invalid credentials" },
-            { status: 401 }
-          );
-        }
-      } catch (mockError) {
-        console.error("login mock path error:", mockError);
-        const msg =
-          mockError instanceof Error ? mockError.message : String(mockError);
-        return NextResponse.json(
-          { error: "Login failed", detail: "mock: " + msg.slice(0, 300) },
-          { status: 500 }
-        );
-      }
-      if (!mockUser) {
+
+      const token = signToken({
+        userId: user._id.toString(),
+        username: user.username,
+        role: user.role,
+        department: user.department,
+      });
+
+      const res = NextResponse.json({
+        user: {
+          id: user._id,
+          name: user.name,
+          username: user.username,
+          department: user.department,
+          role: user.role,
+        },
+      });
+
+      res.cookies.set("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        path: "/",
+        maxAge: 7 * 24 * 60 * 60,
+      });
+
+      return res;
+    } catch {
+      const mockUser = await mockFindByUsername(username);
+      if (!mockUser || !(await bcrypt.compare(password, mockUser.password))) {
         return NextResponse.json(
           { error: "Invalid credentials" },
           { status: 401 }
@@ -88,12 +97,7 @@ export async function POST(req: NextRequest) {
       });
       return res;
     }
-  } catch (error) {
-    console.error("login route error:", error);
-    const msg = error instanceof Error ? error.message : String(error);
-    return NextResponse.json(
-      { error: "Login failed", detail: msg.slice(0, 300) },
-      { status: 500 }
-    );
+  } catch {
+    return NextResponse.json({ error: "Login failed" }, { status: 500 });
   }
 }
