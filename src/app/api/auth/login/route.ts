@@ -97,7 +97,8 @@ export async function POST(req: NextRequest) {
       });
       return res;
     }
-  } catch {
+  } catch (error) {
+    console.error("login route error:", error);
     return NextResponse.json({ error: "Login failed" }, { status: 500 });
   }
 }
