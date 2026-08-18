@@ -16,7 +16,15 @@ export async function GET(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    return NextResponse.json({ user });
+    return NextResponse.json({
+      user: {
+        id: user._id,
+        name: user.name,
+        username: user.username,
+        department: user.department,
+        role: user.role,
+      },
+    });
   } catch {
     const mock = await mockFindByUsername(payload.username);
     if (!mock) {

@@ -41,8 +41,8 @@ export default function DashboardPage() {
   const [showPractice, setShowPractice] = useState(false);
   const [practiceDone, setPracticeDone] = useState(false);
 
-  async function onSubmit(correct: boolean) {
-    await handleSubmit(correct, setStreak, setCompletedToday);
+  async function onSubmit(correct: boolean, answer?: string) {
+    await handleSubmit(correct, setStreak, setCompletedToday, answer);
   }
 
   if (loading) {

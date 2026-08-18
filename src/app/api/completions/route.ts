@@ -5,6 +5,7 @@ import Module from "@/models/Module";
 import Completion from "@/models/Completion";
 import { getAuthUser } from "@/lib/auth";
 import { getTodayIST } from "@/lib/utils";
+import { mockFindByUsername } from "@/lib/mock-users";
 export async function POST(req: NextRequest) {
   const authUser = await getAuthUser(req);
   if (!authUser) {
@@ -117,11 +118,31 @@ export async function GET(req: NextRequest) {
       date: today,
     });
 
+    const user = await User.findById(authUser.userId);
+    const streakData = user
+      ? {
+          currentStreak: user.currentStreak || 0,
+          longestStreak: user.longestStreak || 0,
+          totalCompleted: user.totalCompleted || 0,
+        }
+      : { currentStreak: 0, longestStreak: 0, totalCompleted: 0 };
+
     return NextResponse.json({
       completedToday: !!completed,
       completion: completed,
+      ...streakData,
     });
   } catch {
+    const mockUser = await mockFindByUsername(authUser.username);
+    if (mockUser && mockUser.role === "learner") {
+      return NextResponse.json({
+        completedToday: false,
+        completion: null,
+        currentStreak: 0,
+        longestStreak: 0,
+        totalCompleted: 0,
+      });
+    }
     return NextResponse.json(
       { error: "Service temporarily unavailable. Please try again." },
       { status: 503 }

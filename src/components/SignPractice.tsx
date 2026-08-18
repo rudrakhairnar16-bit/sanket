@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import {
   classifier,
   type Landmark,
   type ClassificationResult,
 } from "@/lib/knn-classifier";
+import { resolveSignIdFromModuleTitle } from "@/data/municipal-signs";
 
 interface SignPracticeProps {
   moduleTitle: string;
@@ -25,6 +26,7 @@ export default function SignPractice({
     signId: null,
     confidence: 0,
   });
+  const targetSignId = useMemo(() => resolveSignIdFromModuleTitle(moduleTitle), [moduleTitle]);
   const [handCount, setHandCount] = useState(0);
   const [accuracy, setAccuracy] = useState(0);
   const correctFrames = useRef(0);
@@ -167,7 +169,11 @@ export default function SignPractice({
             setCurrentSign(classification);
 
             totalFrames.current += 1;
-            if (classification.signId === moduleTitle && classification.confidence > 0.6) {
+            if (
+              classification.signId &&
+              classification.signId === targetSignId &&
+              classification.confidence > 0.6
+            ) {
               correctFrames.current += 1;
             } else if (totalFrames.current > 10) {
               correctFrames.current = Math.max(0, correctFrames.current - 1);
@@ -197,7 +203,7 @@ export default function SignPractice({
     }
 
     init();
-  }, [status, moduleTitle, onComplete]);
+  }, [status, moduleTitle, targetSignId, onComplete]);
 
   useEffect(() => {
     return () => {
@@ -280,7 +286,7 @@ export default function SignPractice({
               </span>
               {currentSign.signId && (
                 <span className="px-3 py-1.5 bg-black/50 text-white text-xs rounded-xl backdrop-blur flex items-center gap-1">
-                  {currentSign.signId === moduleTitle ? "✅" : "⏳"}{" "}
+                  {currentSign.signId === targetSignId ? "✅" : "⏳"}{" "}
                   {currentSign.signId}
                 </span>
               )}

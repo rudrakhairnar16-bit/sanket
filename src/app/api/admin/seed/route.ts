@@ -1,12 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import Module from "@/models/Module";
 import Completion from "@/models/Completion";
+import { getAuthUser } from "@/lib/auth";
 import { getTodayIST } from "@/lib/utils";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
+  const authUser = await getAuthUser(req);
+  if (!authUser || authUser.role !== "superadmin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  }
+
   try {
     await connectDB();
 

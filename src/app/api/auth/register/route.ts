@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { username, password, name, department, role } = body;
+    const { username, password, name, department } = body;
 
     if (!username || !password || !name || !department) {
       return NextResponse.json(
@@ -36,6 +36,8 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    const role = "learner";
 
     try {
       await connectDB();
@@ -52,7 +54,7 @@ export async function POST(req: NextRequest) {
         password,
         name,
         department,
-        role: role || "learner",
+        role,
       });
 
       const token = signToken({
@@ -94,7 +96,7 @@ export async function POST(req: NextRequest) {
         password,
         name,
         department,
-        role: role || "learner",
+        role,
       });
       const token = signToken({
         userId: user.id,

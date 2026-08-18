@@ -256,11 +256,8 @@ export default function TwoWayInterpreterPage() {
   }, [status, hasSamples, lang]);
 
   const cycleLang = () => {
-    setLang((prev) => {
-      const next = prev === "en" ? "hi" : prev === "hi" ? "mr" : "en";
-      setLang(next);
-      return next;
-    });
+    const next = lang === "en" ? "hi" : lang === "hi" ? "mr" : "en";
+    setLang(next);
   };
 
   const toggleMic = () => {

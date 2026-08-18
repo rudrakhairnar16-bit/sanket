@@ -10,10 +10,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
 
+  const body = await req.json().catch(() => ({ clerkIds: [] as string[] }));
+
   try {
     await connectDB();
 
-    const body = await req.json();
     const { clerkIds, reason } = body;
 
     if (!clerkIds || !Array.isArray(clerkIds) || clerkIds.length === 0) {
@@ -42,9 +43,6 @@ export async function POST(req: NextRequest) {
       message: `Nudge sent to ${nudges.length} clerk(s)`,
     });
   } catch {
-    const body = await req
-      .json()
-      .catch(() => ({ clerkIds: [] as string[] }));
     const count = Array.isArray(body.clerkIds) ? body.clerkIds.length : 0;
     return NextResponse.json({
       success: true,

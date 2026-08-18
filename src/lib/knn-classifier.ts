@@ -73,7 +73,7 @@ function augmentFeatures(features: number[], noise = 0.02): number[] {
 }
 
 export class KNNClassifier {
-  static readonly TRAINING_KEY = "sanket-knn-training";
+  static readonly TRAINING_KEY = "sanket-knn-samples";
 
   private samples: Map<string, number[][]> = new Map();
   private history: { signId: string | null; confidence: number }[] = [];
@@ -163,6 +163,10 @@ export class KNNClassifier {
     const confidence = this.history.length > 0
       ? Math.round((bestVotes / this.history.length) * 100) / 100
       : 0;
+
+    if (bestSign && confidence < this.minConfidence) {
+      return { signId: null, confidence };
+    }
 
     return { signId: bestSign, confidence };
   }
@@ -276,7 +280,7 @@ const BASELINE_CONFIGS: Record<string, { x: number; y: number }[]> = {
     { x: 0.54, y: 0.53 }, { x: 0.55, y: 0.47 }, { x: 0.55, y: 0.41 }, { x: 0.56, y: 0.34 }, // ring
     { x: 0.56, y: 0.54 }, { x: 0.57, y: 0.49 }, { x: 0.57, y: 0.44 }, { x: 0.58, y: 0.40 }, // pinky
   ],
-  "thank-you": [
+  thank_you: [
     { x: 0.5, y: 0.55 },
     { x: 0.42, y: 0.48 }, { x: 0.38, y: 0.40 }, { x: 0.35, y: 0.33 }, { x: 0.32, y: 0.26 },
     { x: 0.48, y: 0.46 }, { x: 0.46, y: 0.38 }, { x: 0.44, y: 0.30 }, { x: 0.42, y: 0.22 },

@@ -126,6 +126,7 @@ export function useLessonSubmission(module: ModuleData | null) {
     correct: boolean,
     setStreak: (s: StreakData) => void,
     setCompletedToday: (v: boolean) => void,
+    answer?: string,
   ) {
     if (!module) return;
     try {
@@ -134,7 +135,7 @@ export function useLessonSubmission(module: ModuleData | null) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           moduleId: module._id,
-          answer: selectedAnswer || module.correctAnswer,
+          answer: answer || module.correctAnswer,
         }),
       });
 

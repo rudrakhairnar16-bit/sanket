@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import Feedback from "@/models/Feedback";
+import { getAuthUser } from "@/lib/auth";
 import { getTodayIST } from "@/lib/utils";
 
 export async function POST(req: NextRequest) {
@@ -43,6 +44,11 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const authUser = await getAuthUser(req);
+  if (!authUser || (authUser.role !== "admin" && authUser.role !== "superadmin")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  }
+
   const { searchParams } = new URL(req.url);
   const clerkId = searchParams.get("clerkId");
   const department = searchParams.get("department");

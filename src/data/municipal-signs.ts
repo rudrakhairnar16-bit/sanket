@@ -68,6 +68,16 @@ export function getLocalizedName(sign: SignEntry, lang: string): string {
   return sign.name;
 }
 
+export function resolveSignIdFromModuleTitle(title: string): string {
+  const lower = " " + title.toLowerCase() + " ";
+  for (const entry of KEYWORD_MAP) {
+    if (entry.keywords.some((k) => lower.includes(k))) {
+      return entry.signId;
+    }
+  }
+  return "";
+}
+
 const KEYWORD_MAP: { keywords: string[]; signId: string }[] = [
   { keywords: ["namaste", "namaskar", "hello", "hi ", "greet"], signId: "namaste" },
   { keywords: ["thank", "dhanyavaad", "धन्यवाद", "thanks"], signId: "thank_you" },

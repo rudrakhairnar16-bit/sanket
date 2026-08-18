@@ -40,7 +40,7 @@ export function DailyLesson({
   onComplete,
 }: {
   module: ModuleData;
-  onComplete: (correct: boolean) => Promise<void>;
+  onComplete: (correct: boolean, answer?: string) => Promise<void>;
 }) {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -57,7 +57,7 @@ export function DailyLesson({
     const correct = selectedAnswer === module.correctAnswer;
     if (correct) playCorrect();
     else playIncorrect();
-    await onComplete(correct);
+    await onComplete(correct, selectedAnswer);
     setResult({ correct, milestone: null });
     setSubmitting(false);
   }

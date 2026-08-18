@@ -31,6 +31,10 @@ export function QuizScreen({
 
   const category = CATEGORIES[categoryIndex];
   const quizData = getQuizForCategory(category.id);
+  const totalQuestions = CATEGORIES.reduce(
+    (sum, cat) => sum + getQuizForCategory(cat.id).length,
+    0
+  );
   const q = quizData[questionIndex];
   const isCorrect = selected === q?.sign.meaning;
 
@@ -60,7 +64,7 @@ export function QuizScreen({
         setCategoryIndex((i) => i + 1);
         setQuestionIndex(0);
       } else {
-        const total = Math.max(quizData.length, 1);
+        const total = Math.max(totalQuestions, 1);
         const pct = ((correctCount + (correct ? 1 : 0)) / total) * 100;
         if (pct === 100) onUpdate((prev) => checkPerfectQuiz(prev));
         onUpdate((prev) => addXP(prev, 30));
@@ -72,8 +76,8 @@ export function QuizScreen({
   }
 
   if (finished) {
-    const total = quizData.length;
-    const pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+    const total = Math.max(totalQuestions, 1);
+    const pct = Math.round((correctCount / total) * 100);
     return (
       <div className="max-w-lg mx-auto px-4 py-8 animate-fade-in">
         <div className="surface-card p-8 text-center">
