@@ -26,6 +26,7 @@ const PHASES = [
       "WhatsApp nudge integration for low-engagement clerks",
       "ISL Champion program: top 10% performers get special recognition",
       "Monthly certificate generation for milestone achievers",
+      "Live Human Interpreter Relay: WebRTC video call for low-confidence signs — when AI can't read a sign, a trained interpreter joins via video relay in real-time",
       "Success metric: 50%+ clerks reach 30-day streak",
     ],
   },

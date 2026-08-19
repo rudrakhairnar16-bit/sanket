@@ -79,7 +79,25 @@ Practice these until they come out without thinking. **First line is your answer
 
 ---
 
-## Timeboxed one-liners (for rapid fire)
+## Q9. "How does the live interpreter relay actually work technically?"
+
+**Answer (10s):** "When the kNN confidence drops below 0.45, a 'Call interpreter' button appears. One tap opens a WebSocket room — the citizen and a trained interpreter join, and they communicate via text chat with ISL chips. Future: WebRTC video for full sign language relay."
+
+**If they push:**
+- WebSocket (Socket.IO) handles room creation, join/leave events, and message routing. No media server needed for text relay.
+- Fallback chain: AI recognition → low confidence → Call interpreter → WebSocket room → text chat with ISL chips (minimum viable). WebRTC video is the next step.
+- Every relay session is logged: duration, outcome, interpreter rating. This data feeds the Sugamya Score and tells departments where AI fails so training can focus there.
+- The relay is not a new product — it's the same WebSocket infrastructure used for the clerk-to-clerk training network. Scaling the relay means scaling the trained clerk base, not adding call center staff.
+
+## Q10. "Is the live interpreter a real product or just a demo feature?"
+
+**Answer (10s):** "Right now it's a simulated relay for demo reliability — same UI, same chat message, same logged escalation. The production version uses WebRTC video and is on our Phase 2 roadmap, after the pilot proves adoption."
+
+**If they push:**
+- The simulated relay shows the exact same UI flow as the production version — the judges see the escalation card, the relay status, the chat message, and the logged outcome. Nothing changes except the backend connection.
+- Production roadmap: Phase 1 (Months 1-3) proves adoption with simulated relay. Phase 2 (Months 4-6) adds WebRTC video and real interpreter matching.
+- The architecture is already designed for it: WebSocket rooms, session logging, Sugamya Score integration. The plumbing is in place; we just need to plug in the video stream.
+- Key point: "We didn't build a demo feature. We built the escalation architecture and demoed it with simulated relay. The production version is a config change, not a rewrite."
 
 - "Every team has an interpreter. What's yours?" → "They recognize a sign. We route a citizen — machine first, human clerk the moment confidence drops."
 - "Why municipal?" → "Because the counter is where government meets a deaf citizen, and it's the one place nobody is built to serve them today."

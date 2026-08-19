@@ -73,6 +73,15 @@ Sanket makes ISL training frictionless — **3 minutes a day**, integrated into 
 - Data merges across devices (takes max XP on conflict)
 - "Save Progress" button in dashboard for manual sync
 
+### 📞 Live Human Interpreter (Emergency Relay)
+- **Purpose**: When AI recognition confidence is low (< 0.45), the system escalates to a human interpreter instead of dead-ending the citizen
+- **Current**: Simulated relay for demo — tap "Call interpreter" → simulated interpreter joins after ~1.6s → chat message + escalation logged
+- **Future**: WebRTC video call between citizen and remote trained interpreter, with WebSocket (Socket.IO) signaling for real-time relay management
+- **Fallback chain**: AI recognition → low confidence → Call interpreter → WebSocket relay → text chat with ISL chips (minimum viable communication)
+- **Sugamya Score**: Formula includes 10% "human safety net" weight — rewards departments that resolve citizen issues, not just departments where AI works well
+- **Architecture**: WebSocket signaling + WebRTC media stream + text chat fallback. Interpreter matched by department and availability. Every relay session logged with duration, outcome, and citizen feedback.
+- **Key differentiator**: "We built the routing, not just the recognizer. When the model fails, a human is one tap away."
+
 ---
 
 ## Tech Stack

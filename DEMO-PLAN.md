@@ -66,14 +66,40 @@ curl -X POST https://your-app.vercel.app/api/admin/seed
 
 ## 2.5. LIVE HUMAN INTERPRETER — the escalation moment
 
+### The problem this solves
+No AI recognizer will ever reach 100% accuracy — especially with ISL's regional variation, lighting conditions, and partial hand visibility. When the model can't read a sign, the citizen must **not** be dead-ended. The live human interpreter relay is the safety net: a trained human signs via video call when confidence is low.
+
 ### Setup — Simulated relay (single laptop, default, zero risk)
 - No socket server needed. Tap **Call interpreter** → a simulated relay joins after ~1.6s.
 - The card shows `Demo mode — a simulated interpreter joins on this machine.`
 - **Use this as the primary demo.** It is 100% reliable on stage and the chat message + logged escalation tell the whole story.
 
+### Future production implementation
+- **WebRTC video call** between citizen and remote trained interpreter
+- **WebSocket signaling** (Socket.IO) for real-time relay management
+- **Fallback chain**: AI recognition → low confidence → Call interpreter → WebSocket relay → text chat with ISL chips as minimum viable communication
+- **Interpreter matching**: nearest available trained clerk/interpreter based on department and availability
+- **Escalation logging**: every relay session logged with duration, outcome, and citizen feedback
+
+### Sugamya Score integration
+- Formula includes **10% "human safety net" weight**: `escalations_handled / total_sessions × 10`
+- Rewards departments that actually resolve citizen issues, not just departments where AI works well
+- Admin dashboard shows escalation stats: how many citizens needed human relay, resolution rate
+
 ### What the judges see
 - A "can't read this sign" moment that does **not** dead-end — it escalates.
 - The Sugamya Score formula now includes **10% "human safety net"** (escalations handled), so the score visibly rewards the relay, not just machine recognition.
+- The key message: **"We built the routing, not just the recognizer. When the model fails, a human is one tap away."**
+
+### Architecture (for technical judges)
+```
+Citizen signs → kNN confidence < 0.45
+  → "📞 Call interpreter" button appears
+  → WebSocket: { type: "join_relay", sessionId: "...", role: "citizen" }
+  → Interpreter joins: { type: "relay_joined", interpreterName: "..." }
+  → Two-way text chat with ISL chips + optional WebRTC video
+  → "End relay" → logged to MongoDB → Sugamya Score updated
+```
 
 ---
 
