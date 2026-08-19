@@ -1,177 +1,368 @@
-# Sanket (संकेत)
+<p align="center">
+  <img src="https://img.shields.io/badge/Sanket-संकेत-6366f1?style=for-the-badge&labelColor=0b1120&color=818cf8" alt="Sanket"/>
+  <img src="https://img.shields.io/badge/ISL_for_Sarkari_Clerks-civic_tech-0b1120?style=for-the-badge&labelColor=1e293b&color=c9a961" alt="ISL for Sarkari Clerks"/>
+  <img src="https://img.shields.io/badge/Yuva_6.0-Hackathon-0b1120?style=for-the-badge&labelColor=1e293b&color=4ade80" alt="Yuva 6.0"/>
+  <img src="https://img.shields.io/badge/Live_Demo-sanket--isl.vercel.app-0b1120?style=for-the-badge&labelColor=1e293b&color=fb923c" alt="Live Demo"/>
+</p>
 
-**ISL for Sarkari Clerks** — A civic tech platform helping government clerks learn Indian Sign Language through daily bite-sized lessons, gamified streaks, and admin compliance dashboards.
+<p align="center">
+  <b>From 30 days of training, to 30 seconds of service.</b><br>
+  <sub>A civic tech platform helping government clerks learn Indian Sign Language through daily bite-sized lessons, gamified streaks, and admin compliance dashboards.</sub>
+</p>
 
-Built for **Yuva 6.0 Hackathon** by Team KPGU.
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js_14-000000?style=flat-square&logo=next.js&logoColor=white" alt="Next.js"/>
+  <img src="https://img.shields.io/badge/React_18-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React"/>
+  <img src="https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind"/>
+  <img src="https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white" alt="MongoDB"/>
+  <img src="https://img.shields.io/badge/MediaPipe-FF6F00?style=flat-square&logo=google&logoColor=white" alt="MediaPipe"/>
+  <img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white" alt="Vercel"/>
+</p>
 
 ---
 
 ## The Problem
 
-- **~3.5 million** government clerks serve in municipal offices across India
-- **~63 million** Indians have hearing/speech disabilities (Census 2011)
-- Most citizens with hearing/speech disabilities struggle to access basic public services because clerks don't know sign language
-- The **Rights of Persons with Disabilities Act, 2016** and **Accessible India Campaign (Sugamya Bharat Abhiyan)** mandate accessibility, but ground-level adoption is minimal
+<p align="center">
+  <img src="https://img.shields.io/badge/18M-Deaf_Citizens-gold?style=for-the-badge&labelColor=0b1120" alt="18M"/>
+  <img src="https://img.shields.io/badge/3.5M-Govt_Clerks-blue?style=for-the-badge&labelColor=0b1120" alt="3.5M"/>
+  <img src="https://img.shields.io/badge/<5%-ISL_Proficiency-red?style=for-the-badge&labelColor=0b1120" alt="<5%"/>
+  <img src="https://img.shields.io/badge/0-Counter_Tools-red?style=for-the-badge&labelColor=0b1120" alt="0"/>
+</p>
 
-Sanket makes ISL training frictionless — **3 minutes a day**, integrated into the clerk's workflow.
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         THE SILENCE AT THE COUNTER                     │
+│                                                                         │
+│   🧏 Deaf Citizen                    🧑‍💼 Clerk                          │
+│   ┌─────────────┐                    ┌─────────────┐                   │
+│   │ Signs:      │                    │ Understands: │                   │
+│   │ "bill"      │ ──── ??? ────▶     │ ???          │                   │
+│   │ "water"     │                    │ ???          │                   │
+│   │ "certificate"│                   │ ???          │                   │
+│   └─────────────┘                    └─────────────┘                   │
+│                                                                         │
+│   Root Cause: ISL lessons exist OFF the counter.                        │
+│   Consequence: Written notes, family interpreters, or simply leave.     │
+│   Mandate: RPwD Act 2016 + Sugamya Bharat Abhiyan.                     │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Our Solution — Moment → Habit → Score
+
+<p align="center">
+  <img src="https://img.shields.io/badge/1-MOMENT-4ade80?style=for-the-badge&labelColor=0b1120" alt="Moment"/>
+  <img src="https://img.shields.io/badge/2-HABIT-818cf8?style=for-the-badge&labelColor=0b1120" alt="Habit"/>
+  <img src="https://img.shields.io/badge/3-SCORE-fb923c?style=for-the-badge&labelColor=0b1120" alt="Score"/>
+</p>
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                          MOMENT → HABIT → SCORE                             │
+│                                                                              │
+│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐          │
+│  │   1 · MOMENT    │    │   2 · HABIT     │    │   3 · SCORE     │          │
+│  │                 │    │                 │    │                 │          │
+│  │  Sanket Sahayak │    │   ISL Quest     │    │  Sugamya Score  │          │
+│  │  30-sec service │───▶│  3-min lessons  │───▶│  Compliance     │          │
+│  │  at the counter │    │  XP, streaks    │    │  Dashboard      │          │
+│  │                 │    │  badges          │    │  Real data      │          │
+│  └─────────────────┘    └─────────────────┘    └─────────────────┘          │
+│                                                                              │
+│  "The desk flow wins the clerk today; the gamified habit and the             │
+│   departmental score make it stick."                                         │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## How It Works — Architecture Flow
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                         DATA FLOW: SIGN TO CLERK                            │
+│                                                                              │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌────────┐│
+│  │ 📷       │    │ 🧠       │    │ 💬       │    │ 🔄       │    │ 🗄️     ││
+│  │ MediaPipe│───▶│ kNN      │───▶│ Clerk UI │───▶│ API      │───▶│ MongoDB││
+│  │ 21 hand  │    │ k=3      │    │ React    │    │ Server-  │    │ Atlas  ││
+│  │ landmarks│    │ conf≥0.45│    │ ISL chips│    │ less     │    │        ││
+│  └──────────┘    └──────────┘    └──────────┘    └──────────┘    └────────┘│
+│       │               │                                                   │
+│       │               ▼                                                   │
+│       │         ┌──────────┐                                              │
+│       │         │ ⚠️ LOW   │                                              │
+│       │         │CONFIDENCE│                                              │
+│       │         │  < 0.45  │                                              │
+│       │         └────┬─────┘                                              │
+│       │              │                                                    │
+│       │              ▼                                                    │
+│       │    ┌─────────────────┐                                            │
+│       │    │ 📞 CALL         │                                            │
+│       │    │ INTERPRETER     │                                            │
+│       │    │ WebSocket Relay │                                            │
+│       │    │ → Text + ISL    │                                            │
+│       │    └─────────────────┘                                            │
+│       │                                                                    │
+│  Runs ON-DEVICE. No server round-trip. Offline-capable.                   │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                    SANKET SAHAYAK — 30-SECOND FLOW                          │
+│                                                                              │
+│  🧏 Citizen                                           🧑‍💼 Clerk              │
+│  ─────────                                           ─────────              │
+│                                                                              │
+│  ┌─────────┐     ┌─────────┐     ┌─────────┐     ┌─────────┐              │
+│  │ App     │────▶│ Citizen │────▶│ Clerk   │────▶│ Reply   │              │
+│  │ Speaks  │     │ Signs   │     │ Sees +  │     │ ISL +   │              │
+│  │ First   │     │ Camera/ │     │ Hears   │     │ Voice   │              │
+│  │         │     │ One-Tap │     │ Text    │     │ Back    │              │
+│  └─────────┘     └─────────┘     └─────────┘     └─────────┘              │
+│       │                                              │                      │
+│       └──────────────────────────────────────────────┘                      │
+│                        ┌─────────────┐                                     │
+│                        │ 🎉 +25 XP   │                                     │
+│                        │ "You helped  │                                     │
+│                        │  a citizen"  │                                     │
+│                        └─────────────┘                                     │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
 ## Features
 
-### 🙏 Sanket Sahayak — Help a citizen in 30 seconds (`/assist`)
-- **Public, no login** — lives on the counter, not in a classroom
-- **Welcome-first flow**: the app speaks before the citizen has to — text, ISL chips, and TTS in EN/HI/MR
-- **Two-way desk flow**: citizen signs (webcam or one-tap demo) → clerk sees text + hears it → clerk taps a one-tap reply or types → ISL chips + voice back to the citizen
-- **14 desk-ready one-tap replies**: "Namaste", "Please wait", "Please fill this form", "Bill payment is over here", "Your complaint is registered"…
-- **+25 XP + assist counter** per finished session (`sanket-assist-count`) — the counter card on the clerk dashboard shows real assists
-- **Auto demo fallback**: no camera/model? Clickable sign grid — the flow never crashes on stage
+### 🙏 Sanket Sahayak — Help a Citizen in 30 Seconds
 
-### 👨‍🏫 Learner View
-- **Daily ISL lesson**: Watch a short video → answer one MCQ
-- **Streak tracking**: Build daily streaks with visual progress
-- **Gamification**: Department vs. department leaderboard, milestone badges
-- **Webcam practice**: Real-time hand sign detection using MediaPipe (5 signs: Namaste, Thank You, Wait, Yes, No)
-- **Spaced repetition**: Wrong answers resurface 2-3 days later for review
-- **Milestone certificate**: Auto-generate PDF certificate at 7/14/21/30 day streaks
+```
+  URL: /assist (public, no login)
+  ┌─────────────────────────────────────────────────────┐
+  │  WELCOME: "Namaste, I am Sanket Sahayak"           │
+  │  ↓                                                  │
+  │  CITIZEN: Signs "water" (webcam or one-tap)        │
+  │  ↓                                                  │
+  │  CLERK: Sees text + hears TTS in EN/HI/MR         │
+  │  ↓                                                  │
+  │  CLERK: Taps one-tap reply → ISL chips + voice     │
+  │  ↓                                                  │
+  │  ✅ SESSION COMPLETE → +25 XP                       │
+  └─────────────────────────────────────────────────────┘
+```
 
-### 📊 Admin Dashboard
-- **Compliance analytics**: Department-wise completion rates with bar charts
-- **Leaderboard**: Top-performing clerks across departments
-- **Content management**: Create/edit/activate/deactivate lesson modules
-- **CSV export**: Download compliance data for reporting
-- **QR code generator**: Generate citizen feedback QR codes for each desk
-- **Role hierarchy**: Super Admin (all departments) vs. Department Admin
+- **14 desk-ready one-tap replies** — Namaste, Please wait, Bill payment is over here...
+- **Auto demo fallback** — no camera? Clickable sign grid — never crashes on stage
+- **Live typing preview** — ISL symbols show above input as clerk types
 
-### 📱 Citizen Feedback Loop
-- QR code at each desk links to a one-question form
-- Citizens answer: *"Did this staff member try to use sign language?"*
-- Feedback metrics shown on admin dashboard (converts training completion → real-world impact)
+### 👨‍🏫 ISL Quest — Gamified Learning
 
-### 🌐 ISL Quest — Public Learning (`/learn`)
-- **No login required** — open to all citizens
-- **Flashcard Mode**: 3D card flip animation, 35 signs across 6 categories (Greetings, Office, Emergency, Daily Life, Numbers, Questions)
-- **Quiz Challenge**: MCQ tests with scoring (+20 XP correct, +5 XP wrong)
-- **Webcam Practice**: Real-time MediaPipe hand tracking for 5 signs (+50 XP)
-- **XP & Leveling**: Level 1-20 progression system with 10 unlockable badges
-- **Daily Streak**: Tracks consecutive practice days
-- **ISL Dictionary**: Search any sign by name or meaning with category filter
-- **Dark Mode**: Toggle for comfortable evening learning
-- **Hindi Bilingual**: Switch between English and हिंदी UI
-- **Sound Effects**: Web Audio API chimes for correct/incorrect answers
-- **Citizen Leaderboard**: Top learners ranked by XP on `/learn`
-- **Progress Sharing**: Share achievements on WhatsApp
+```
+  ┌─────────────────────────────────────────────────┐
+  │              ISL QUEST — DAILY HABIT             │
+  │                                                  │
+  │  ┌──────┐   ┌──────┐   ┌──────┐   ┌──────┐    │
+  │  │ 📖   │   │ 🎯   │   │ 🏆   │   │ 🎓   │    │
+  │  │Lesson│──▶│ Quiz │──▶│ XP   │──▶│ Cert │    │
+  │  │ 3min │   │ MCQ  │   │ +20  │   │ PDF  │    │
+  │  └──────┘   └──────┘   └──────┘   └──────┘    │
+  │                                                  │
+  │  34 Signs · 6 Categories · Spaced Repetition    │
+  │  Daily Streaks · Leaderboards · Badges          │
+  └─────────────────────────────────────────────────┘
+```
 
-### 👤 New User Onboarding
-- First-time users see a welcome banner with 3 intro tasks
-- First sign "Namaste" auto-assigned (not random)
-- Progress tracking for onboarding completion
+- **35 signs** across 6 categories (Greetings, Office, Emergency, Daily Life, Numbers, Questions)
+- **Webcam practice** — real-time MediaPipe hand tracking for 5 signs (+50 XP)
+- **Spaced repetition** — wrong answers resurface 2-3 days later
+- **Milestone certificates** — auto-generated PDF at 7/14/21/30 day streaks
 
-### 🔄 Game Progress Sync
-- Logged-in users' ISL Quest progress auto-syncs to MongoDB
-- Leaderboard shows both daily lesson streaks and ISL Quest XP
-- Data merges across devices (takes max XP on conflict)
-- "Save Progress" button in dashboard for manual sync
+### 📊 Admin Dashboard — Real Compliance Data
+
+```
+  ┌─────────────────────────────────────────────────────┐
+  │                 SUGAMYA SCORE                        │
+  │                                                      │
+  │  ┌──────────────────────────────────────────────┐   │
+  │  │  45% Compliance (DAL + streak)               │   │
+  │  │  ████████████████████░░░░░░░░░░░  45%        │   │
+  │  │                                              │   │
+  │  │  30% Citizen Satisfaction (QR feedback)      │   │
+  │  │  █████████████░░░░░░░░░░░░░░░░░  30%        │   │
+  │  │                                              │   │
+  │  │  15% Participation (active learners)         │   │
+  │  │  ███████░░░░░░░░░░░░░░░░░░░░░░░  15%        │   │
+  │  │                                              │   │
+  │  │  10% Human Safety Net (escalations)          │   │
+  │  │  █████░░░░░░░░░░░░░░░░░░░░░░░░░  10%        │   │
+  │  └──────────────────────────────────────────────┘   │
+  │                                                      │
+  │  Charts · CSV Export · QR Generator · Leaderboard   │
+  └─────────────────────────────────────────────────────┘
+```
 
 ### 📞 Live Human Interpreter (Emergency Relay)
-- **Purpose**: When AI recognition confidence is low (< 0.45), the system escalates to a human interpreter instead of dead-ending the citizen
-- **Current**: Simulated relay for demo — tap "Call interpreter" → simulated interpreter joins after ~1.6s → chat message + escalation logged
-- **Future**: WebRTC video call between citizen and remote trained interpreter, with WebSocket (Socket.IO) signaling for real-time relay management
-- **Fallback chain**: AI recognition → low confidence → Call interpreter → WebSocket relay → text chat with ISL chips (minimum viable communication)
-- **Sugamya Score**: Formula includes 10% "human safety net" weight — rewards departments that resolve citizen issues, not just departments where AI works well
-- **Architecture**: WebSocket signaling + WebRTC media stream + text chat fallback. Interpreter matched by department and availability. Every relay session logged with duration, outcome, and citizen feedback.
-- **Key differentiator**: "We built the routing, not just the recognizer. When the model fails, a human is one tap away."
+
+```
+  ┌─────────────────────────────────────────────────────────────┐
+  │              ESCALATION FLOW                                 │
+  │                                                              │
+  │  AI Confidence ≥ 0.45        AI Confidence < 0.45           │
+  │  ┌─────────────────┐         ┌─────────────────┐           │
+  │  │ ✅ Recognized    │         │ ⚠️ Low Confidence│           │
+  │  │ Show result      │         │ Show result      │           │
+  │  └─────────────────┘         └────────┬────────┘           │
+  │                                       │                      │
+  │                                       ▼                      │
+  │                              ┌─────────────────┐           │
+  │                              │ 📞 Call          │           │
+  │                              │ Interpreter      │           │
+  │                              └────────┬────────┘           │
+  │                                       │                      │
+  │                              ┌────────▼────────┐           │
+  │                              │ WebSocket Relay  │           │
+  │                              │ Text + ISL Chips │           │
+  │                              └────────┬────────┘           │
+  │                                       │                      │
+  │                              ┌────────▼────────┐           │
+  │                              │ End Relay → Log  │           │
+  │                              │ Sugamya Score +10%│          │
+  │                              └─────────────────┘           │
+  │                                                              │
+  │  "We built the routing, not just the recognizer."           │
+  └─────────────────────────────────────────────────────────────┘
+```
+
+### 🌐 ISL Quest — Public Learning
+
+| Feature | Details |
+|---------|---------|
+| **Flashcard Mode** | 3D card flip animation, 35 signs |
+| **Quiz Challenge** | MCQ tests, +20 XP correct, +5 XP wrong |
+| **Webcam Practice** | MediaPipe hand tracking, +50 XP |
+| **XP & Leveling** | Level 1-20, 10 unlockable badges |
+| **Daily Streak** | Consecutive practice tracking |
+| **ISL Dictionary** | Search by name/meaning with category filter |
+| **Dark Mode** | Toggle for comfortable evening learning |
+| **Hindi Bilingual** | EN ↔ हिंदी UI switch |
+| **Sound Effects** | Web Audio API chimes |
+| **Citizen Leaderboard** | Top learners ranked by XP |
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology | Rationale |
-|---|---|---|
-| **Frontend** | Next.js 14 (App Router) + Tailwind CSS | One repo, fast builds, modern React |
-| **Backend** | Next.js API Routes | No separate server; deploy as one unit |
-| **Database** | MongoDB + Mongoose | Flexible schema; free Atlas tier |
-| **Auth** | JWT + bcrypt (httpOnly cookies) | Simple, secure, no third-party |
-| **Video** | Cloudinary (free tier) | Upload, transcode, CDN delivery |
-| **Charts** | Recharts | React-native charting |
-| **PDF** | jsPDF | Client-side certificate generation |
-| **ML** | MediaPipe Hands (tasks-vision) + Euclidean kNN | Browser-based hand landmark detection |
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        TECH STACK                                │
+│                                                                  │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  FRONTEND          │  Next.js 14 App Router              │   │
+│  │                    │  React 18 + Tailwind CSS            │   │
+│  │                    │  PWA · Dark Mode · EN/HI/MR         │   │
+│  ├──────────────────────────────────────────────────────────┤   │
+│  │  BACKEND           │  Next.js API Routes (Serverless)    │   │
+│  │                    │  No separate server needed          │   │
+│  ├──────────────────────────────────────────────────────────┤   │
+│  │  DATABASE          │  MongoDB Atlas (Mongoose ODM)       │   │
+│  │                    │  Fail-fast · Mock fallback          │   │
+│  ├──────────────────────────────────────────────────────────┤   │
+│  │  AUTH              │  JWT + bcrypt (httpOnly cookies)    │   │
+│  │                    │  No third-party dependencies        │   │
+│  ├──────────────────────────────────────────────────────────┤   │
+│  │  ML / CV           │  MediaPipe Hands (tasks-vision)     │   │
+│  │                    │  Euclidean kNN · On-device          │   │
+│  ├──────────────────────────────────────────────────────────┤   │
+│  │  CHARTS            │  Recharts (React-native)            │   │
+│  ├──────────────────────────────────────────────────────────┤   │
+│  │  PDF               │  jsPDF (Client-side generation)     │   │
+│  ├──────────────────────────────────────────────────────────┤   │
+│  │  VIDEO             │  Cloudinary (free tier)             │   │
+│  ├──────────────────────────────────────────────────────────┤   │
+│  │  DEPLOYMENT        │  Vercel + MongoDB Atlas             │   │
+│  │                    │  Auto-scaling · Free tiers          │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-### ⚠️ Honest note on the recognition model
-
-The recognizer is a **demo-grade Euclidean kNN** over 21 MediaPipe hand landmarks (wrist-relative normalization, 15-frame temporal smoothing). It is deliberately simple so the prototype works entirely on-device and offline on any clerk's laptop. **It is not production ML, and we don't claim it is.**
-
-We believe the moat is *not* the recognizer. The differentiators are:
-1. **ISLRTC-certified municipal vocabulary** — content, not the classifier
-2. **Structured escalation to human interpreters** when confidence is low (roadmap)
-3. **Deployment where service happens** — the 30-second Sanket Sahayak desk flow
-
-Recognition quality is table stakes and will improve; adoption at 6 lakh counters is the product.
-| **Deployment** | Vercel + MongoDB Atlas | Free tiers for both |
+> **⚠️ Honest note on the recognition model:** The recognizer is a **demo-grade Euclidean kNN** over 21 MediaPipe hand landmarks. It is deliberately simple so the prototype works entirely on-device and offline. **It is not production ML, and we don't claim it is.**
+>
+> The moat is *not* the recognizer. The differentiators are:
+> 1. **ISLRTC-certified municipal vocabulary** — content, not the classifier
+> 2. **Structured escalation to human interpreters** when confidence is low
+> 3. **Deployment where service happens** — the 30-second Sanket Sahayak desk flow
 
 ---
 
 ## Setup Instructions
 
 ### Prerequisites
-- Node.js 18+ and npm
-- **Docker** (recommended — for local MongoDB + one-command setup) OR MongoDB Atlas account (free tier)
-- Cloudinary account (free tier) — optional, for video uploads
 
-### 1. Clone & Install
+```
+  ┌─────────────────────────────────────────┐
+  │  Required:                              │
+  │  ✓ Node.js 18+ and npm                 │
+  │  ✓ Docker (recommended) OR MongoDB Atlas│
+  │                                         │
+  │  Optional:                              │
+  │  ✓ Cloudinary account (video uploads)   │
+  └─────────────────────────────────────────┘
+```
+
+### Quick Start (Docker)
+
 ```bash
+# 1. Clone & Install
 git clone https://github.com/rudrakhairnar16-bit/sanket.git
 cd sanket
 npm install
-```
 
-### 2. Start MongoDB (choose one)
-
-**Option A — Docker (recommended, easiest):**
-```bash
+# 2. Start MongoDB
 docker run -d --name sanket-mongo -p 27017:27017 mongo:7
-```
 
-**Option B — MongoDB Atlas (free tier):**
-Create a free cluster at [cloud.mongodb.com](https://cloud.mongodb.com) and get your connection string.
-
-### 3. Environment Variables
-Create a `.env` file in the root directory:
-
-**If using Docker (local):**
-```env
+# 3. Create .env
+cat > .env << EOF
 MONGODB_URI=mongodb://localhost:27017/sanket
 JWT_SECRET=sanket-dev-secret-change-in-production
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=placeholder
-```
+EOF
 
-**If using MongoDB Atlas:**
-```env
-MONGODB_URI=mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/sanket
-JWT_SECRET=<any-random-string-at-least-32-chars>
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=<your-cloudinary-cloud-name>
-```
-
-### 4. Run Development Server
-```bash
+# 4. Run
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000)
 
-### 5. (Optional) Run All Services with Docker Compose
+### Quick Start (MongoDB Atlas)
+
+```bash
+# 1. Clone & Install
+git clone https://github.com/rudrakhairnar16-bit/sanket.git
+cd sanket
+npm install
+
+# 2. Create .env
+cat > .env << EOF
+MONGODB_URI=mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/sanket
+JWT_SECRET=<any-random-string-at-least-32-chars>
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=<your-cloudinary-cloud-name>
+EOF
+
+# 3. Run
+npm run dev
+```
+
+### Docker Compose (All Services)
 
 ```bash
 docker compose up -d
+# App at http://localhost:3000
 ```
 
-This starts MongoDB + the Next.js app in one command. The app will be available at `http://localhost:3000`.
-
----
-
-### 6. Live Interpreter (Socket.IO)
-
-The interpreter feature uses a **separate Socket.IO server** for real-time WebRTC signaling:
+### Live Interpreter (Socket.IO)
 
 ```bash
 # Terminal 1: Next.js
@@ -181,60 +372,116 @@ npm run dev
 npm run socket
 ```
 
-**Production:** The Socket.IO server runs as a standalone Node process. Deploy it to Railway / Fly.io alongside your Vercel deployment:
-```bash
-node server-socket.js
-```
+> Falls back to **Demo mode** when socket server is off — app still works.
 
-The interpreter falls back to **Demo mode** when the socket server is off — the app still works for walkthroughs.
+### Seed Demo Data
 
----
-
-### 7. Seed Demo Data
-> **⚠️ This clears all existing data and populates the database with demo records.**
-
-Visit: `POST /api/admin/seed`
-
-Or use curl:
 ```bash
 curl -X POST http://localhost:3000/api/admin/seed
 ```
 
-### 8. Demo Accounts
+> ⚠️ This clears all existing data and populates with demo records.
+
+### Demo Accounts
 
 | Username | Password | Role |
-|---|---|---|
+|----------|----------|------|
 | `admin` | `Admin123` | Super Admin |
 | `wateradmin` | `admin123` | Department Admin (Water Tax) |
 | `ramesh` | `admin123` | Learner (12-day streak) |
 | `sita` | `admin123` | Learner (8-day streak) |
 | `amit` | `admin123` | Learner (5-day streak) |
 
-*(All learner accounts use password `admin123`)*
+---
+
+## What's Real vs. Simulated
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    REALITY CHECK                              │
+│                                                              │
+│  ✅ REAL                                                     │
+│  ├── Auth & streak logic (JWT, server-enforced)             │
+│  ├── Quiz engine (MCQ with tracking)                        │
+│  ├── Admin CRUD (create/edit/deactivate)                    │
+│  ├── Charts & CSV export (Recharts)                         │
+│  ├── Citizen feedback (public form → DB)                    │
+│  ├── Spaced repetition (2-3 day window)                     │
+│  ├── PDF certificate (jsPDF)                                │
+│  ├── Hindi bilingual (70+ translations)                     │
+│  ├── Dark mode (Tailwind dark:class)                        │
+│  ├── ISL Dictionary (35 signs searchable)                   │
+│  ├── Sound effects (Web Audio API)                          │
+│  ├── ISL Quest leaderboard (XP-based)                       │
+│  └── Game progress sync (MongoDB)                           │
+│                                                              │
+│  ⚠️ PARTIAL                                                  │
+│  ├── QR code generation (links to live form)                │
+│  ├── Webcam sign practice (demo-grade classifier)           │
+│  └── Video content (placeholder URLs)                       │
+│                                                              │
+│  ❌ PLANNED                                                  │
+│  ├── WhatsApp/SMS nudge integration                         │
+│  └── WebRTC live interpreter relay                          │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## What's Real vs. Simulated (for Demo)
+## Scalability Roadmap
 
-| Feature | Status | Notes |
-|---|---|---|
-| Auth & streak logic | ✅ Real | Full JWT auth, server-enforced 1 module/day |
-| Quiz engine | ✅ Real | MCQ with correct/incorrect tracking |
-| Admin CRUD | ✅ Real | Create/edit/deactivate modules |
-| Charts & CSV export | ✅ Real | Recharts, client-side CSV generation |
-| Webcam sign practice | ✅ Real (demo) | MediaPipe + rule-based classifier for 5 signs. Not a production-grade model — use ISLRTC-certified content for deployment |
-| Citizen feedback | ✅ Real | Public form, stores in DB |
-| Spaced repetition | ✅ Real | 2-3 day window for wrong-answer review |
-| PDF certificate | ✅ Real | jsPDF-generated with streak info |
-| QR code generation | ⚠️ Partially real | QR links to live form; print-ready download provided |
-| Hindi bilingual UI | ✅ Real | 70+ translation map across all learner screens |
-| Dark mode | ✅ Real | Tailwind `dark:class` — toggle on learn page, dashboard, admin |
-| ISL Dictionary (search) | ✅ Real | 35 signs searchable by name/meaning with category filter |
-| Sound effects | ✅ Real | Web Audio API tones for quiz correct/incorrect |
-| ISL Quest leaderboard | ✅ Real | XP-based ranking with top-7 display |
-| Game progress sync | ✅ Real | Auto-syncs to MongoDB for logged-in users |
-| WhatsApp/SMS nudge | ❌ Planned | Pitch mentions this as next step; not implemented |
-| Video content | ⚠️ Placeholder | Demo uses placeholder video URLs. Real content should use ISLRTC dictionary |
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                    PILOT → NATIONAL                                           │
+│                                                                              │
+│  PHASE 1          PHASE 2          PHASE 3          PHASE 4       PHASE 5  │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐  ┌──────────┐│
+│  │  PILOT   │───▶│CITY-WIDE │───▶│ REGIONAL │───▶│  STATE   │─▶│ NATIONAL ││
+│  │ Months   │    │ Months   │    │ Months   │    │  Year 2  │  │ Years    ││
+│  │ 1-3      │    │ 4-6      │    │ 7-12     │    │          │  │ 3-5      ││
+│  │          │    │          │    │          │    │          │  │          ││
+│  │ 1 munici-│    │ 5-10     │    │ 5 Tier   │    │ Gujarat  │  │ 36       ││
+│  │ pality   │    │ offices  │    │ 2/3      │    │ + Maha-  │  │ states   ││
+│  │ 3 depts  │    │ 500+     │    │ cities   │    │ rashtra  │  │ & UTs    ││
+│  │ 50-100   │    │ clerks   │    │ 5,000+   │    │ 25,000+  │  │ 500,000+ ││
+│  │ clerks   │    │          │    │ clerks   │    │ certified│  │ trained  ││
+│  └──────────┘    └──────────┘    └──────────┘    └──────────┘  └──────────┘│
+│                                                                              │
+│  Partners: GSRDM · Maharashtra SRC · DEPwD · ISLRTC Certified              │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 90-Second Demo Script
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  THE MOMENT — 30-second service (0-40s)                        │
+│  ─────────────────────────────────────────────────────────────  │
+│  "A deaf citizen walks into a sarkari office. Watch this."     │
+│  → App speaks first: "Namaste, I am Sanket Sahayak"           │
+│  → Click "Water" → citizen bubble appears                      │
+│  → Clerk taps reply "Water is over there" → ISL + voice       │
+│  → Citizen signs "Namaste" → finish → +25 XP                   │
+│  → "30 seconds. Not 30 days. That's the moment."              │
+│                                                                 │
+│  THE HABIT (40-60s)                                             │
+│  ─────────────────────────────────────────────────────────────  │
+│  → Open /dashboard: "Same clerk, same desk — habit."           │
+│  → Point to Sahayak counter card + ISL Quest card              │
+│                                                                 │
+│  THE SCORE (60-80s)                                             │
+│  ─────────────────────────────────────────────────────────────  │
+│  → Login as admin → "The department sees it: real data."       │
+│  → Analytics dashboard, charts, CSV, leaderboard               │
+│                                                                 │
+│  CLOSE (80-90s)                                                 │
+│  ─────────────────────────────────────────────────────────────  │
+│  → "From 30 days of training to 30 seconds of service."       │
+│  → Open floor for Q&A (QA-BANK.md)                             │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -243,94 +490,10 @@ curl -X POST http://localhost:3000/api/admin/seed
 All ISL sign content is curated from the **Indian Sign Language Research and Training Centre (ISLRTC)** — an autonomous body under the Department of Empowerment of Persons with Disabilities, Ministry of Social Justice & Empowerment, Government of India.
 
 - ISLRTC's public ISL Dictionary covers **10,000+ signed terms**
-- We curate ~10-15 clerk-relevant terms for the demo
+- We curate ~34 clerk-relevant terms for the demo
 - Full attribution: *"Content sourced from ISLRTC, Ministry of Social Justice & Empowerment, Government of India."*
 
 > **For production use:** Any original content beyond the ISLRTC set should be reviewed by Deaf community members or certified ISL interpreters before deployment.
-
----
-
-## Production Seed
-
-After deploying to production, seed the database by running the seed script:
-
-```bash
-# Set your MongoDB Atlas URI (or use .env with MONGODB_URI)
-export MONGODB_URI="mongodb+srv://user:pass@cluster.xxxxx.mongodb.net/sanket?retryWrites=true&w=majority"
-
-# Run the standalone seed script
-npx tsx scripts/seed.ts
-```
-
-This creates:
-- **2 admins**: `admin` / `Admin123`, `wateradmin` / `admin123`
-- **12 learners**: `ramesh`, `sita`, `amit`, `priya`, `vikram`, `anita`, `rajesh`, `neha`, `suresh`, `kavita`, `deepak`, `pooja` (all password: `admin123`)
-- **5 modules**: Thank You, Please Wait, Sign Here, Water Bill, Submit
-- **Completion history** for learners with streaks
-
-> The API endpoint `POST /api/admin/seed` does the same but requires running inside Next.js. Use the script for production deployments.
-
----
-
-## Live Demo
-
-> **⚠️ Deploy status:** The URLs below are NOT live yet. `sanket.vercel.app` belongs to an unrelated project and `sanket-isl.vercel.app` is a 404. **Run from `localhost:3000` for the demo**, and update this section after the fresh Vercel deploy + `POST /api/admin/seed`.
-
-**Used in the demo (local):** `http://localhost:3000`
-
-| Login | URL |
-|-------|-----|
-| Sanket Sahayak (public) | `/assist` |
-| Clerk Dashboard | `/dashboard` |
-| Admin Panel | `/admin` |
-| ISL Quest (Public) | `/learn` |
-| Citizen Feedback | `/feedback/[username]` |
-| Playground (guest) | `/login` → click "Play ISL Quest" |
-
-> **Tip:** Visit `/learn` first to try ISL Quest without logging in! 🎮
-
----
-
-## Scalability Narrative
-
-```
-Hackathon MVP → Single Municipality Pilot → Statewide Rollout
-```
-
-1. **Next step**: WhatsApp/SMS nudge integration (Twilio API) — clerks respond better to mobile alerts
-2. **Scale**: Admin hierarchy already supports multi-department scope; add district/state heatmap
-3. **Content**: Partner with ISLRTC for certified content pipeline
-4. **Outcome**: Shift from measuring *training completion* to measuring *on-ground usage* via citizen feedback
-
----
-
-## 90-Second Judge Demo Script
-
-```
-[OPEN http://localhost:3000/assist in Chrome, logged out]
-
-1. THE MOMENT — 30-second service (0-40s)
-   → "A deaf citizen walks into a sarkari office. Watch what happens."
-   → The app speaks first: "Namaste, I am Sanket Sahayak."
-   → Click the demo sign "Water" → citizen bubble appears on the clerk desk
-   → Clerk taps one-tap reply "Water is over there" → ISL chips + voice
-   → Citizen signs "Namaste" → clerk says "Namaste" back
-   → Click Finish Session → "You helped a citizen today 💙 +25 XP"
-   → "30 seconds. Not 30 days. That's the moment."
-
-2. THE HABIT (40-60s)
-   → Open /dashboard: "The same clerk, the same desk — Sanket makes it a habit."
-   → Point to Sahayak counter card + ISL Quest card (streaks, XP, badges)
-
-3. THE SCORE (60-80s)
-   → Sign out, login as "admin"
-   → "And now the department sees it: assisted citizens, compliance, real data."
-   → Point to the analytics dashboard (charts, CSV export, leaderboard)
-
-4. CLOSE (80-90s)
-   → "From 30 days of training to 30 seconds of service. Sanket."
-   → Open floor for Q&A (answers in QA-BANK.md)
-```
 
 ---
 
@@ -338,12 +501,31 @@ Hackathon MVP → Single Municipality Pilot → Statewide Rollout
 
 MIT — Built for educational purposes at Yuva 6.0 Hackathon.
 
-## Team
+---
 
-- **Rudra Khaire**
-- **Pratiksha Jawale** (Team Leader)
-- **Mahi Panchal**
-- **Suhani Pawar**
-- **Sheena Sharma**
+## Team — Beyond Words
 
-Dr. Kiran and Pallavi Patel Global University (KPGU) — B.Tech CSE, 2nd Year
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     TEAM BEYOND WORDS                        │
+│                                                              │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
+│  │   PJ     │ │   RK     │ │   MP     │ │   SP     │ │   SS     │
+│  │ Pratiksha│ │  Rudra   │ │  Mahi    │ │  Suhani  │ │  Sheena  │
+│  │ Jawale   │ │  Khaire  │ │  Panchal │ │  Pawar   │ │  Sharma  │
+│  │          │ │          │ │          │ │          │ │          │
+│  │Team Lead │ │Developer │ │Developer │ │Developer │ │Developer │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────────┘
+│                                                              │
+│  Dr. Kiran & Pallavi Patel Global University (KPGU)         │
+│  B.Tech CSE · 2nd Year                                      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Sanket-संकेत-6366f1?style=for-the-badge&labelColor=0b1120" alt="Sanket"/>
+  <img src="https://img.shields.io/badge/ISL_for_Sarkari_Clerks-civic_tech-0b1120?style=for-the-badge&labelColor=1e293b&color=c9a961" alt="ISL"/>
+  <img src="https://img.shields.io/badge/6_Lakh_Counters-not_a_classroom-0b1120?style=for-the-badge&labelColor=1e293b&color=4ade80" alt="6 Lakh Counters"/>
+</p>
