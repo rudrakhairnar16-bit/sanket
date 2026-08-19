@@ -76,7 +76,7 @@ export default function LoginPage() {
                 <span className="text-2xl font-bold text-white">सं</span>
               </div>
               <h1 className="text-3xl font-bold text-white">Sanket</h1>
-              <p className="text-surface-400 mt-1 text-sm">
+              <p className="text-surface-300 mt-1 text-sm">
                 ISL for Government Clerks
               </p>
               <div className="flex flex-wrap items-center justify-center gap-2 mt-4 lg:hidden">
@@ -88,7 +88,7 @@ export default function LoginPage() {
                 ].map((f) => (
                   <span
                     key={f.label}
-                    className="inline-flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-3 py-1 text-xs text-surface-300"
+                    className="inline-flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-3 py-1 text-xs text-surface-200"
                   >
                     <span>{f.icon}</span>
                     {f.label}
@@ -111,7 +111,7 @@ export default function LoginPage() {
                   className={`relative flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors duration-200 z-10 ${
                     isLogin
                       ? "text-white"
-                      : "text-surface-400 hover:text-surface-200"
+                      : "text-surface-300 hover:text-surface-100"
                   }`}
                   role="tab"
                   aria-selected={isLogin}
@@ -125,7 +125,7 @@ export default function LoginPage() {
                   className={`relative flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors duration-200 z-10 ${
                     !isLogin
                       ? "text-white"
-                      : "text-surface-400 hover:text-surface-200"
+                      : "text-surface-300 hover:text-surface-100"
                   }`}
                   role="tab"
                   aria-selected={!isLogin}
@@ -137,7 +137,7 @@ export default function LoginPage() {
 
               {!isLogin && (
                 <div>
-                  <label className="block text-xs font-medium text-surface-400 mb-1.5 uppercase tracking-wider">
+                  <label className="block text-xs font-medium text-surface-200 mb-1.5 uppercase tracking-wider">
                     Full Name
                   </label>
                   <input
@@ -152,7 +152,7 @@ export default function LoginPage() {
               )}
 
               <div>
-                <label className="block text-xs font-medium text-surface-400 mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-medium text-surface-200 mb-1.5 uppercase tracking-wider">
                   Username
                 </label>
                 <input
@@ -167,7 +167,7 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-surface-400 mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-medium text-surface-200 mb-1.5 uppercase tracking-wider">
                   Password
                 </label>
                 <input
@@ -182,7 +182,7 @@ export default function LoginPage() {
 
               {!isLogin && (
                 <div>
-                  <label className="block text-xs font-medium text-surface-400 mb-1.5 uppercase tracking-wider">
+                  <label className="block text-xs font-medium text-surface-200 mb-1.5 uppercase tracking-wider">
                     Department
                   </label>
                   <select
@@ -221,7 +221,7 @@ export default function LoginPage() {
               </button>
             </form>
 
-            <p className="text-center text-xs text-surface-500 mt-6">
+            <p className="text-center text-xs text-surface-400 mt-6">
               Sanket v1.0 — Team KPGU · KPGU University · Inter-University Round
             </p>
           </div>
@@ -235,7 +235,7 @@ export default function LoginPage() {
                 <h3 className="text-sm font-semibold text-white mb-1">
                   The Problem
                 </h3>
-                <p className="text-xs leading-relaxed text-surface-400">
+                <p className="text-xs leading-relaxed text-surface-300">
                   18 million hearing-impaired Indians are excluded from basic
                   services every day — because almost no public-facing staff
                   know Indian Sign Language. Sanket closes that gap.
@@ -259,8 +259,8 @@ export default function LoginPage() {
               <GamepadIcon />
               Play ISL Quest — No Login Needed
             </Link>
-            <p className="text-surface-600 text-xs text-center">
-              Demo accounts: <span className="text-surface-400">admin / Admin123</span> or <span className="text-surface-400">ramesh / admin123</span>
+            <p className="text-surface-500 text-xs text-center">
+              Demo accounts: <span className="text-surface-300">admin / Admin123</span> or <span className="text-surface-300">ramesh / admin123</span>
             </p>
           </div>
         </div>
@@ -276,7 +276,7 @@ export default function LoginPage() {
           <h2 className="text-3xl font-bold text-white mb-2">
             ISL Quest
           </h2>
-          <p className="text-surface-400 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
+          <p className="text-surface-300 text-sm leading-relaxed mb-8 max-w-sm mx-auto">
             Your gamified Indian Sign Language learning journey — 
             flashcards, quizzes, webcam practice, and more.
           </p>
@@ -286,15 +286,15 @@ export default function LoginPage() {
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-white">{gameData.level}</p>
-                  <p className="text-xs text-surface-400">Level</p>
+                  <p className="text-xs text-surface-300">Level</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold text-white">{gameData.xp}</p>
-                  <p className="text-xs text-surface-400">XP</p>
+                  <p className="text-xs text-surface-300">XP</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold text-white">{gameData.streak}</p>
-                  <p className="text-xs text-surface-400">Streak</p>
+                  <p className="text-xs text-surface-300">Streak</p>
                 </div>
               </div>
               <div className="bg-white/10 rounded-full h-1.5 overflow-hidden">
@@ -303,7 +303,7 @@ export default function LoginPage() {
                   style={{ width: `${progress.progress}%` }}
                 />
               </div>
-              <p className="text-xs text-surface-500 mt-2">
+              <p className="text-xs text-surface-400 mt-2">
                 {progress.current} / {progress.next} XP to next level
               </p>
             </div>
@@ -317,7 +317,7 @@ export default function LoginPage() {
                 ].map((f) => (
                   <div key={f.label} className="text-center">
                     <span className="text-2xl block mb-1">{f.icon}</span>
-                    <p className="text-xs text-surface-400">{f.label}</p>
+                    <p className="text-xs text-surface-300">{f.label}</p>
                   </div>
                 ))}
               </div>
@@ -330,7 +330,7 @@ export default function LoginPage() {
                 ].map((f) => (
                   <div key={f.label} className="flex items-center gap-2 bg-white/5 rounded-btn px-3 py-2">
                     <f.icon />
-                    <span className="text-xs text-surface-400">{f.label}</span>
+                    <span className="text-xs text-surface-300">{f.label}</span>
                   </div>
                 ))}
               </div>
@@ -353,7 +353,7 @@ export default function LoginPage() {
               <BookIcon />
               View 12-Week Curriculum
             </Link>
-            <p className="text-xs text-surface-600">
+            <p className="text-xs text-surface-400">
               {hasGameData
                 ? "Continue your learning journey — no login needed"
                 : "Start learning in seconds. No account required."}
