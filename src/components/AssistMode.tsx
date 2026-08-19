@@ -165,12 +165,12 @@ export default function AssistMode() {
   async function loadHandLandmarker() {
     const { HandLandmarker, FilesetResolver } = await import("@mediapipe/tasks-vision");
     const vision = await FilesetResolver.forVisionTasks(
-      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+      "/wasm"
     );
     const opts = {
       baseOptions: {
         modelAssetPath:
-          "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task",
+          "/models/hand_landmarker.task",
       },
       runningMode: "VIDEO" as const,
       numHands: 2,

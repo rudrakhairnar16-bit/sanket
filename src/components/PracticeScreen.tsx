@@ -79,15 +79,25 @@ export function PracticeScreen({
       let landmarker: any = null;
       try {
         const { HandLandmarker, FilesetResolver } = await import("@mediapipe/tasks-vision");
-        const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm");
-        landmarker = await HandLandmarker.createFromOptions(vision, {
+        const vision = await FilesetResolver.forVisionTasks("/wasm");
+        const opts = {
           baseOptions: {
-            modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task",
-            delegate: "GPU",
+            modelAssetPath: "/models/hand_landmarker.task",
           },
-          runningMode: "VIDEO",
+          runningMode: "VIDEO" as const,
           numHands: 2,
-        });
+        };
+        try {
+          landmarker = await HandLandmarker.createFromOptions(vision, {
+            ...opts,
+            baseOptions: { ...opts.baseOptions, delegate: "CPU" },
+          });
+        } catch {
+          landmarker = await HandLandmarker.createFromOptions(vision, {
+            ...opts,
+            baseOptions: { ...opts.baseOptions, delegate: "GPU" },
+          });
+        }
       } catch {
         loopActiveRef.current = false;
         setStatus("error");
@@ -100,46 +110,49 @@ export function PracticeScreen({
 
       function processFrame() {
         if (!loopActiveRef.current) return;
+        animFrameRef.current = requestAnimationFrame(processFrame);
         const video = videoRef.current;
         const canvas = canvasRef.current;
         if (!video || !canvas || video.readyState < 2) {
-          animFrameRef.current = requestAnimationFrame(processFrame);
           return;
         }
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0);
+        try {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0);
 
-        const now = performance.now();
-        if (now - lastTimestampRef.current > 100) {
-          lastTimestampRef.current = now;
-          const result = landmarker.detectForVideo(video, now);
-          const sign = currentSignRef.current;
-          if (result.landmarks?.[0]) {
-            latestLandmarksRef.current = result.landmarks[0] as Landmark[];
-            const cls = classifier.classify(result.landmarks[0]);
-            if (cls.signId && cls.confidence > 0.5) {
-              setRecognized(cls.signId);
-              if (cls.signId === sign.id && cls.confidence > 0.65 && !successRef.current) {
-                setSuccess(t("Sign Recognized!"));
-                onUpdateRef.current((prev) => {
-                  let state = addXP(prev, 30);
-                  state = completeSign(state, sign.id);
-                  state = checkWebcamMilestone(state, practiceCountRef.current + 1);
-                  return state;
-                });
-                setPracticeCount((c) => {
-                  practiceCountRef.current = c + 1;
-                  return c + 1;
-                });
-                setTimeout(() => { setSuccess(null); setRecognized(null); }, 2000);
+          const now = performance.now();
+          if (now - lastTimestampRef.current > 100) {
+            lastTimestampRef.current = now;
+            const result = landmarker.detectForVideo(video, now);
+            const sign = currentSignRef.current;
+            if (result.landmarks?.[0]) {
+              latestLandmarksRef.current = result.landmarks[0] as Landmark[];
+              const cls = classifier.classify(result.landmarks[0]);
+              if (cls.signId && cls.confidence > 0.5) {
+                setRecognized(cls.signId);
+                if (cls.signId === sign.id && cls.confidence > 0.65 && !successRef.current) {
+                  setSuccess(t("Sign Recognized!"));
+                  onUpdateRef.current((prev) => {
+                    let state = addXP(prev, 30);
+                    state = completeSign(state, sign.id);
+                    state = checkWebcamMilestone(state, practiceCountRef.current + 1);
+                    return state;
+                  });
+                  setPracticeCount((c) => {
+                    practiceCountRef.current = c + 1;
+                    return c + 1;
+                  });
+                  setTimeout(() => { setSuccess(null); setRecognized(null); }, 2000);
+                }
               }
             }
           }
+        } catch {
+          // keep loop alive even if a frame fails
         }
-        animFrameRef.current = requestAnimationFrame(processFrame);
       }
 
       processFrame();
