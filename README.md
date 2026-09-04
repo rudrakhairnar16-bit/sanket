@@ -726,7 +726,7 @@ Show that the system can:
 | Developer | **Rudra Keyur Khaire** |
 | Research | **Mahi Panchal** |
 | Research | **Suhani Pawar** |
-| Research | **Sheen Asharma** |
+| Research | **Sheena Sharma** |
 
 > Team roles should be kept synchronized with the official competition submission.
 
