@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <g fill="white" stroke="white" stroke-width="3">
+    <polygon points="100,25 80,60 120,60" fill="none"/>
+    <line x1="100" y1="35" x2="100" y2="50"/>
+    <line x1="100" y1="60" x2="100" y2="110"/>
+    <line x1="88" y1="110" x2="88" y2="155"/>
+    <line x1="96" y1="110" x2="96" y2="150"/>
+    <line x1="104" y1="110" x2="104" y2="150"/>
+    <line x1="112" y1="110" x2="112" y2="155"/>
+    <path d="M 70 40 L 60 30 M 130 40 L 140 30" fill="none" stroke-width="3"/>
+  </g>
+</svg>

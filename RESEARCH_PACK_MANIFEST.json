@@ -1,0 +1,22 @@
+{
+  "created": "2026-09-04",
+  "research_documents": [
+    "DATASET_EVALUATION_RESEARCH.md",
+    "DATA_PROVENANCE_LICENSE_MATRIX.md",
+    "DETAILED_RESEARCH_REPORT.md",
+    "ETHICS_PRIVACY_ACCESSIBILITY.md",
+    "LITERATURE_REVIEW_ISL.md",
+    "OPENCODE_RESEARCH_INTEGRATION_TASK.md",
+    "REFERENCES.bib",
+    "REFERENCES.md",
+    "RESEARCH_DOCUMENTATION_MASTER.md",
+    "RESEARCH_EVIDENCE_MATRIX.md",
+    "SANKET_RESEARCH_PAPER.md",
+    "SYSTEM_DESIGN_SRS.md",
+    "TECHNICAL_RESEARCH_REPORT.md",
+    "VALIDATION_PROTOCOL.md",
+    "VIVA_AND_JUDGE_RESEARCH_QA.md"
+  ],
+  "pdf": "SANKET_Research_Documentation_Pack.pdf",
+  "note": "Original research synthesis and project documentation; copyrighted papers are not redistributed."
+}
