@@ -1,7 +1,10 @@
 import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
-const JWT_SECRET = process.env.JWT_SECRET || "sanket-v2-dev-secret-change-in-production-32chars";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  console.warn('[Sanket] JWT_SECRET not set — using fallback for development only');
+}
 const TOKEN_EXPIRY = "7d";
 const COOKIE_NAME = "sanket_token";
 
@@ -12,13 +15,18 @@ export interface JWTPayload {
   name: string;
 }
 
+function getSecret(): string {
+  if (!JWT_SECRET) throw new Error('JWT_SECRET environment variable is required');
+  return JWT_SECRET;
+}
+
 export function signToken(payload: JWTPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
+  return jwt.sign(payload, getSecret(), { expiresIn: TOKEN_EXPIRY });
 }
 
 export function verifyToken(token: string): JWTPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as JWTPayload;
+    return jwt.verify(token, getSecret()) as JWTPayload;
   } catch {
     return null;
   }

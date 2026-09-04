@@ -13,3 +13,6 @@ next-env.d.ts
 .vercel
 test-results/
 playwright-report/
+datasets_sources.tmp
+OPENCODE_FINAL_LAST_MILE_TASK.md
+OPENCODE_MASTER_TASK.md
