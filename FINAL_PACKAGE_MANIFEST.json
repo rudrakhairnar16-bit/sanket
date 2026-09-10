@@ -1,0 +1,9 @@
+{
+  "release": "SANKET 2.0 national final last-mile package",
+  "date": "2026-09-04",
+  "readme": "README.md",
+  "internal_execution_prompt": "OPENCODE_FINAL_LAST_MILE_TASK.md",
+  "public_handoff": "NATIONAL_LAST_MILE_HANDOFF.md",
+  "public_checklist": "FINAL_NATIONAL_CHECKLIST.md",
+  "rule": "OPENCODE_FINAL_LAST_MILE_TASK.md is an execution prompt and must not be committed to public GitHub."
+}

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <g fill="white" stroke="white" stroke-width="2">
+    <rect x="50" y="70" width="45" height="30" rx="5"/>
+    <line x1="60" y1="70" x2="60" y2="55"/>
+    <circle cx="60" cy="53" r="4"/>
+    <line x1="70" y1="70" x2="70" y2="55"/>
+    <circle cx="70" cy="53" r="4"/>
+    <line x1="80" y1="70" x2="80" y2="57"/>
+    <circle cx="80" cy="55" r="4"/>
+    <rect x="105" y="65" width="45" height="35" rx="5"/>
+    <line x1="115" y1="65" x2="115" y2="48"/>
+    <circle cx="115" cy="46" r="4"/>
+    <line x1="125" y1="65" x2="125" y2="48"/>
+    <circle cx="125" cy="46" r="4"/>
+    <line x1="135" y1="65" x2="135" y2="50"/>
+    <circle cx="135" cy="48" r="4"/>
+    <line x1="122" y1="100" x2="122" y2="140"/>
+    <line x1="110" y1="140" x2="110" y2="175"/>
+    <line x1="118" y1="140" x2="118" y2="170"/>
+    <line x1="126" y1="140" x2="126" y2="170"/>
+    <line x1="134" y1="140" x2="134" y2="175"/>
+    <path d="M 95 85 L 105 85" fill="none" stroke-width="3"/>
+  </g>
+</svg>

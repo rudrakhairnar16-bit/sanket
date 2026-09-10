@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "purpose": "offline research inputs for SANKET recognition",
+  "sources": [
+    {"id":"include","name":"INCLUDE","license":"CC-BY-4.0","url":"https://zenodo.org/records/4010759","role":"primary_isolated_sign"},
+    {"id":"openhands-include","name":"OpenHands INCLUDE pose release","license":"see_upstream","url":"https://openhands.ai4bharat.org/en/latest/instructions/datasets.html","role":"pose_landmark_reference"},
+    {"id":"realsign","name":"RealSign ISL Alphabet","license":"CC0-1.0","url":"https://github.com/RealSign62/RealSign-Indian-Sign-Language-Dataset","role":"fingerspelling_only"},
+    {"id":"islrtc","name":"ISLRTC ISL Dictionary","license":"government_reference_terms","url":"https://islrtc.nic.in/isl-dictionary/","role":"vocabulary_reference"},
+    {"id":"fdmse-isl","name":"FDMSE-ISL","license":"verify_upstream_before_redistribution","url":"https://paperswithcode.com/dataset/fdmse-isl","role":"future_large_scale_benchmark"}
+  ],
+  "importFormat": "Sanket landmark JSON",
+  "notes": [
+    "Do not claim external-dataset accuracy as SANKET deployment accuracy.",
+    "Keep subject-separated test data where possible.",
+    "Use SANKET camera-captured samples for final device calibration."
+  ]
+}
